@@ -17,6 +17,10 @@ public class SongService {
         return songRepository.save(songAddDto.toEntity());
     }
 
+    public Song getSong(Long id) {
+        return songRepository.findById(id).orElseThrow();
+    }
+
     public List<Song> getSongList() {
         return songRepository.findAll();
     }
