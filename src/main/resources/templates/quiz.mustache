@@ -1,8 +1,19 @@
 {{>layout/header}}
-
-UUID: {{song.uuid}}
-fileId: {{song.fileId}}
-
+<div>
+UUID: {{song.uuid}}<br>
+fileId: {{song.fileId}}<br>
+<audio controls src="/audio/{{song.fileId}}.mp3">
+</audio>
+</div>
+<div>
+    <form action="/submit" method="post">
+        <input type="hidden" name="uuid" value="{{song.uuid}}">
+        {{#songList}}
+            <label><input type="radio" name="songChoice" value="{{songName}}"> {{songName}}</label> <br>
+        {{/songList}}
+        <input type="submit" value="정답!">
+    </form>
+</div>
 
 
 {{>layout/footer}}

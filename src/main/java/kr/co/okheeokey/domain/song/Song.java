@@ -31,4 +31,8 @@ public class Song {
         this.fileId = fileId;
         this.uuid = UUID.randomUUID().toString();
     }
+
+    public Boolean songNameMatch(String songName) {
+        return this.songName.equals(songName);
+    }
 }
