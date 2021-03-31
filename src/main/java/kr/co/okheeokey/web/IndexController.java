@@ -21,24 +21,20 @@ public class IndexController {
 
     @GetMapping("/songlist")
     public String songList(Model model) {
-        songService.addSong(SongAddDto.builder()
-                .songName("Candy Jelly Love")
-                .albumId(20141117L)
-                .fileId(11001L)
-                .build());
-        songService.addSong(SongAddDto.builder()
-                .songName("Hi~")
-                .albumId(20150302L)
-                .fileId(12002L)
-                .build());
-
         model.addAttribute("songList", songService.getSongList());
         return "songList";
     }
 
     @GetMapping("/quiz/{id}")
     public String songQuiz(@PathVariable("id") Long id, Model model) {
-        Song song = songService.getSong(id);
+        Song song = null;
+        try {
+            song = songService.getSong(id);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            model.addAttribute("songId", id);
+            return "song_not_found";
+        }
         model.addAttribute("song", song);
         model.addAttribute("songList", songService.getSongList());
         return "quiz";

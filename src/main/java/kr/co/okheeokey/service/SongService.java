@@ -18,8 +18,9 @@ public class SongService {
         return songRepository.save(songAddDto.toEntity());
     }
 
-    public Song getSong(Long id) {
-        return songRepository.findById(id).orElseThrow();
+    public Song getSong(Long id){
+        return songRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No such song with given id exists"));
     }
 
     public Boolean checkAnswer(SongSubmitDto songSubmitDto) {
