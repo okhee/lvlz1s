@@ -1,6 +1,8 @@
 package kr.co.okheeokey.service;
 
 import kr.co.okheeokey.domain.song.Song;
+import kr.co.okheeokey.domain.song.SongHash;
+import kr.co.okheeokey.domain.song.SongHashRepository;
 import kr.co.okheeokey.domain.song.SongRepository;
 import kr.co.okheeokey.web.dto.SongAddDto;
 import kr.co.okheeokey.web.dto.SongSubmitDto;
@@ -8,24 +10,38 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
 public class SongService {
     private final SongRepository songRepository;
+    private final SongHashRepository songHashRepository;
 
     public Song addSong(SongAddDto songAddDto) {
         return songRepository.save(songAddDto.toEntity());
     }
 
-    public Song getSong(Long id){
-        return songRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No such song with given id exists"));
+    public Optional<Song> getSongById(Long id){
+        return songRepository.findById(id);
+    }
+
+    public Optional<String> getSongHashById(Long id) throws IllegalArgumentException{
+        List<SongHash> songHashList = songHashRepository.findAllBySongId(id);
+
+        if (songHashList.isEmpty()){
+            return Optional.empty();
+        }
+        Random r = new Random();
+        String songHash = songHashList.get(r.nextInt(songHashList.size())).getSongHash();
+        return Optional.of(songHash);
     }
 
     public Boolean checkAnswer(SongSubmitDto songSubmitDto) {
-        Song song = songRepository.findByUuid(songSubmitDto.getUuid());
-        return song.songNameMatch(songSubmitDto.getSongChoice());
+        Optional<SongHash> songHash = songHashRepository.findBySongIdAndSongHash(songSubmitDto.getSongId(),
+                                                        songSubmitDto.getSongHash());
+        return songHash.isPresent();
     }
 
     public List<Song> getSongList() {

@@ -1,19 +1,18 @@
 {{>layout/header}}
 <div>
-UUID: {{song.uuid}}<br>
 fileId: {{song.fileId}}<br>
 <audio controls src="/audio/{{song.fileId}}.mp3">
 </audio>
 </div>
 <div>
     <form action="/submit" method="post">
-        <input type="hidden" name="uuid" value="{{song.uuid}}">
+        <input type="hidden" name="songHash" value="{{songHash}}">
+        <input type="hidden" name="nextSongId" value="{{nextSongId}}">
         {{#songList}}
-            <label><input type="radio" name="songChoice" value="{{songName}}"> {{songName}}</label> <br>
+            <label><input type="radio" name="songId" value="{{id}}">{{songName}}</label><br>
         {{/songList}}
         <input type="submit" value="정답!">
     </form>
 </div>
-
 
 {{>layout/footer}}
