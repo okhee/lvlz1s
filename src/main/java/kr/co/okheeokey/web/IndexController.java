@@ -3,13 +3,16 @@ package kr.co.okheeokey.web;
 import kr.co.okheeokey.domain.song.Song;
 import kr.co.okheeokey.service.SongService;
 import kr.co.okheeokey.web.dto.SongSubmitDto;
+import kr.co.okheeokey.web.dto.UserRegisterDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -18,7 +21,9 @@ public class IndexController {
     private final SongService songService;
 
     @GetMapping("/")
-    public String index() {
+    public String index(HttpSession session, Model model) {
+        String loginUserName = (String) session.getAttribute("loginUserName");
+        model.addAttribute("loginUserName", loginUserName);
         return "index";
     }
 
@@ -26,6 +31,30 @@ public class IndexController {
     public String songList(Model model) {
         model.addAttribute("songList", songService.getSongList());
         return "songList";
+    }
+
+    @GetMapping("/register")
+    public String registerPage(HttpSession session, Model model) {
+        String userHashSalt = "vSf2taAc";
+
+        String loginUserName = (String) session.getAttribute("loginUserName");
+
+        model.addAttribute("user", loginUserName);
+//        model.addAttribute("userHashSalt", userHashSalt);
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String registerUser(UserRegisterDto userRegisterDto, HttpSession session, Model model) {
+        String loginUserName = userRegisterDto.getLoginUserName();
+        session.setAttribute("loginUserName", loginUserName);
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session, Model model) {
+        session.removeAttribute("loginUserName");
+        return "redirect:/";
     }
 
     @GetMapping("/quiz/{id}")

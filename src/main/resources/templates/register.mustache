@@ -1,0 +1,17 @@
+{{>layout/header}}
+<div>
+    {{#user}}
+        <h3>Log in successful! username = {{user}}</h3>
+    {{/user}}
+    {{^user}}
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="userNameInput">User name</label>
+                <input type="text" class="form-control" name="loginUserName" id="userNameInput" placeholder="Enter nickname">
+            </div>
+            <button type="submit" class="btn btn-primary">제출</button>
+        </form>
+    {{/user}}
+</div>
+
+{{>layout/footer}}
