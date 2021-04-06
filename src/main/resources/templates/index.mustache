@@ -1,45 +1,180 @@
 {{>layout/header}}
 
-<h1>Lovelyz one second</h1>
-<div class="col-md-12">
-    <div class="row">
-        <div class="col-md-6">
-            <a href="/posts/save" role="button" class="btn btn-primary">글 등록</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark ">
+    <a class="navbar-brand" href="#">Lvlz1s</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav px-3">
             {{#loginUserName}}
-                <br>
-                Logged in as: <span id="user">{{loginUserName}}</span>
-                <a href="/logout" class="btn btn-info active" role="button">Logout</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Login as: {{loginUserName}}</a>
+                </li>
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" href="/logout">Sign out</a>
+                </li>
             {{/loginUserName}}
             {{^loginUserName}}
-                <a href="/register" class="btn btn-primary active" role="button">비회원 Login</a>
-                <a href="/oauth2/authorization/google" class="btn btn-success active" role="button">Google Login</a>
-                <a href="/oauth2/authorization/naver" class="btn btn-secondary active" role="button">Naver Login</a>
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" href="/register">Sign in</a>
+                </li>
             {{/loginUserName}}
+        </ul>
+    </div>
+</nav>
+
+
+<main role="main">
+<!--    <section class="jumbotron text-center" style="background-image: url('/img/index_title_back.jpg')">-->
+    <section class="jumbotron text-center" style="background-color: #fff7fa">
+        <div class="container">
+            <h1 class="jumbotron-heading">Guess the song challenge - Lovelyz</h1>
+            <p class="lead text-muted">러블리즈의 명곡을 단 1초만 듣고 어떤 곡인지 맞춰보세요.</p>
+            <p>
+                {{#loginUserName}}
+                    <a href="#select" class="btn btn-primary my-2">바로 도전하기</a>
+                {{/loginUserName}}
+                {{^loginUserName}}
+                    <a href="/register" class="btn btn-primary my-2">로그인하기</a>
+                {{/loginUserName}}
+                <a href="#" class="btn btn-secondary my-2">설명 듣기</a>
+            </p>
+        </div>
+    </section>
+
+    <div class="album py-5 bg-light" id="select">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="/img/baby-chicks.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">병아리너스</h5>
+                            <p class="card-text">신규 러블리너스를 위한 입문 난이도</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">도전</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">기록</button>
+                                </div>
+                                <small class="text-muted">총 9곡</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="/img/lovelinus.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">러블리너스</h5>
+                            <p class="card-text">음악 좀 들었다고 할 수 있는 경력쌓인 러블리너스</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">도전</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">기록</button>
+                                </div>
+                                <small class="text-muted">총 11곡</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="/img/1piece.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">1Piece</h5>
+                            <p class="card-text">주파수 깎는 장인. 음악을 향한 극단적인 열정</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">도전</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">기록</button>
+                                </div>
+                                <small class="text-muted">총 10곡</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top" src="" alt="Card image cap">
+                        <div class="card-body">
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                </div>
+                                <small class="text-muted">9 mins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
         </div>
     </div>
-    <br>
-    <!-- 목록 출력 영역 -->
-    <table class="table table-horizontal table-bordered">
-        <thead class="thead-strong">
-        <tr>
-            <th>게시글번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>최종수정일</th>
-        </tr>
-        </thead>
-        <tbody id="tbody">
-        {{#posts}}
-            <tr>
-                <td>{{id}}</td>
-                <td><a href="/posts/update/{{id}}">{{title}}</a></td>
-                <td>{{author}}</td>
-                <td>{{modifiedDate}}</td>
-            </tr>
-        {{/posts}}
-        </tbody>
-    </table>
-</div>
+</main>
+
+<!--<div class="col-md-12">-->
+<!--    <div class="row">-->
+<!--        <div class="col-md-6">-->
+<!--            <a href="/posts/save" role="button" class="btn btn-primary">글 등록</a>-->
+<!--            {{#loginUserName}}-->
+<!--                <br>-->
+<!--                Logged in as: <span id="user">{{loginUserName}}</span>-->
+<!--                <a href="/logout" class="btn btn-info active" role="button">Logout</a>-->
+<!--            {{/loginUserName}}-->
+<!--            {{^loginUserName}}-->
+<!--                <a href="/register" class="btn btn-primary active" role="button">비회원 Login</a>-->
+<!--                <a href="/oauth2/authorization/google" class="btn btn-success active" role="button">Google Login</a>-->
+<!--                <a href="/oauth2/authorization/naver" class="btn btn-secondary active" role="button">Naver Login</a>-->
+<!--            {{/loginUserName}}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <br>-->
+<!--    &lt;!&ndash; 목록 출력 영역 &ndash;&gt;-->
+<!--    <table class="table table-horizontal table-bordered">-->
+<!--        <thead class="thead-strong">-->
+<!--        <tr>-->
+<!--            <th>게시글번호</th>-->
+<!--            <th>제목</th>-->
+<!--            <th>작성자</th>-->
+<!--            <th>최종수정일</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody id="tbody">-->
+<!--        {{#posts}}-->
+<!--            <tr>-->
+<!--                <td>{{id}}</td>-->
+<!--                <td><a href="/posts/update/{{id}}">{{title}}</a></td>-->
+<!--                <td>{{author}}</td>-->
+<!--                <td>{{modifiedDate}}</td>-->
+<!--            </tr>-->
+<!--        {{/posts}}-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
 
 {{>layout/footer}}

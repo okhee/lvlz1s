@@ -39,7 +39,7 @@ public class IndexController {
 
         String loginUserName = (String) session.getAttribute("loginUserName");
 
-        model.addAttribute("user", loginUserName);
+        model.addAttribute("loginUserName", loginUserName);
 //        model.addAttribute("userHashSalt", userHashSalt);
         return "register";
     }
