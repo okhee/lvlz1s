@@ -1,11 +1,9 @@
 package kr.co.okheeokey.domain.song;
 
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @NoArgsConstructor
 @Entity
@@ -14,11 +12,26 @@ public class SongHash {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long songId;
-
     private String songHash;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SONG_ID")
+    private Song song;
+
+    @Builder
+    public SongHash(String songHash) {
+        this.songHash = songHash;
+    }
 
     public String getSongHash() {
         return songHash;
+    }
+
+    public void setSong(Song song) {
+        if(this.song != null){
+            this.song.getSongHash().remove(this);
+        }
+        this.song = song;
+        song.getSongHash().add(this);
     }
 }
