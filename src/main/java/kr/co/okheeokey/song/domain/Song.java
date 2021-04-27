@@ -1,5 +1,7 @@
-package kr.co.okheeokey.song;
+package kr.co.okheeokey.song.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -14,15 +16,19 @@ public class Song {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String songName;
 
     @OneToMany(mappedBy = "song")
+    @JsonManagedReference
     private List<SongHash> songHash = new ArrayList<>();
 
     @OneToMany(mappedBy = "song")
+    @JsonManagedReference
     private List<SongFile> songFile = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "ALBUM_ID")
     private Album album;
 

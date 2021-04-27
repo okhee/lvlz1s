@@ -1,6 +1,6 @@
 package kr.co.okheeokey.quiz;
 
-import kr.co.okheeokey.song.SongFileRepository;
+import kr.co.okheeokey.song.domain.SongFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

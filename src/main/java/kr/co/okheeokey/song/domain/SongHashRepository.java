@@ -1,5 +1,6 @@
-package kr.co.okheeokey.song;
+package kr.co.okheeokey.song.domain;
 
+import kr.co.okheeokey.song.domain.SongHash;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

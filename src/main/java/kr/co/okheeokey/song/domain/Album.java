@@ -1,5 +1,6 @@
-package kr.co.okheeokey.song;
+package kr.co.okheeokey.song.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class Album {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String albumName;
 
     private LocalDate releasedDate;
@@ -22,6 +24,7 @@ public class Album {
     private String albumCover;
 
     @OneToMany(mappedBy = "album")
+    @JsonManagedReference
     private List<Song> songList = new ArrayList<>();
 
     @Builder

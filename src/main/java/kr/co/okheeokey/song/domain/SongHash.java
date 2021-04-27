@@ -1,5 +1,6 @@
-package kr.co.okheeokey.song;
+package kr.co.okheeokey.song.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ public class SongHash {
     private String songHash;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "SONG_ID")
     private Song song;
 
