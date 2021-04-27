@@ -1,9 +1,9 @@
-package kr.co.okheeokey.service;
+package kr.co.okheeokey.song;
 
-import kr.co.okheeokey.domain.song.Song;
-import kr.co.okheeokey.domain.song.SongHash;
-import kr.co.okheeokey.domain.song.SongHashRepository;
-import kr.co.okheeokey.domain.song.SongRepository;
+import kr.co.okheeokey.song.Song;
+import kr.co.okheeokey.song.SongHash;
+import kr.co.okheeokey.song.SongHashRepository;
+import kr.co.okheeokey.song.SongRepository;
 import kr.co.okheeokey.web.dto.SongAddDto;
 import kr.co.okheeokey.web.dto.SongSubmitDto;
 import lombok.RequiredArgsConstructor;

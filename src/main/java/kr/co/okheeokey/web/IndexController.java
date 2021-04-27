@@ -1,7 +1,7 @@
 package kr.co.okheeokey.web;
 
-import kr.co.okheeokey.domain.song.Song;
-import kr.co.okheeokey.service.SongService;
+import kr.co.okheeokey.song.Song;
+import kr.co.okheeokey.song.SongService;
 import kr.co.okheeokey.web.dto.SongSubmitDto;
 import kr.co.okheeokey.web.dto.UserRegisterDto;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.Optional;

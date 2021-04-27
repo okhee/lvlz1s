@@ -1,4 +1,4 @@
-package kr.co.okheeokey.domain.user;
+package kr.co.okheeokey.user;
 
 import lombok.Builder;
 import lombok.Getter;

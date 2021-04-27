@@ -1,4 +1,4 @@
-package kr.co.okheeokey.domain.song;
+package kr.co.okheeokey.song;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;

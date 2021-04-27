@@ -19,6 +19,6 @@ public class IndexControllerTest {
     @Test
     public void index() throws Exception{
         String body = restTemplate.getForObject("/", String.class);
-        assertThat(body).contains("Hello Mustache!!");
+        assertThat(body).contains("Lovelyz");
     }
 }

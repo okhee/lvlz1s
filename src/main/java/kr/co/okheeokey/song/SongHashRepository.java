@@ -1,4 +1,4 @@
-package kr.co.okheeokey.domain.song;
+package kr.co.okheeokey.song;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

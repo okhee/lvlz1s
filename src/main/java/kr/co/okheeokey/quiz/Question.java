@@ -1,4 +1,4 @@
-package kr.co.okheeokey.domain.quiz;
+package kr.co.okheeokey.quiz;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;

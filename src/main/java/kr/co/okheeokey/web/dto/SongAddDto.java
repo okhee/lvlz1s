@@ -1,6 +1,6 @@
 package kr.co.okheeokey.web.dto;
 
-import kr.co.okheeokey.domain.song.Song;
+import kr.co.okheeokey.song.Song;
 import lombok.Builder;
 import lombok.Getter;
 
