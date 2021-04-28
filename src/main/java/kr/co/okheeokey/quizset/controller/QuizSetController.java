@@ -49,7 +49,7 @@ public class QuizSetController {
         }
 
         Quiz quiz = quizService.previousQuiz(new QuizQueryValues(userId, quizSetId))
-                .orElseGet(() -> quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, 5L)));
+                .orElseGet(() -> quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, 2L)));
 
         URI uri = URI.create("/quizs/" + quiz.getId());
         return ResponseEntity.created(uri).build();
