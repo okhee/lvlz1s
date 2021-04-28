@@ -35,4 +35,15 @@ public class QuizSet {
         this.title = title;
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "QuizSet{" +
+                "id=" + id +
+                ", ownerId=" + ownerId +
+                ", songPool=" + songPool +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

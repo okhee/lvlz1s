@@ -30,4 +30,13 @@ public class SongFile {
         this.song = song;
         song.getSongFile().add(this);
     }
+
+    @Override
+    public String toString() {
+        return "SongFile{" +
+                "id=" + id +
+                ", song=" + song +
+                ", songFileName='" + songFileName + '\'' +
+                '}';
+    }
 }
