@@ -1,6 +1,7 @@
 package kr.co.okheeokey.quiz.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.Song;
 import kr.co.okheeokey.song.SongFile;
@@ -11,9 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @Entity
@@ -34,9 +33,11 @@ public class Quiz {
     private User owner;
 
     @OneToMany
+    @JsonManagedReference
     private List<SongFile> songList = new ArrayList<>();
 
     @OneToMany
+    @JsonManagedReference
     private List<Song> responseList = new ArrayList<>();
 
     private Boolean closed;

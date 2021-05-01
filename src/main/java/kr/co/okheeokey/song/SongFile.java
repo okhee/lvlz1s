@@ -1,18 +1,22 @@
 package kr.co.okheeokey.song;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
 @Entity
+@Getter
 public class SongFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "SONG_ID")
     private Song song;
 
@@ -40,3 +44,4 @@ public class SongFile {
                 '}';
     }
 }
+
