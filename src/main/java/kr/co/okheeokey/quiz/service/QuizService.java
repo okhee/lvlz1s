@@ -39,6 +39,11 @@ public class QuizService {
         );
     }
 
+    public SongFile getQuestion(Long quizId, Long questionIndex) {
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false).orElseThrow(IllegalArgumentException::new);
+        return quiz.getSongList().get(questionIndex.intValue() - 1);
+    }
+
     public Optional<Quiz> previousQuiz(QuizQueryValues values) {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId()).orElseThrow(IllegalArgumentException::new);
         return quizRepository.findByIdAndQuizSetAndClosed(values.getUserId(), quizSet, false);
