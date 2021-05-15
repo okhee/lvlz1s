@@ -10,7 +10,7 @@ import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quiz.vo.QuizResultValues;
 import kr.co.okheeokey.quizset.service.QuizSetService;
-import kr.co.okheeokey.song.SongFile;
+import kr.co.okheeokey.song.domain.SongFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;

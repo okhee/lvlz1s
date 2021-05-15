@@ -1,7 +1,7 @@
 package kr.co.okheeokey.quizset.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import kr.co.okheeokey.song.SongFile;
+import kr.co.okheeokey.song.domain.SongFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

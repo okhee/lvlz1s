@@ -2,7 +2,7 @@ package kr.co.okheeokey.quiz.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import kr.co.okheeokey.quiz.vo.QuizResultValues;
-import kr.co.okheeokey.song.SongFile;
+import kr.co.okheeokey.song.domain.SongFile;
 
 import java.util.List;
 import java.util.Map;

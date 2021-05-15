@@ -3,8 +3,8 @@ package kr.co.okheeokey.quiz.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.quizset.domain.QuizSet;
-import kr.co.okheeokey.song.Song;
-import kr.co.okheeokey.song.SongFile;
+import kr.co.okheeokey.song.domain.Song;
+import kr.co.okheeokey.song.domain.SongFile;
 import kr.co.okheeokey.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,9 +67,9 @@ public class Quiz {
     }
 
     public void scoreResponse() {
-        for (Integer i = 0; i < this.songList.size(); i++){
-            Boolean isAnswer = this.songList.get(i).getSong().getId().equals(this.responseMap.get(i.longValue()));
-            this.scoreList.put(i.longValue(), isAnswer);
+        for (int i = 0; i < this.songList.size(); i++){
+            Boolean isAnswer = this.songList.get(i).getSong().getId().equals(this.responseMap.get((long) i));
+            this.scoreList.put((long) i, isAnswer);
         }
     }
 
