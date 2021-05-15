@@ -3,14 +3,17 @@ package kr.co.okheeokey.song.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Entity
+@Getter
 public class Song {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +35,22 @@ public class Song {
     @JoinColumn(name = "ALBUM_ID")
     private Album album;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Song song = (Song) o;
+        return id.equals(song.id) && songName.equals(song.songName) && album.equals(song.album);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, songName, album);
+    }
+
     @Builder
     public Song(String songName) {
         this.songName = songName;
-    }
-
-    public List<SongHash> getSongHash() {
-        return songHash;
-    }
-
-    public List<SongFile> getSongFile() {
-        return songFile;
     }
 
     public void setAlbum(Album album) {
@@ -53,7 +61,4 @@ public class Song {
         album.getSongList().add(this);
     }
 
-    public Boolean songNameMatch(String songName) {
-        return this.songName.equals(songName);
-    }
 }
