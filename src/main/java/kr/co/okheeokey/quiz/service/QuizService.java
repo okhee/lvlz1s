@@ -9,7 +9,7 @@ import kr.co.okheeokey.quiz.vo.QuizResultValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.song.domain.SongFile;
+import kr.co.okheeokey.songfile.domain.SongFile;
 import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.user.User;
 import kr.co.okheeokey.user.UserRepository;

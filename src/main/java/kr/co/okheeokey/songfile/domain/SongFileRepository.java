@@ -1,6 +1,5 @@
-package kr.co.okheeokey.song.domain;
+package kr.co.okheeokey.songfile.domain;
 
-import kr.co.okheeokey.song.domain.SongFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SongFileRepository extends JpaRepository<SongFile, Long> {

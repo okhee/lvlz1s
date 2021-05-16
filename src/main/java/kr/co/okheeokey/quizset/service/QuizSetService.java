@@ -1,13 +1,10 @@
 package kr.co.okheeokey.quizset.service;
 
-import kr.co.okheeokey.quiz.domain.Quiz;
-import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
-import kr.co.okheeokey.song.domain.SongFile;
-import kr.co.okheeokey.song.domain.SongFileRepository;
-import kr.co.okheeokey.user.UserRepository;
+import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.songfile.domain.SongFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +28,7 @@ public class QuizSetService {
     public void isAllowed(Long userId, Long quizSetId) throws Exception {
         Optional<QuizSet> quizSet = quizSetRepository.findById(quizSetId);
 
-        if (quizSet.isEmpty())
+        if (!quizSet.isPresent())
             throw new IllegalArgumentException();
         if (!userId.equals(quizSet.get().getOwnerId()))
             throw new IllegalAccessException();

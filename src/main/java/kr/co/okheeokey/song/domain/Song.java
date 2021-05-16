@@ -2,6 +2,7 @@ package kr.co.okheeokey.song.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kr.co.okheeokey.songfile.domain.SongFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

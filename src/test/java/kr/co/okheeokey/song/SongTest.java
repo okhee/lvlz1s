@@ -1,6 +1,8 @@
 package kr.co.okheeokey.song;
 
 import kr.co.okheeokey.song.domain.*;
+import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.songfile.domain.SongFileRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

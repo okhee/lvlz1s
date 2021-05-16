@@ -1,9 +1,11 @@
-package kr.co.okheeokey.song.domain;
+package kr.co.okheeokey.songfile.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import kr.co.okheeokey.song.domain.Song;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 
@@ -22,6 +24,13 @@ public class SongFile {
 
     @Column(nullable = false)
     private String songFileName;
+
+    @Lob
+    private byte[] audio;
+
+    public void setAudio(byte[] audio) {
+        this.audio = audio;
+    }
 
     @Builder
     public SongFile(String songFileName) {

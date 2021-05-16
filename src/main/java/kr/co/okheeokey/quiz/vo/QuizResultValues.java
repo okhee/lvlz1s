@@ -1,7 +1,6 @@
 package kr.co.okheeokey.quiz.vo;
 
-import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.song.domain.SongFile;
+import kr.co.okheeokey.songfile.domain.SongFile;
 import lombok.Builder;
 import lombok.Getter;
 
