@@ -3,6 +3,7 @@ package kr.co.okheeokey.songfile.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.song.domain.Song;
+import kr.co.okheeokey.songfile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.songfile.exception.NoAudioFileExistsException;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,8 @@ public class SongFile {
     @Column(nullable = false)
     private String songFileName;
 
+    // key(Long): difficulty (length of audio file)
+    // value(AudioFile): audioFile
     @OneToMany(mappedBy = "songFile")
     @JsonManagedReference
     private Map<Long, AudioFile> audioList = new HashMap<>();
@@ -35,6 +38,20 @@ public class SongFile {
     @Builder
     public SongFile(String songFileName) {
         this.songFileName = songFileName;
+    }
+
+    public void diffEmptyCheck(Long difficulty) throws AudioFileAlreadyExistsException {
+        if (this.audioList.containsKey(difficulty)) {
+            throw new AudioFileAlreadyExistsException("Audio file already exists in SongFile id { " + id
+                                                    + " }, difficulty { " + difficulty + " }; Use PUT request");
+        }
+    }
+
+    public void diffExistCheck(Long difficulty) throws NoAudioFileExistsException {
+        if (!this.audioList.containsKey(difficulty)) {
+            throw new NoAudioFileExistsException("Audio file does not exists in SongFile id { " + id
+                                        + " }, difficulty { " + difficulty + " }; Add audio file first");
+        }
     }
 
     public void setSong(Song song) {
