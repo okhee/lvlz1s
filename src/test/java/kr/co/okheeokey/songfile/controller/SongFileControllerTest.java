@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.util.NoSuchElementException;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -73,5 +74,30 @@ public class SongFileControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/songfiles/1?diff=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(IOUtils.toByteArray(file1.getInputStream())));
+    }
+
+    @Test
+    @Transactional
+    public void audioFileAlreadyExist() throws Exception {
+        MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
+                new FileInputStream("src/main/resources/static/audio/11001.mp3"));
+        Long id = 1L;
+
+        mvc.perform(MockMvcRequestBuilders.multipart("/songfiles/" + id)
+                .file(file1)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/songfiles/1?diff=0"));
+
+        mvc.perform(MockMvcRequestBuilders.multipart("/songfiles/" + id)
+                .file(file1)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message",
+                        is("Audio file already exists in SongFile id { " + id + " }, difficulty { " + 0 + " }; Use PUT request")));
     }
 }
