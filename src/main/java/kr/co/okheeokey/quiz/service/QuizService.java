@@ -27,9 +27,20 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final QuizSetRepository quizSetRepository;
 
-    public Quiz createNewQuiz(QuizCreateValues values) {
-        User user = userRepository.findById(values.getUserId()).orElseThrow(IllegalArgumentException::new);
-        QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId()).orElseThrow(IllegalArgumentException::new);
+    public Optional<Quiz> previousQuiz(QuizExistQueryValues values) throws NoSuchElementException, IllegalAccessException {
+        QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
+                .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
+        isAllowedToQuizSet(values.getUserId(), quizSet);
+
+        return quizRepository.findByIdAndQuizSetAndClosed(values.getUserId(), quizSet, false);
+    }
+
+    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IllegalArgumentException {
+        User user = userRepository.findById(values.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("No user exists with id { " + values.getUserId() + " }"));
+        QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
+                .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
+
         List<SongFile> randomSongList = sampleSongList(quizSet.getSongPool(), values.getSongNum());
 
         return quizRepository.save(
@@ -42,23 +53,29 @@ public class QuizService {
         );
     }
 
-    public SongFile getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException {
-        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false).orElseThrow(NoSuchElementException::new);
+    public SongFile getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException, NoSuchElementException {
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
+                .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
         if (questionId >= quiz.getSongList().size())
             throw new IndexOutOfBoundsException();
+
         return quiz.getSongList().get(questionId.intValue() - 1);
     }
 
     @Transactional
-    public void closeQuiz(Long quizId) {
-        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false).orElseThrow(NoSuchElementException::new);
-        quiz.scoreResponse();
-        quiz.close();
+    public void saveQuestionResponse(QuestionSubmitValues values) throws NoSuchElementException{
+        Quiz quiz = quizRepository.findByIdAndClosed(values.getQuizId(), false)
+                .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + values.getQuizId() + " }"));
+        Song song = songRepository.findById(values.getResponseSongId())
+                .orElseThrow(() -> new NoSuchElementException("No song exists with id { " + values.getResponseSongId() + " }"));
+
+        quiz.saveResponse(values.getQuestionId() - 1L, song);
     }
 
-    public QuizResultValues getQuizResult(Long quizId) {
-        Quiz quiz = quizRepository.findByIdAndClosed(quizId, true).orElseThrow(NoSuchElementException::new);
+    public QuizResultValues getQuizResult(Long quizId) throws NoSuchElementException{
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, true)
+                .orElseThrow(() -> new NoSuchElementException("No finished quiz exists with id { " + quizId + " }"));
         return QuizResultValues.builder()
                 .quizId(quizId)
                 .quizSetTitle(quiz.getQuizSet().getTitle())
@@ -70,12 +87,14 @@ public class QuizService {
     }
 
     @Transactional
-    public Song saveQuestionResponse(QuestionSubmitValues values) {
-        Quiz quiz = quizRepository.findByIdAndClosed(values.getQuizId(), false).orElseThrow(NoSuchElementException::new);
-        Song song = songRepository.findById(values.getResponseSongId()).orElseThrow(NoSuchElementException::new);
+    public void closeQuiz(Long quizId) throws NoSuchElementException{
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
+                .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
+//        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
+//                .orElseThrow(NoSuchElementException::new);
 
-        quiz.saveResponse(values.getQuestionId() - 1L, song);
-        return song;
+        quiz.scoreResponse();
+        quiz.close();
     }
 
     public Optional<Quiz> previousQuiz(QuizExistQueryValues values) {
