@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -24,6 +25,8 @@ public class SongFileService{
             throws NoSuchElementException, AudioFileAlreadyExistsException, IOException {
         SongFile songFile = songFileRepository.findById(songFileId).orElseThrow(NoSuchElementException::new);
         songFile.diffEmptyCheck(difficulty);
+
+        verifyMultipartFile(file);
 
         AudioFile audioFile = new AudioFile(difficulty);
         audioFile.setSongFile(songFile);
@@ -40,5 +43,24 @@ public class SongFileService{
         AudioFile audioFile = songFile.getAudio(difficulty);
 
         return IOUtils.toByteArray(audioFileContentStore.getContent(audioFile));
+    }
+
+    private void verifyMultipartFile(MultipartFile file) throws IOException{
+        byte[] mp3MagicNumber = new byte[]{0x49, 0x44, 0x33};
+        byte[] flacMagicNumber = new byte[]{0x66, 0x4C, 0x61, 0x43};
+        byte[] buffer = new byte[4];
+
+        if (file.getInputStream().read(buffer) < 0)
+            throw new IOException("Uploaded file is not mp3 nor flac");
+
+        if (Arrays.equals(Arrays.copyOfRange(buffer, 0,
+                mp3MagicNumber.length), mp3MagicNumber))
+            return;
+
+        if (Arrays.equals(Arrays.copyOfRange(buffer, 0,
+                flacMagicNumber.length), flacMagicNumber))
+            return;
+
+        throw new IOException("Uploaded file is not mp3 nor flac");
     }
 }
