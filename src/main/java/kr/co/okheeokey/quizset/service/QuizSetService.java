@@ -25,15 +25,6 @@ public class QuizSetService {
         return quizSetRepository.findById(quizSetId);
     }
 
-    public void isAllowed(Long userId, Long quizSetId) throws Exception {
-        Optional<QuizSet> quizSet = quizSetRepository.findById(quizSetId);
-
-        if (!quizSet.isPresent())
-            throw new IllegalArgumentException();
-        if (!userId.equals(quizSet.get().getOwnerId()))
-            throw new IllegalAccessException();
-    }
-
     public QuizSet createNewQuizSet(QuizSetCreateValues values) {
         List<SongFile> songPool = songFileRepository.findAllById(values.getSongFileIdList());
 

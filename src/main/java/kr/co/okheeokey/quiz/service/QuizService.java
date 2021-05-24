@@ -87,4 +87,10 @@ public class QuizService {
         Collections.shuffle(songPool);
         return songPool.subList(0, songNum.intValue());
     }
+
+    private void isAllowedToQuizSet(Long userId, QuizSet quizSet) throws IllegalAccessException {
+        if (!userId.equals(quizSet.getOwnerId()))
+            throw new IllegalAccessException("User { " + userId + " } not allowed to access quiz set { " + quizSet.getId() + " }");
+    }
+
 }
