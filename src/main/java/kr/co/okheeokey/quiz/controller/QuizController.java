@@ -80,17 +80,11 @@ public class QuizController {
         );
     }
 
-    @PostMapping("/{id}/q/{qid}")
-    public EntityModel<?> submitQuestion(@PathVariable("id") Long quizId, @PathVariable("qid") Long questionId,
-                                         @RequestBody QuestionSubmitDto submitDto) {
-        quizService.saveQuestionResponse(new QuestionSubmitValues(quizId, questionId, submitDto.getResponseSongId()));
+    // Todo: check user authorization
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> giveUpQuiz(@PathVariable("id") Long quizId) throws NoSuchElementException {
+        quizService.deleteQuiz(quizId);
 
-        return EntityModel.of(linkTo(methodOn(QuizController.class).resumeQuiz(quizId, questionId+1)).withRel(IanaLinkRelations.NEXT));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-//
-//    @GetMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<?> dslofi() {
-//
-//    }
-
 }

@@ -97,9 +97,12 @@ public class QuizService {
         quiz.close();
     }
 
-    public Optional<Quiz> previousQuiz(QuizExistQueryValues values) {
-        QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId()).orElseThrow(IllegalArgumentException::new);
-        return quizRepository.findByIdAndQuizSetAndClosed(values.getUserId(), quizSet, false);
+    // Todo: check user authorization
+    @Transactional
+    public void deleteQuiz(Long quizId) throws NoSuchElementException {
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
+                .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
+        quizRepository.deleteById(quiz.getId());
     }
 
     private List<SongFile> sampleSongList(List<SongFile> songPool, Long songNum) {
