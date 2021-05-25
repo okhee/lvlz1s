@@ -39,23 +39,23 @@ public class Quiz {
     private List<SongFile> songList = new ArrayList<>();
 
     @ElementCollection
-    private Map<Long, Long> responseMap = new HashMap<>();
+    private final Map<Long, Long> responseMap = new HashMap<>();
 
     @ElementCollection
-    private Map<Long, Boolean> scoreList = new HashMap<>();
+    private final Map<Long, Boolean> scoreList = new HashMap<>();
+
+    private Long questionNum;
 
     private Boolean closed;
 
     @Builder
-    public Quiz(QuizSet quizSet, User owner, List<SongFile> songList, Boolean closed) {
+    public Quiz(QuizSet quizSet, User owner, List<SongFile> songList, Long questionNum, Boolean closed) {
         this.quizSet = quizSet;
         this.owner = owner;
         this.songList = songList;
+        this.questionNum = questionNum;
         this.closed = closed;
     }
-//
-//    public synchronized void initResponseList() {
-//    }
 
     public void close() {
         this.closed = true;

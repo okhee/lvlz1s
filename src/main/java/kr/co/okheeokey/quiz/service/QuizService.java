@@ -48,6 +48,7 @@ public class QuizService {
                         .quizSet(quizSet)
                         .owner(user)
                         .songList(randomSongList)
+                        .questionNum(values.getSongNum())
                         .closed(false)
                         .build()
         );
@@ -90,8 +91,6 @@ public class QuizService {
     public void closeQuiz(Long quizId) throws NoSuchElementException{
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
-//        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
-//                .orElseThrow(NoSuchElementException::new);
 
         quiz.scoreResponse();
         quiz.close();
