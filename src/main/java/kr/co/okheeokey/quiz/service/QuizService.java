@@ -84,6 +84,13 @@ public class QuizService {
         return Optional.of(quiz);
     }
 
+    public QuizStatusValues getQuizStatus(Long quizId) throws NoSuchElementException {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new NoSuchElementException("No quiz exists with id { " + quizId + " }"));
+
+        return new QuizStatusValues(quiz, quiz.getQuizSet());
+    }
+
     public QuizResultValues getQuizResult(Long quizId) throws NoSuchElementException{
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, true)
                 .orElseThrow(() -> new NoSuchElementException("No finished quiz exists with id { " + quizId + " }"));

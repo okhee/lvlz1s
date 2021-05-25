@@ -65,7 +65,14 @@ public class QuizController {
             );
     }
 
-    @GetMapping("/{id}/submit")
+    @GetMapping("/{id}/submit-info")
+    public ResponseEntity<?> submitQuizInfo(@PathVariable("id") Long quizId) {
+        QuizStatusValues quizStatus = quizService.getQuizStatus(quizId);
+
+        return ResponseEntity.ok().body(quizStatus);
+    }
+
+    @PostMapping("/{id}")
     public ResponseEntity<?> submitQuiz(@PathVariable("id") Long quizId) throws NoSuchElementException {
         quizService.closeQuiz(quizId);
 
