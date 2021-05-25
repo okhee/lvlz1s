@@ -4,10 +4,7 @@ import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
-import kr.co.okheeokey.quiz.vo.QuizCreateValues;
-import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
-import kr.co.okheeokey.quiz.vo.QuizResultValues;
+import kr.co.okheeokey.quiz.vo.*;
 import kr.co.okheeokey.songfile.domain.SongFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
@@ -31,11 +28,15 @@ public class QuizController {
     private final QuizService quizService;
 
     @PostMapping
-    public ResponseEntity<?> createQuiz(@RequestBody QuizCreateDto dto) throws Exception {
-        Quiz quiz = quizService.previousQuiz(new QuizExistQueryValues(dto.getUserId(), dto.getQuizSetId()))
-                .orElseGet(() -> quizService.createNewQuiz(new QuizCreateValues(dto)));
-
-        return ResponseEntity.created(URI.create("/quizs/" + quiz.getId())).build();
+    public ResponseEntity<?> createQuiz(@RequestBody QuizCreateDto dto) throws NoSuchElementException, IllegalAccessException {
+        return quizService.previousQuiz(new QuizExistQueryValues(dto.getUserId(), dto.getQuizSetId()))
+            .map(q -> ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                    .location(URI.create("/quizs/" + q.getId())).build())
+            .orElseGet(() ->
+                ResponseEntity.created(
+                    URI.create("/quizs/" + quizService.createNewQuiz(new QuizCreateValues(dto)).getId())
+                ).build()
+            );
     }
 
     @GetMapping("/{id}")
