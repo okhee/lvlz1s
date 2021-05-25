@@ -64,13 +64,24 @@ public class QuizService {
     }
 
     @Transactional
-    public void saveQuestionResponse(QuestionSubmitValues values) throws NoSuchElementException{
+    public Optional<Quiz> saveQuestionResponse(QuestionSubmitValues values) throws IndexOutOfBoundsException, NoSuchElementException {
         Quiz quiz = quizRepository.findByIdAndClosed(values.getQuizId(), false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + values.getQuizId() + " }"));
         Song song = songRepository.findById(values.getResponseSongId())
                 .orElseThrow(() -> new NoSuchElementException("No song exists with id { " + values.getResponseSongId() + " }"));
 
+        // if out of bounds or last question, redirect to submit page
+        if (values.getQuestionId() >= quiz.getQuestionNum())
+            return Optional.empty();
+
         quiz.saveResponse(values.getQuestionId() - 1L, song);
+
+        // if all question is answered, redirect to submit page
+        if (quiz.getResponseMap().size() >= quiz.getQuestionNum())
+            return Optional.empty();
+
+        // if not out of bounds, move to next question
+        return Optional.of(quiz);
     }
 
     public QuizResultValues getQuizResult(Long quizId) throws NoSuchElementException{
