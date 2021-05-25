@@ -1,5 +1,7 @@
 package kr.co.okheeokey.quiz.vo;
 
+import kr.co.okheeokey.quiz.domain.Quiz;
+import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.songfile.domain.SongFile;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,20 +11,19 @@ import java.util.Map;
 
 @Getter
 public class QuizResultValues {
-    private Long quizId;
-    private String quizSetTitle;
-    private String quizSetDescription;
-    private List<SongFile> songList;
-    private Map<Long, Long> responseMap;
-    private Map<Long, Boolean> scoreList;
+    private final Long quizId;
+    private final String quizSetTitle;
+    private final String quizSetDescription;
+    private final List<SongFile> songList;
+    private final Map<Long, Long> responseMap;
+    private final Map<Long, Boolean> scoreList;
 
-    @Builder
-    public QuizResultValues(Long quizId, String quizSetTitle, String quizSetDescription, List<SongFile> songList, Map<Long, Long> responseMap, Map<Long, Boolean> scoreList) {
-        this.quizId = quizId;
-        this.quizSetTitle = quizSetTitle;
-        this.quizSetDescription = quizSetDescription;
-        this.songList = songList;
-        this.responseMap = responseMap;
-        this.scoreList = scoreList;
+    public QuizResultValues(Quiz quiz, QuizSet quizSet) {
+        this.quizId = quiz.getId();
+        this.quizSetTitle = quizSet.getTitle();
+        this.quizSetDescription = quizSet.getDescription();
+        this.songList = quiz.getSongList();
+        this.responseMap = quiz.getResponseMap();
+        this.scoreList = quiz.getScoreList();
     }
 }

@@ -94,14 +94,8 @@ public class QuizService {
     public QuizResultValues getQuizResult(Long quizId) throws NoSuchElementException{
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, true)
                 .orElseThrow(() -> new NoSuchElementException("No finished quiz exists with id { " + quizId + " }"));
-        return QuizResultValues.builder()
-                .quizId(quizId)
-                .quizSetTitle(quiz.getQuizSet().getTitle())
-                .quizSetDescription(quiz.getQuizSet().getDescription())
-                .songList(quiz.getSongList())
-                .responseMap(quiz.getResponseMap())
-                .scoreList(quiz.getScoreList())
-                .build();
+
+        return new QuizResultValues(quiz, quiz.getQuizSet());
     }
 
     @Transactional
