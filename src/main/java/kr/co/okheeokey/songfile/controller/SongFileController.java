@@ -17,24 +17,13 @@ public class SongFileController {
     private final SongFileService songFileService;
 
     @PostMapping(value = "/{id}")
-    public ResponseEntity<?> setContent(@RequestPart MultipartFile file,
-                                        @PathVariable("id") Long id,
-                                        @RequestParam(value = "diff", defaultValue = "0") Long difficulty) throws Exception{
-//        Long difficulty = 0L;
-//        for(MultipartFile file: files) {
-//            File f = new File("src/main/resources/static/audio/test", file.getOriginalFilename());
-//            new ClassPathResource("static/audio/test" + file.getOriginalFilename())
-//            try {
-//                f.createNewFile();
-//                file.transferTo(f);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        songFileService.saveAudioFile(id, file, difficulty);
+    public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file,
+                                          @PathVariable("id") Long songFileId,
+                                          @RequestParam(value = "diff", defaultValue = "0") Long difficulty) throws Exception{
+        songFileService.setAudioFile(songFileId, file, difficulty);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.LOCATION, "/songfiles/" + id + "?diff=" + difficulty);
+        headers.add(HttpHeaders.LOCATION, "/songfiles/" + songFileId + "?diff=" + difficulty);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 

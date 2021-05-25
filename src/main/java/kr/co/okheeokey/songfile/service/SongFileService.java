@@ -21,7 +21,7 @@ public class SongFileService{
     private final AudioFileContentStore audioFileContentStore;
 
     @Transactional
-    public AudioFile saveAudioFile(Long songFileId, MultipartFile file, Long difficulty)
+    public AudioFile setAudioFile(Long songFileId, MultipartFile file, Long difficulty)
             throws NoSuchElementException, AudioFileAlreadyExistsException, IOException {
         SongFile songFile = songFileRepository.findById(songFileId).orElseThrow(NoSuchElementException::new);
         songFile.diffEmptyCheck(difficulty);
