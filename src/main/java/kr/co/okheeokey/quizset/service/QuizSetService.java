@@ -29,13 +29,12 @@ public class QuizSetService {
         List<SongFile> songPool = songFileRepository.findAllById(values.getSongFileIdList());
 
         return quizSetRepository.save(
-                QuizSet.builder()
-                        .ownerId(values.getOwnerId())
-                        .title(values.getTitle())
-                        .songPool(songPool)
-                        .title(values.getTitle())
-                        .description(values.getDescription())
-                        .build()
+            QuizSet.builder()
+                .ownerId(values.getOwnerId())
+                .title(values.getTitle())
+                .songPool(songPool)
+                .description(values.getDescription())
+                .build()
         );
     }
 }

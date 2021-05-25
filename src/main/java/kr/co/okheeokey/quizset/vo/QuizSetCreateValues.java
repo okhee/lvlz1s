@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 public class QuizSetCreateValues {
-    private Long ownerId;
-    private List<Long> songFileIdList;
-    private String title;
-    private String description;
+    private final Long ownerId;
+    private final List<Long> songFileIdList;
+    private final String title;
+    private final String description;
 
     public QuizSetCreateValues(QuizSetAddDto quizSetAddDto) {
         ownerId = quizSetAddDto.getUserId();

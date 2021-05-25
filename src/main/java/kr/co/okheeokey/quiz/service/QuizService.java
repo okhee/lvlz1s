@@ -2,22 +2,22 @@ package kr.co.okheeokey.quiz.service;
 
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
-import kr.co.okheeokey.quiz.vo.QuizCreateValues;
-import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
-import kr.co.okheeokey.quiz.vo.QuizResultValues;
+import kr.co.okheeokey.quiz.vo.*;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.songfile.domain.SongFile;
 import kr.co.okheeokey.song.domain.SongRepository;
+import kr.co.okheeokey.songfile.domain.SongFile;
 import kr.co.okheeokey.user.User;
 import kr.co.okheeokey.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +27,8 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final QuizSetRepository quizSetRepository;
 
+    // Check if previous ongoing quiz exists using (User, QuizSet)
+    // If exist, return such quiz
     public Optional<Quiz> previousQuiz(QuizExistQueryValues values) throws NoSuchElementException, IllegalAccessException {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
@@ -35,9 +37,9 @@ public class QuizService {
         return quizRepository.findByIdAndQuizSetAndClosed(values.getUserId(), quizSet, false);
     }
 
-    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IllegalArgumentException {
+    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException {
         User user = userRepository.findById(values.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("No user exists with id { " + values.getUserId() + " }"));
+                .orElseThrow(() -> new NoSuchElementException("No user exists with id { " + values.getUserId() + " }"));
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
 
@@ -57,9 +59,6 @@ public class QuizService {
     public SongFile getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException, NoSuchElementException {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
-
-        if (questionId >= quiz.getSongList().size())
-            throw new IndexOutOfBoundsException();
 
         return quiz.getSongList().get(questionId.intValue() - 1);
     }
