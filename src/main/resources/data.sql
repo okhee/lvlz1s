@@ -1,19 +1,34 @@
--- -- Initialize Song table --
--- insert into song (album_id, file_id, song_name) values (122, 2151, 'Candy Jelly Love');
--- insert into song (album_id, file_id, song_name) values (122, 1135, '어제처럼 굿나잇');
--- insert into song (album_id, file_id, song_name) values (135, 4334, '안녕(Hi~)');
--- insert into song (album_id, file_id, song_name) values (432, 1353, 'Ah-Choo');
--- insert into song (album_id, file_id, song_name) values (354, 4681, 'WoW!');
---
--- INSERT INTO song_hash (song_id, song_hash) VALUES (1, 'somerandomhashvalue___');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (1, 'an983xfbhhLL');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (1, 'gjncqgpq3kckv');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (1, '-n2q489yx9fbly');
---
--- INSERT INTO song_hash (song_id, song_hash) VALUES (2, 'wnc41-1d-igi');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (2, 'lbd1kbflbdkjo9');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (2, 'bf2sk0vg23');
--- INSERT INTO song_hash (song_id, song_hash) VALUES (2, 'dqr2d7fjf213');
---
--- INSERT INTO song_hash (song_id, song_hash) VALUES (3, 'd1x27f0hdb');
-Select * from song;
+-- User -------------------------------------------------------------
+INSERT INTO user (name, is_alive) VALUES ('myName1', true);
+
+-- Album ------------------------------------------------------------
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Girls'' Invasion', '2014-11-17', '/img/album-cover/girls_invasion.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Hi~', '2015-03-03', '/img/album-cover/hi.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Lovelyz8', '2015-10-01', '/img/album-cover/lovelyz8.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Lovelinus', '2015-12-07', '/img/album-cover/lovelinus.png');
+
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('A New Trilogy', '2016-04-25', '/img/album-cover/ANT.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('R U Ready?', '2017-02-26', '/img/album-cover/RUR.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Now, We', '2017-05-02', '/img/album-cover/now-we.png');
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('Fall in Lovelyz', '2017-11-14', '/img/album-cover/Fall-in-L.png');
+
+INSERT INTO album (album_name, released_date, album_cover) VALUES ('治癒 (치유)', '2018-04-23', '/img/album-cover/Heal.png');
+
+
+-- Song ------------------------------------------------------------
+INSERT INTO song (song_name, album_id) VALUES ('Introducing the Candy', 1);
+INSERT INTO song (song_name, album_id) VALUES ('Candy Jelly Love', 1);
+INSERT INTO song (song_name, album_id) VALUES ('어제처럼 굿나잇', 1);
+INSERT INTO song (song_name, album_id) VALUES ('이별 Chapter 1', 1);
+INSERT INTO song (song_name, album_id) VALUES ('비밀여행', 1);
+INSERT INTO song (song_name, album_id) VALUES ('놀이공원', 2);
+INSERT INTO song (song_name, album_id) VALUES ('Welcome to the Lovelyz8', 3);
+INSERT INTO song (song_name, album_id) VALUES ('治癒 (치유)', 9);
+
+-- SongFile ------------------------------------------------------------
+INSERT INTO song_file (song_file_name, song_id) VALUES ('Introducing the Candy 전주 1.mp3', 1);
+INSERT INTO song_file (song_file_name, song_id) VALUES ('Introducing the Candy 후주 1.mp3', 1);
+INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 전주1.mp3', 2);
+INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 전주2.mp3', 2);
+INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 후주1.mp3', 2);
+
