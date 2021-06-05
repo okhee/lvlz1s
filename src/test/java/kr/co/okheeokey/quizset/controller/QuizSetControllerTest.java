@@ -71,12 +71,15 @@ public class QuizSetControllerTest {
 
     @Test
     public void createQuizSet_withInvalidSongFileId_thenThrowsException() throws Exception {
+        // given
         doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetCreateValues.class));
 
+        // when
         mvc.perform(post("/quizsets")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(objectMapper.writeValueAsString(new QuizSetAddDto(1L, "", "", Collections.emptyList())))
         )
+        // then
         .andExpect(status().isBadRequest())
         .andDo(print());
     }

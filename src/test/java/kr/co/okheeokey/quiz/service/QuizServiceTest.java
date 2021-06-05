@@ -77,7 +77,7 @@ public class QuizServiceTest {
     }
 
     @Test
-    public void createNewQuiz() throws Exception {
+    public void createNewQuiz() {
         // given
         QuizCreateValues values = new QuizCreateValues(userId, quizSetId, songNum);
 
@@ -99,7 +99,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void createNewQuiz_withInvalidUser() throws Exception {
+    public void createNewQuiz_withInvalidUser() {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         // when
@@ -107,7 +107,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void createNewQuiz_withInvalidQuizSet() throws Exception {
+    public void createNewQuiz_withInvalidQuizSet() {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -117,7 +117,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void createNewQuiz_withInvalidSongNum() throws Exception {
+    public void createNewQuiz_withInvalidSongNum() {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
@@ -129,5 +129,9 @@ public class QuizServiceTest {
         quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
     }
 
+    @Test
+    public void saveQuestionResponse() {
+
+    }
 
 }

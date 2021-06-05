@@ -7,14 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
+import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 public class AudioFileContentStoreTest {
     @Autowired
     private AudioFileContentStore contentStore;
@@ -23,15 +25,21 @@ public class AudioFileContentStoreTest {
     private AudioFileRepository repository;
 
     @Test
-    public void tt() throws Exception{
-        repository.save(new AudioFile());
+    public void saveAudioFileToContentStore() throws Exception{
+        // given
+        AudioFile audioFile = new AudioFile();
 
-        AudioFile audioFile = repository.findById(1L).orElseThrow(NoSuchElementException::new);
+        repository.save(audioFile);
+        Long fid = audioFile.getId();
 
-        contentStore.setContent(audioFile,
+        // when
+        AudioFile returnAudioFile = repository.findById(fid).orElseThrow(NoSuchElementException::new);
+        contentStore.setContent(returnAudioFile,
                 new FileInputStream("src/main/resources/static/audio/11001.mp3"));
 
+        // then
+        assertEquals(audioFile, returnAudioFile);
         assertArrayEquals(IOUtils.toByteArray(new FileInputStream("src/main/resources/static/audio/11001.mp3")),
-                        IOUtils.toByteArray(contentStore.getContent(audioFile)));
+                        IOUtils.toByteArray(contentStore.getContent(returnAudioFile)));
     }
 }
