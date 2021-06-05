@@ -3,11 +3,14 @@ package kr.co.okheeokey.quiz.vo;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Getter
 public class QuizStatusValues {
     private final String title;
