@@ -65,7 +65,7 @@ public class QuizController {
             );
     }
 
-    @GetMapping("/{id}/submit-info")
+    @GetMapping("/{id}/status")
     public ResponseEntity<?> submitQuizInfo(@PathVariable("id") Long quizId) {
         QuizStatusValues quizStatus = quizService.getQuizStatus(quizId);
 
