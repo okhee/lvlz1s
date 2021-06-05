@@ -15,12 +15,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class QuizServiceTest {
@@ -38,21 +41,20 @@ public class QuizServiceTest {
     @Mock private List<SongFile> songPool;
     @Mock private List<SongFile> randomSongList;
 
+    private final Long userId = 51L;
+    private final Long quizSetId = 73L;
+    private final Long songNum = 12L;
+
     @Test
     public void createNewQuiz() throws Exception {
         // given
-        Long userId = 51L;
-        Long quizSetId = 73L;
-        Long songNum = 12L;
-
         QuizCreateValues values = new QuizCreateValues(userId, quizSetId, songNum);
 
-        doReturn(Optional.of(user)).when(userRepository).findById(anyLong());
-        doReturn(Optional.of(quizSet)).when(quizSetRepository).findById(anyLong());
-        doReturn(songPool).when(quizSet).getSongPool();
-        doReturn(randomSongList).when(songPool).subList(anyInt(), anyInt());
-        doReturn(new Quiz(quizSet, user, randomSongList, songNum, false))
-                .when(quizRepository).save(any(Quiz.class));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getSongPool()).thenReturn(songPool);
+        when(songPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
+        when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomSongList, songNum, false));
 
         // when
         Quiz newQuiz = quizService.createNewQuiz(values);
@@ -64,4 +66,37 @@ public class QuizServiceTest {
         assertEquals(quizSet, newQuiz.getQuizSet());
         assertArrayEquals(randomSongList.toArray(), newQuiz.getSongList().toArray());
     }
+
+    @Test(expected = NoSuchElementException.class)
+    public void createNewQuiz_withInvalidUser() throws Exception {
+        // given
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        // when
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void createNewQuiz_withInvalidQuizSet() throws Exception {
+        // given
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // when
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void createNewQuiz_withInvalidSongNum() throws Exception {
+        // given
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getSongPool()).thenReturn(Collections.emptyList());
+
+        assert songNum > 0;
+
+        // when
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+    }
+
+
 }
