@@ -3,6 +3,7 @@ package kr.co.okheeokey.quiz.service;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
+import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.SongRepository;
@@ -44,6 +45,36 @@ public class QuizServiceTest {
     private final Long userId = 51L;
     private final Long quizSetId = 73L;
     private final Long songNum = 12L;
+
+    @Test
+    public void previousQuiz() throws Exception {
+        // given
+        QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
+
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getOwnerId()).thenReturn(userId);
+        when(quizRepository.findByIdAndQuizSetAndClosed(anyLong(), any(QuizSet.class), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
+
+        // when
+        Optional<Quiz> previousQuiz = quizService.previousQuiz(values);
+
+        // then
+        assertTrue(previousQuiz.isPresent());
+        assertEquals(quiz, previousQuiz.get());
+    }
+
+    @Test(expected = IllegalAccessException.class)
+    public void previousQuiz_withInvalidAuthority() throws Exception {
+        // given
+        QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
+
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getOwnerId()).thenReturn(userId + 1);
+
+        // when
+        quizService.previousQuiz(values);
+    }
 
     @Test
     public void createNewQuiz() throws Exception {
