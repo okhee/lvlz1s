@@ -1,6 +1,5 @@
 package kr.co.okheeokey.quizset.controller;
 
-import kr.co.okheeokey.quiz.service.QuizService;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
@@ -12,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,7 +22,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/quizsets")
 public class QuizSetController {
-    private final QuizService quizService;
     private final QuizSetService quizSetService;
 
     @GetMapping
@@ -35,15 +34,12 @@ public class QuizSetController {
         return ResponseEntity.ok(quizSetService.getQuizSet(id));
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> newQuizSet(@RequestBody QuizSetAddDto quizSetAddDto) {
+    @PostMapping
+    public ResponseEntity<?> newQuizSet(@RequestBody QuizSetAddDto quizSetAddDto) throws IllegalArgumentException {
         QuizSet quizSet = quizSetService.createNewQuizSet(new QuizSetCreateValues(quizSetAddDto));
 
-        return ResponseEntity.accepted().body(
-            EntityModel.of(quizSet,
-                linkTo(methodOn(QuizSetController.class).getQuizSet(quizSet.getId())).withRel(IanaLinkRelations.NEXT)
-            )
-        );
+        return ResponseEntity.created(URI.create("/quizsets/" + quizSet.getId()))
+            .build();
     }
 
 }
