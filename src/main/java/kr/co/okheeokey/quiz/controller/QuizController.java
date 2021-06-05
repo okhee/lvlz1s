@@ -40,8 +40,14 @@ public class QuizController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getQuestion(@PathVariable("id") Long quizId,
-                                      @RequestParam(value = "q", required = false, defaultValue = "1") Long questionId)
+    public ResponseEntity<?> getQuizInfo(@PathVariable("id") Long quizId) {
+        QuizStatusValues quizStatus = quizService.getQuizStatus(quizId);
+
+        return ResponseEntity.ok().body(quizStatus);
+    }
+
+    @GetMapping("/{id}/q/{qid}")
+    public ResponseEntity<?> getQuestion(@PathVariable("id") Long quizId, @PathVariable("qid") Long questionId)
                                         throws IndexOutOfBoundsException, NoSuchElementException {
         SongFile question = quizService.getQuestion(quizId, questionId);
 
@@ -60,13 +66,6 @@ public class QuizController {
         return ResponseEntity.accepted().body(
             EntityModel.of(linkTo(methodOn(QuizController.class).getQuestion(quizId, questionId+1)).withRel(IanaLinkRelations.NEXT))
         );
-    }
-
-    @GetMapping("/{id}/status")
-    public ResponseEntity<?> submitQuizInfo(@PathVariable("id") Long quizId) {
-        QuizStatusValues quizStatus = quizService.getQuizStatus(quizId);
-
-        return ResponseEntity.ok().body(quizStatus);
     }
 
     @PostMapping("/{id}")
