@@ -54,15 +54,12 @@ public class QuizController {
 
     @PostMapping("/{id}/q/{qid}")
     public ResponseEntity<?> submitQuestion(@PathVariable("id") Long quizId, @PathVariable("qid") Long questionId,
-                                         @RequestBody QuestionSubmitDto submitDto) throws NoSuchElementException {
-        return quizService.saveQuestionResponse(new QuestionSubmitValues(quizId, questionId, submitDto.getResponseSongId()))
-            .map(q -> ResponseEntity.accepted().body(
-                EntityModel.of(linkTo(methodOn(QuizController.class).getQuestion(quizId, questionId+1)).withRel(IanaLinkRelations.NEXT))))
+                                            @RequestBody QuestionSubmitDto submitDto) throws NoSuchElementException, IndexOutOfBoundsException {
+        quizService.saveQuestionResponse(new QuestionSubmitValues(quizId, questionId, submitDto.getResponseSongId()));
 
-            // if qid is out of bounds, redirect to submit page.
-            .orElseGet(() -> ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                .location(URI.create("/quizs/" + quizId + "/submit")).build()
-            );
+        return ResponseEntity.accepted().body(
+            EntityModel.of(linkTo(methodOn(QuizController.class).getQuestion(quizId, questionId+1)).withRel(IanaLinkRelations.NEXT))
+        );
     }
 
     @GetMapping("/{id}/status")
