@@ -2,10 +2,12 @@ package kr.co.okheeokey.quiz.service;
 
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
+import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
+import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.songfile.domain.SongFile;
 import kr.co.okheeokey.user.User;
@@ -41,10 +43,14 @@ public class QuizServiceTest {
     @Mock private QuizSet quizSet;
     @Mock private List<SongFile> songPool;
     @Mock private List<SongFile> randomSongList;
+    @Mock private Song song;
 
     private final Long userId = 51L;
     private final Long quizSetId = 73L;
     private final Long songNum = 12L;
+    private final Long quizId = 83L;
+    private final Long questionId = songNum - 2L;
+    private final Long responseSongId = 15L;
 
     @Test
     public void previousQuiz() throws Exception {
@@ -131,7 +137,42 @@ public class QuizServiceTest {
 
     @Test
     public void saveQuestionResponse() {
+        // given
+        Quiz quiz = new Quiz(quizSet, user, randomSongList, songNum, false);
 
+        when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
+        when(songRepository.findById(anyLong()))
+                .thenReturn(Optional.of(song));
+        when(song.getId()).thenReturn(responseSongId);
+
+        assert questionId <= songNum;
+        QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
+
+        // when
+        Quiz returnQuiz = quizService.saveQuestionResponse(values);
+
+        // then
+        assertEquals(quiz, returnQuiz);
+        assertEquals(responseSongId, returnQuiz.getResponseMap().get(questionId));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void saveQuestionResponse_withInvalidQuestionId() {
+        // given
+        Long questionId = songNum + 2L;
+
+        when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
+        when(songRepository.findById(anyLong()))
+                .thenReturn(Optional.of(song));
+        when(quiz.getQuestionNum()).thenReturn(songNum);
+
+        assert questionId > songNum;
+        QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
+
+        // when
+        quizService.saveQuestionResponse(values);
     }
 
 }
