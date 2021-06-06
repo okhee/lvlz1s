@@ -1,6 +1,5 @@
 package kr.co.okheeokey.quiz.controller;
 
-import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
@@ -28,7 +27,8 @@ public class QuizController {
     private final QuizService quizService;
 
     @PostMapping
-    public ResponseEntity<?> createQuiz(@RequestBody QuizCreateDto dto) throws NoSuchElementException, IllegalAccessException {
+    public ResponseEntity<?> createQuiz(@RequestBody QuizCreateDto dto)
+            throws NoSuchElementException, IllegalAccessException, IndexOutOfBoundsException {
         return quizService.previousQuiz(new QuizExistQueryValues(dto.getUserId(), dto.getQuizSetId()))
             .map(q -> ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
                     .location(URI.create("/quizs/" + q.getId())).build())

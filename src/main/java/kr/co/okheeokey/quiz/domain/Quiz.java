@@ -34,7 +34,7 @@ public class Quiz {
     @JoinColumn(name = "USER_ID")
     private User owner;
 
-    @OneToMany
+    @ManyToMany
     @JsonManagedReference
     private List<SongFile> songList = new ArrayList<>();
 

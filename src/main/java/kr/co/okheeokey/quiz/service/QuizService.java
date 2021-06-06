@@ -30,14 +30,16 @@ public class QuizService {
     // Check if previous ongoing quiz exists using (User, QuizSet)
     // If exist, return such quiz
     public Optional<Quiz> previousQuiz(QuizExistQueryValues values) throws NoSuchElementException, IllegalAccessException {
+        User user = userRepository.findById(values.getUserId())
+                .orElseThrow(() -> new NoSuchElementException("No user exists with id { " + values.getUserId() + " }"));
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
         isAllowedToQuizSet(values.getUserId(), quizSet);
 
-        return quizRepository.findByIdAndQuizSetAndClosed(values.getUserId(), quizSet, false);
+        return quizRepository.findByOwnerAndQuizSetAndClosed(user, quizSet, false);
     }
 
-    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException {
+    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IndexOutOfBoundsException {
         User user = userRepository.findById(values.getUserId())
                 .orElseThrow(() -> new NoSuchElementException("No user exists with id { " + values.getUserId() + " }"));
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
@@ -45,15 +47,14 @@ public class QuizService {
 
         List<SongFile> randomSongList = sampleSongList(quizSet.getSongPool(), values.getSongNum());
 
-        return quizRepository.save(
-                Quiz.builder()
-                        .quizSet(quizSet)
-                        .owner(user)
-                        .songList(randomSongList)
-                        .questionNum(values.getSongNum())
-                        .closed(false)
-                        .build()
-        );
+        Quiz newQuiz = Quiz.builder()
+                            .quizSet(quizSet)
+                            .owner(user)
+                            .songList(randomSongList)
+                            .questionNum(values.getSongNum())
+                            .closed(false)
+                            .build();
+        return quizRepository.save(newQuiz);
     }
 
     public SongFile getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException, NoSuchElementException {
@@ -110,7 +111,7 @@ public class QuizService {
         quizRepository.deleteById(quiz.getId());
     }
 
-    private List<SongFile> sampleSongList(List<SongFile> songPool, Long songNum) {
+    private List<SongFile> sampleSongList(List<SongFile> songPool, Long songNum) throws IndexOutOfBoundsException{
         Collections.shuffle(songPool);
         return songPool.subList(0, songNum.intValue());
     }
