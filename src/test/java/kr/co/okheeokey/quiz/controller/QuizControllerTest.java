@@ -102,7 +102,7 @@ public class QuizControllerTest {
         String title = "ttiit_";
         String description = "ddedi1";
         Boolean closed = (Math.random() < 0.5);
-        List<Long> responseExistList = new ArrayList<>(Arrays.asList(1L, 7L, 19L));
+        List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
         Long questionNum = 156L;
 
         when(quizService.getQuizStatus(anyLong()))
@@ -120,9 +120,9 @@ public class QuizControllerTest {
         .andExpect(jsonPath("$.closed", is(closed)))
         .andExpect(jsonPath("$.responseExistList").isArray())
         .andExpect(jsonPath("$.responseExistList", hasSize(3)))
-        .andExpect(jsonPath("$.responseExistList", hasItem(1)))
-        .andExpect(jsonPath("$.responseExistList", hasItem(7)))
-        .andExpect(jsonPath("$.responseExistList", hasItem(19)))
+        .andExpect(jsonPath("$.responseExistList[0]", is(true)))
+        .andExpect(jsonPath("$.responseExistList[1]", is(false)))
+        .andExpect(jsonPath("$.responseExistList[2]", is(true)))
         .andExpect(jsonPath("$.questionNum", is(questionNum.intValue())))
         .andDo(print());
     }
