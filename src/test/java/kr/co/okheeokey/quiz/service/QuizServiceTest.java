@@ -20,12 +20,10 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -57,9 +55,10 @@ public class QuizServiceTest {
         // given
         QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
 
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getOwnerId()).thenReturn(userId);
-        when(quizRepository.findByIdAndQuizSetAndClosed(anyLong(), any(QuizSet.class), anyBoolean()))
+        when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
 
         // when
@@ -75,6 +74,7 @@ public class QuizServiceTest {
         // given
         QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
 
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getOwnerId()).thenReturn(userId + 1);
 
