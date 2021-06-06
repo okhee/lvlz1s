@@ -75,7 +75,7 @@ public class QuizService {
             throw new IndexOutOfBoundsException("Question index { " + values.getQuestionId() + " } out of bounds. " +
                     "Current quiz has total " + quiz.getQuestionNum() + " question(s).");
 
-        quiz.saveResponse(values.getQuestionId(), song);
+        quiz.saveResponse(values.getQuestionId() - 1L, song);
         return quiz;
     }
 

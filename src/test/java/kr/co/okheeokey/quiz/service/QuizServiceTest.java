@@ -5,6 +5,7 @@ import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
+import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
@@ -18,11 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
@@ -154,7 +154,7 @@ public class QuizServiceTest {
 
         // then
         assertEquals(quiz, returnQuiz);
-        assertEquals(responseSongId, returnQuiz.getResponseMap().get(questionId));
+        assertEquals(responseSongId, returnQuiz.getResponseMap().get(questionId - 1L));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -175,4 +175,40 @@ public class QuizServiceTest {
         quizService.saveQuestionResponse(values);
     }
 
+    @Test
+    public void getQuizStatus() {
+        // given
+        String title = "180h12f";
+        String description = "f1803xz";
+        Boolean closed = (Math.random() < 0.5);
+        long questionNum = Math.round(Math.random() * 5 + 7);
+        Map<Long, Long> responseMap = new HashMap<>();
+        for(int i = 0; i < questionNum; i++){
+            if (Math.random() < 0.35)
+                responseMap.put((long) i, 55L);
+        }
+
+        when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
+        when(quiz.getQuizSet()).thenReturn(quizSet);
+        when(quiz.getClosed()).thenReturn(closed);
+        when(quiz.getQuestionNum()).thenReturn(questionNum);
+        when(quiz.getResponseMap()).thenReturn(responseMap);
+
+        when(quizSet.getTitle()).thenReturn(title);
+        when(quizSet.getDescription()).thenReturn(description);
+
+        // when
+        QuizStatusValues values = quizService.getQuizStatus(quizId);
+
+        // then
+        assertThat(values.getTitle(), is(title));
+        assertThat(values.getDescription(), is(description));
+        assertThat(values.getClosed(), is(closed));
+        assertThat(values.getQuestionNum(), is(questionNum));
+
+        List<Boolean> responseList = values.getResponseExistList();
+        for(int i = 0; i < questionNum; i++){
+            assertEquals(responseList.get(i), responseMap.containsKey((long) i));
+        }
+    }
 }
