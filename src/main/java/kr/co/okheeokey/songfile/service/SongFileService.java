@@ -36,7 +36,8 @@ public class SongFileService{
         return audioFile;
     }
 
-    public byte[] getAudioFile(Long songFileId, Long difficulty) throws NoAudioFileExistsException, IOException {
+    public byte[] getAudioFile(Long songFileId, Long difficulty)
+            throws NoSuchElementException, NoAudioFileExistsException, IOException {
         SongFile songFile = songFileRepository.findById(songFileId).orElseThrow(NoSuchElementException::new);
         songFile.diffExistCheck(difficulty);
 

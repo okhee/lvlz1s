@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 @ControllerAdvice("kr.co.okheeokey.songfile")
 public class SongFileExceptionHandler extends ResponseEntityExceptionHandler {
@@ -23,6 +24,12 @@ public class SongFileExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = AudioFileAlreadyExistsException.class)
     public ResponseEntity<?> audioFileAlreadyExist(AudioFileAlreadyExistsException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Collections.singletonMap("message", e.getMessage()));
+    }
+
+    @ExceptionHandler(value = NoSuchElementException.class)
+    public ResponseEntity<?> noSongFileExist(NoSuchElementException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
