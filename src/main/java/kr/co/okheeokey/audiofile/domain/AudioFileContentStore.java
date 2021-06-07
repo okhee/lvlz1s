@@ -1,4 +1,4 @@
-package kr.co.okheeokey.songfile.domain;
+package kr.co.okheeokey.audiofile.domain;
 
 import org.springframework.content.commons.repository.ContentStore;
 

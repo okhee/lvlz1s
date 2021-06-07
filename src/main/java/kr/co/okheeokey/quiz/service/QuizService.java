@@ -7,7 +7,7 @@ import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
-import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.user.User;
 import kr.co.okheeokey.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class QuizService {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
 
-        List<SongFile> randomSongList = sampleSongList(quizSet.getSongPool(), values.getSongNum());
+        List<Question> randomSongList = sampleSongList(quizSet.getSongPool(), values.getSongNum());
 
         Quiz newQuiz = Quiz.builder()
                             .quizSet(quizSet)
@@ -57,7 +57,7 @@ public class QuizService {
         return quizRepository.save(newQuiz);
     }
 
-    public SongFile getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException, NoSuchElementException {
+    public Question getQuestion(Long quizId, Long questionId) throws IndexOutOfBoundsException, NoSuchElementException {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
@@ -111,7 +111,7 @@ public class QuizService {
         quizRepository.deleteById(quiz.getId());
     }
 
-    private List<SongFile> sampleSongList(List<SongFile> songPool, Long songNum) throws IndexOutOfBoundsException{
+    private List<Question> sampleSongList(List<Question> songPool, Long songNum) throws IndexOutOfBoundsException{
         Collections.shuffle(songPool);
         return songPool.subList(0, songNum.intValue());
     }

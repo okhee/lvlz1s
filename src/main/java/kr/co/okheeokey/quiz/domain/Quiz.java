@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public class Quiz {
 
     @ManyToMany
     @JsonManagedReference
-    private List<SongFile> songList = new ArrayList<>();
+    private List<Question> songList = new ArrayList<>();
 
     @ElementCollection
     private final Map<Long, Long> responseMap = new HashMap<>();
@@ -49,7 +49,7 @@ public class Quiz {
     private Boolean closed;
 
     @Builder
-    public Quiz(QuizSet quizSet, User owner, List<SongFile> songList, Long questionNum, Boolean closed) {
+    public Quiz(QuizSet quizSet, User owner, List<Question> songList, Long questionNum, Boolean closed) {
         this.quizSet = quizSet;
         this.owner = owner;
         this.songList = songList;

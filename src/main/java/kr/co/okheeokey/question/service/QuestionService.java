@@ -1,8 +1,12 @@
-package kr.co.okheeokey.songfile.service;
+package kr.co.okheeokey.question.service;
 
-import kr.co.okheeokey.songfile.domain.*;
-import kr.co.okheeokey.songfile.exception.AudioFileAlreadyExistsException;
-import kr.co.okheeokey.songfile.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.audiofile.domain.AudioFile;
+import kr.co.okheeokey.audiofile.domain.AudioFileContentStore;
+import kr.co.okheeokey.audiofile.domain.AudioFileRepository;
+import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.question.domain.QuestionRepository;
+import kr.co.okheeokey.question.exception.AudioFileAlreadyExistsException;
+import kr.co.okheeokey.question.exception.NoAudioFileExistsException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -15,33 +19,33 @@ import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Service
-public class SongFileService{
-    private final SongFileRepository songFileRepository;
+public class QuestionService {
+    private final QuestionRepository questionRepository;
     private final AudioFileRepository audioFileRepository;
     private final AudioFileContentStore audioFileContentStore;
 
     @Transactional
-    public AudioFile setAudioFile(Long songFileId, MultipartFile file, Long difficulty)
+    public AudioFile setAudioFile(Long questionId, MultipartFile file, Long difficulty)
             throws NoSuchElementException, AudioFileAlreadyExistsException, IOException {
-        SongFile songFile = songFileRepository.findById(songFileId).orElseThrow(NoSuchElementException::new);
-        songFile.diffEmptyCheck(difficulty);
+        Question question = questionRepository.findById(questionId).orElseThrow(NoSuchElementException::new);
+        question.diffEmptyCheck(difficulty);
 
         verifyMultipartFile(file);
 
         AudioFile audioFile = new AudioFile(difficulty);
-        audioFile.setSongFile(songFile);
+        audioFile.setQuestion(question);
         audioFileRepository.save(audioFile);
         audioFileContentStore.setContent(audioFile, file.getInputStream());
 
         return audioFile;
     }
 
-    public byte[] getAudioFile(Long songFileId, Long difficulty)
+    public byte[] getAudioFile(Long questionId, Long difficulty)
             throws NoSuchElementException, NoAudioFileExistsException, IOException {
-        SongFile songFile = songFileRepository.findById(songFileId).orElseThrow(NoSuchElementException::new);
-        songFile.diffExistCheck(difficulty);
+        Question question = questionRepository.findById(questionId).orElseThrow(NoSuchElementException::new);
+        question.diffExistCheck(difficulty);
 
-        AudioFile audioFile = songFile.getAudio(difficulty);
+        AudioFile audioFile = question.getAudio(difficulty);
 
         return IOUtils.toByteArray(audioFileContentStore.getContent(audioFile));
     }

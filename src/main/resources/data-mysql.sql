@@ -24,10 +24,10 @@ INSERT INTO song (song_name, album_id) VALUES ('놀이공원', 2);
 INSERT INTO song (song_name, album_id) VALUES ('Welcome to the Lovelyz8', 3);
 INSERT INTO song (song_name, album_id) VALUES ('治癒 (치유)', 9);
 
--- SongFile ------------------------------------------------------------
-INSERT INTO song_file (song_file_name, song_id) VALUES ('Introducing the Candy 전주 1.mp3', 1);
-INSERT INTO song_file (song_file_name, song_id) VALUES ('Introducing the Candy 후주 1.mp3', 1);
-INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 전주1.mp3', 2);
-INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 전주2.mp3', 2);
-INSERT INTO song_file (song_file_name, song_id) VALUES ('Candy Jelly Love 후주1.mp3', 2);
+-- Question ------------------------------------------------------------
+INSERT INTO question (question_name, song_id) VALUES ('Introducing the Candy 전주 1.mp3', 1);
+INSERT INTO question (question_name, song_id) VALUES ('Introducing the Candy 후주 1.mp3', 1);
+INSERT INTO question (question_name, song_id) VALUES ('Candy Jelly Love 전주1.mp3', 2);
+INSERT INTO question (question_name, song_id) VALUES ('Candy Jelly Love 전주2.mp3', 2);
+INSERT INTO question (question_name, song_id) VALUES ('Candy Jelly Love 후주1.mp3', 2);
 

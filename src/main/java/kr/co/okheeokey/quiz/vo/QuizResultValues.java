@@ -2,8 +2,7 @@ package kr.co.okheeokey.quiz.vo;
 
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quizset.domain.QuizSet;
-import kr.co.okheeokey.songfile.domain.SongFile;
-import lombok.Builder;
+import kr.co.okheeokey.question.domain.Question;
 import lombok.Getter;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class QuizResultValues {
     private final Long quizId;
     private final String quizSetTitle;
     private final String quizSetDescription;
-    private final List<SongFile> songList;
+    private final List<Question> songList;
     private final Map<Long, Long> responseMap;
     private final Map<Long, Boolean> scoreList;
 

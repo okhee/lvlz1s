@@ -48,11 +48,11 @@ public class QuizSetControllerTest {
         Long userId = 41L;
         String title = "This is ttttitle";
         String description = "thiS is descripttion";
-        List<Long> songFileIdList = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 4L));
+        List<Long> questionIdList = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 4L));
 
         Long createdQuizSetId = 51L;
 
-        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, songFileIdList);
+        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, questionIdList);
 
         doReturn(quizSet).when(quizSetService).createNewQuizSet(any(QuizSetCreateValues.class));
         when(quizSet.getId())
@@ -70,7 +70,7 @@ public class QuizSetControllerTest {
     }
 
     @Test
-    public void createQuizSet_withInvalidSongFileId_thenThrowsException() throws Exception {
+    public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
         doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetCreateValues.class));
 

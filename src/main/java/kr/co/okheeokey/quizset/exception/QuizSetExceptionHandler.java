@@ -10,7 +10,7 @@ import java.util.Collections;
 @ControllerAdvice("kr.co.okheeokey.quizset")
 public class QuizSetExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> invalidSongFileId(Exception e) {
+    public ResponseEntity<?> invalidQuestionId(Exception e) {
         return ResponseEntity.badRequest()
                 .body(Collections.singletonMap("message", e.getMessage()));
     }

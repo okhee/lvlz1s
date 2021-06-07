@@ -4,7 +4,7 @@ import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
 import kr.co.okheeokey.quiz.vo.*;
-import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.question.domain.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -49,10 +49,10 @@ public class QuizController {
     @GetMapping("/{id}/q/{qid}")
     public ResponseEntity<?> getQuestion(@PathVariable("id") Long quizId, @PathVariable("qid") Long questionId)
                                         throws IndexOutOfBoundsException, NoSuchElementException {
-        SongFile question = quizService.getQuestion(quizId, questionId);
+        Question question = quizService.getQuestion(quizId, questionId);
 
         return ResponseEntity.ok().body(
-                EntityModel.of(Collections.singletonMap("filename", question.getSongFileName()),
+                EntityModel.of(Collections.singletonMap("filename", question.getQuestionName()),
                 linkTo(methodOn(QuizController.class).getQuestion(quizId, questionId)).withSelfRel(),
                 linkTo(methodOn(QuizController.class).submitQuestion(quizId, questionId, null)).withRel("submit"))
         );

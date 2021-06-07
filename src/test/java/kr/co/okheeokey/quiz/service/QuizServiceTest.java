@@ -10,7 +10,7 @@ import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
-import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.user.User;
 import kr.co.okheeokey.user.UserRepository;
 import org.junit.Test;
@@ -39,8 +39,8 @@ public class QuizServiceTest {
     @Mock private Quiz quiz;
     @Mock private User user;
     @Mock private QuizSet quizSet;
-    @Mock private List<SongFile> songPool;
-    @Mock private List<SongFile> randomSongList;
+    @Mock private List<Question> songPool;
+    @Mock private List<Question> randomSongList;
     @Mock private Song song;
 
     private final Long userId = 51L;

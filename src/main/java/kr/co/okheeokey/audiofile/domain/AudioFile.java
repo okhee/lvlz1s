@@ -1,6 +1,7 @@
-package kr.co.okheeokey.songfile.domain;
+package kr.co.okheeokey.audiofile.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import kr.co.okheeokey.question.domain.Question;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,8 +22,8 @@ public class AudioFile {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "SONG_FILE_ID")
-    private SongFile songFile;
+    @JoinColumn(name = "QUESTION_ID")
+    private Question question;
 
     private Long difficulty = 0L;
 
@@ -39,11 +40,11 @@ public class AudioFile {
         this.difficulty = difficulty;
     }
 
-    public void setSongFile(SongFile songFile) {
-        if(this.songFile != null) {
-            this.songFile.removeAudio(this.difficulty);
+    public void setQuestion(Question question) {
+        if(this.question != null) {
+            this.question.removeAudio(this.difficulty);
         }
-        this.songFile = songFile;
-        this.songFile.appendAudio(this.difficulty, this);
+        this.question = question;
+        this.question.appendAudio(this.difficulty, this);
     }
 }

@@ -2,7 +2,7 @@ package kr.co.okheeokey.song.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import kr.co.okheeokey.songfile.domain.SongFile;
+import kr.co.okheeokey.question.domain.Question;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +29,7 @@ public class Song {
 
     @OneToMany(mappedBy = "song")
     @JsonManagedReference
-    private List<SongFile> songFile = new ArrayList<>();
+    private List<Question> question = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference

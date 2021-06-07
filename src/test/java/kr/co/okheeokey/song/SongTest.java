@@ -1,8 +1,8 @@
 package kr.co.okheeokey.song;
 
 import kr.co.okheeokey.song.domain.*;
-import kr.co.okheeokey.songfile.domain.SongFile;
-import kr.co.okheeokey.songfile.domain.SongFileRepository;
+import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.question.domain.QuestionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class SongTest {
     @Autowired
     private SongHashRepository songHashRepository;
     @Autowired
-    private SongFileRepository songFileRepository;
+    private QuestionRepository questionRepository;
 
     public SongTest() {
     }
@@ -43,12 +43,12 @@ public class SongTest {
                 .songHash("Hello~!")
                 .build();
 
-        SongFile file1 = SongFile.builder()
-                .songFileName("02_0807_Candy_jelly_love.mp3")
+        Question file1 = Question.builder()
+                .questionName("02_0807_Candy_jelly_love.mp3")
                 .build();
 
-        SongFile file2 = SongFile.builder()
-                .songFileName("02_0181_Candy_jelly_love.mp3")
+        Question file2 = Question.builder()
+                .questionName("02_0181_Candy_jelly_love.mp3")
                 .build();
 
         Album sample_album = Album.builder()

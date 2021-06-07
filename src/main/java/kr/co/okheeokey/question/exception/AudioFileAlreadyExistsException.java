@@ -1,4 +1,4 @@
-package kr.co.okheeokey.songfile.exception;
+package kr.co.okheeokey.question.exception;
 
 public class AudioFileAlreadyExistsException extends RuntimeException{
     public AudioFileAlreadyExistsException(String message) {

@@ -1,20 +1,17 @@
-package kr.co.okheeokey.songfile.exception;
+package kr.co.okheeokey.question.exception;
 
-import kr.co.okheeokey.songfile.controller.SongFileController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.NoSuchElementException;
 
-@ControllerAdvice("kr.co.okheeokey.songfile")
-public class SongFileExceptionHandler extends ResponseEntityExceptionHandler {
+@ControllerAdvice("kr.co.okheeokey.question")
+public class QuestionExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = NoAudioFileExistsException.class)
     public ResponseEntity<?> noAudioFileExist(NoAudioFileExistsException e){
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -28,7 +25,7 @@ public class SongFileExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = NoSuchElementException.class)
-    public ResponseEntity<?> noSongFileExist(NoSuchElementException e){
+    public ResponseEntity<?> noQuestionExist(NoSuchElementException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
