@@ -2,7 +2,7 @@
 
 **lvlz1s** is quiz to guess which Lovelyz song it is by listening to music for short amount of time.
 
-## [Example Questions](https://okhee.github.io/lvlz1s/sample-question.md)
+## [Example Questions](https://okhee.github.io/lvlz1s/sample-question/)
 
 ## How To Play
 
