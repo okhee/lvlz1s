@@ -101,7 +101,7 @@ public class QuizServiceTest {
         assertEquals(user, newQuiz.getOwner());
         assertEquals(songNum, newQuiz.getQuestionNum());
         assertEquals(quizSet, newQuiz.getQuizSet());
-        assertArrayEquals(randomSongList.toArray(), newQuiz.getSongList().toArray());
+        assertArrayEquals(randomSongList.toArray(), newQuiz.getQuestionList().toArray());
     }
 
     @Test(expected = NoSuchElementException.class)

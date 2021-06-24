@@ -50,7 +50,7 @@ public class QuizService {
         Quiz newQuiz = Quiz.builder()
                             .quizSet(quizSet)
                             .owner(user)
-                            .songList(randomSongList)
+                            .questionList(randomSongList)
                             .questionNum(values.getSongNum())
                             .closed(false)
                             .build();
@@ -61,7 +61,7 @@ public class QuizService {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
-        return quiz.getSongList().get(questionId.intValue() - 1);
+        return quiz.getQuestionList().get(questionId.intValue() - 1);
     }
 
     @Transactional

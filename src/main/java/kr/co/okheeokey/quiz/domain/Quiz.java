@@ -36,7 +36,7 @@ public class Quiz {
 
     @ManyToMany
     @JsonManagedReference
-    private List<Question> songList = new ArrayList<>();
+    private List<Question> questionList = new ArrayList<>();
 
     @ElementCollection
     private final Map<Long, Long> responseMap = new HashMap<>();
@@ -49,10 +49,10 @@ public class Quiz {
     private Boolean closed;
 
     @Builder
-    public Quiz(QuizSet quizSet, User owner, List<Question> songList, Long questionNum, Boolean closed) {
+    public Quiz(QuizSet quizSet, User owner, List<Question> questionList, Long questionNum, Boolean closed) {
         this.quizSet = quizSet;
         this.owner = owner;
-        this.songList = songList;
+        this.questionList = questionList;
         this.questionNum = questionNum;
         this.closed = closed;
     }
@@ -66,8 +66,8 @@ public class Quiz {
     }
 
     public void scoreResponse() {
-        for (int i = 0; i < this.songList.size(); i++){
-            Boolean isAnswer = this.songList.get(i).getSong().getId().equals(this.responseMap.get((long) i));
+        for (int i = 0; i < this.questionList.size(); i++){
+            Boolean isAnswer = this.questionList.get(i).getSong().getId().equals(this.responseMap.get((long) i));
             this.scoreList.put((long) i, isAnswer);
         }
     }
