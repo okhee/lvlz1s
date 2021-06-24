@@ -1,14 +1,15 @@
 package kr.co.okheeokey.question.controller;
 
 import kr.co.okheeokey.question.service.QuestionService;
+import kr.co.okheeokey.question.vo.AudioFileValues;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,9 +29,14 @@ public class QuestionController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<byte[]> getAudioFile(@PathVariable("id") Long id,
-                                               @RequestParam(value = "diff", defaultValue = "0") Long difficulty) throws IOException{
-        byte[] binaryAudioFile = questionService.getAudioFile(id, difficulty);
-        return new ResponseEntity<>(binaryAudioFile, HttpStatus.OK);
+    public ResponseEntity<?> getAudioFile(@PathVariable("id") Long id,
+                                               @RequestParam(value = "diff", defaultValue = "0") Long difficulty) {
+        AudioFileValues values = questionService.getAudioFile(id, difficulty);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(values.getMimeType()));
+        headers.setContentLength(values.getContentLength());
+
+        return new ResponseEntity<>(new InputStreamResource(values.getAudioStream()), headers, HttpStatus.OK);
     }
 }

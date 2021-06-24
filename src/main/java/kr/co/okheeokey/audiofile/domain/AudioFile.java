@@ -2,6 +2,7 @@ package kr.co.okheeokey.audiofile.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import kr.co.okheeokey.question.domain.Question;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,8 +37,10 @@ public class AudioFile {
     @MimeType
     private String mimeType = "audio/flac";
 
-    public AudioFile(Long difficulty) {
+    @Builder
+    public AudioFile(Long difficulty, String mimeType) {
         this.difficulty = difficulty;
+        this.mimeType = mimeType;
     }
 
     public void setQuestion(Question question) {

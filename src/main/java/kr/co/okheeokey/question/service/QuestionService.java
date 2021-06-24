@@ -7,8 +7,8 @@ import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
 import kr.co.okheeokey.question.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.question.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.question.vo.AudioFileValues;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,9 +30,12 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId).orElseThrow(NoSuchElementException::new);
         question.diffEmptyCheck(difficulty);
 
-        verifyMultipartFile(file);
+        String mimeType = verifyMultipartFile(file);
 
-        AudioFile audioFile = new AudioFile(difficulty);
+        AudioFile audioFile = AudioFile.builder()
+                .difficulty(difficulty)
+                .mimeType(mimeType)
+                .build();
         audioFile.setQuestion(question);
         audioFileRepository.save(audioFile);
         audioFileContentStore.setContent(audioFile, file.getInputStream());
@@ -40,17 +43,21 @@ public class QuestionService {
         return audioFile;
     }
 
-    public byte[] getAudioFile(Long questionId, Long difficulty)
-            throws NoSuchElementException, NoAudioFileExistsException, IOException {
+    public AudioFileValues getAudioFile(Long questionId, Long difficulty)
+            throws NoSuchElementException, NoAudioFileExistsException {
         Question question = questionRepository.findById(questionId).orElseThrow(NoSuchElementException::new);
         question.diffExistCheck(difficulty);
 
         AudioFile audioFile = question.getAudio(difficulty);
 
-        return IOUtils.toByteArray(audioFileContentStore.getContent(audioFile));
+        return AudioFileValues.builder()
+                .audioStream(audioFileContentStore.getContent(audioFile))
+                .contentLength(audioFile.getContentLength())
+                .mimeType(audioFile.getMimeType())
+                .build();
     }
 
-    private void verifyMultipartFile(MultipartFile file) throws IOException{
+    private String verifyMultipartFile(MultipartFile file) throws IOException{
         byte[] mp3MagicNumber = new byte[]{0x49, 0x44, 0x33};
         byte[] flacMagicNumber = new byte[]{0x66, 0x4C, 0x61, 0x43};
         byte[] buffer = new byte[4];
@@ -58,13 +65,11 @@ public class QuestionService {
         if (file.getInputStream().read(buffer) < 0)
             throw new IOException("Uploaded file is not mp3 nor flac");
 
-        if (Arrays.equals(Arrays.copyOfRange(buffer, 0,
-                mp3MagicNumber.length), mp3MagicNumber))
-            return;
+        if (Arrays.equals(mp3MagicNumber, Arrays.copyOfRange(buffer, 0, mp3MagicNumber.length)))
+            return "audio/mpeg";
 
-        if (Arrays.equals(Arrays.copyOfRange(buffer, 0,
-                flacMagicNumber.length), flacMagicNumber))
-            return;
+        if (Arrays.equals(flacMagicNumber, Arrays.copyOfRange(buffer, 0, flacMagicNumber.length)))
+            return "audio/flac";
 
         throw new IOException("Uploaded file is not mp3 nor flac");
     }
