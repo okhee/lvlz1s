@@ -30,11 +30,15 @@ public class Question {
     @Column(nullable = false)
     private String questionName;
 
-    // key(Long): difficulty (length of audio file)
+    @Column(columnDefinition = "varchar(255) not null default 'EASY'")
+    @Enumerated(value = EnumType.STRING)
+    private QuestionDifficulty difficulty = QuestionDifficulty.EASY;
+
+    // key(Long): stage; length of audio file
     // value(AudioFile): audioFile
     @OneToMany(mappedBy = "question")
     @JsonManagedReference
-    private Map<Long, AudioFile> audioList = new HashMap<>();
+    private final Map<Long, AudioFile> audioList = new HashMap<>();
 
     @Builder
     public Question(String questionName) {
