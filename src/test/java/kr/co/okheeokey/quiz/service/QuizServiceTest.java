@@ -1,5 +1,6 @@
 package kr.co.okheeokey.quiz.service;
 
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
@@ -10,7 +11,6 @@ import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
-import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.user.User;
 import kr.co.okheeokey.user.UserRepository;
 import org.junit.Test;
@@ -182,17 +182,22 @@ public class QuizServiceTest {
         String description = "f1803xz";
         Boolean closed = (Math.random() < 0.5);
         long questionNum = Math.round(Math.random() * 5 + 7);
+
+        List<Question> questionList = Arrays.asList(new Question(), new Question());
         Map<Long, Long> responseMap = new HashMap<>();
         for(int i = 0; i < questionNum; i++){
             if (Math.random() < 0.35)
                 responseMap.put((long) i, 55L);
         }
+        Map<Long, Boolean> scoreList = Collections.singletonMap(questionId, true);
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
         when(quiz.getQuizSet()).thenReturn(quizSet);
         when(quiz.getClosed()).thenReturn(closed);
         when(quiz.getQuestionNum()).thenReturn(questionNum);
+        when(quiz.getQuestionList()).thenReturn(questionList);
         when(quiz.getResponseMap()).thenReturn(responseMap);
+        when(quiz.getScoreList()).thenReturn(scoreList);
 
         when(quizSet.getTitle()).thenReturn(title);
         when(quizSet.getDescription()).thenReturn(description);
@@ -205,6 +210,9 @@ public class QuizServiceTest {
         assertThat(values.getDescription(), is(description));
         assertThat(values.getClosed(), is(closed));
         assertThat(values.getQuestionNum(), is(questionNum));
+
+        assertThat(values.getQuestionList().size(), is(2));
+        assertThat(values.getScoreList().get(questionId), is(true));
 
         List<Boolean> responseList = values.getResponseExistList();
         for(int i = 0; i < questionNum; i++){

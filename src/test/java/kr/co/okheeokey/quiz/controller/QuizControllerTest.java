@@ -3,14 +3,17 @@ package kr.co.okheeokey.quiz.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
+import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
+import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,14 +21,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.*;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -44,6 +48,8 @@ public class QuizControllerTest {
 
     @MockBean private Quiz quiz;
     @MockBean private QuizSet quizSet;
+
+    @Mock private QuestionSubmitDto questionSubmitDto;
 
     private final Long userId = 12L;
     private final Long quizSetId = 43L;
@@ -135,5 +141,27 @@ public class QuizControllerTest {
                 .andExpect(jsonPath("$.responseExistList[1]", is(false)))
                 .andExpect(jsonPath("$.responseExistList[2]", is(true)))
                 .andDo(print());
+    }
+
+    @Test
+    public void submitQuestion() throws Exception {
+        // given
+        Long quizId = 1625L;
+        Long questionId = 515L;
+        Long responseSongId = 72L;
+
+        QuestionSubmitDto dto = new QuestionSubmitDto(responseSongId);
+
+        when(quizService.saveQuestionResponse(any(QuestionSubmitValues.class)))
+                .thenReturn(new Quiz());
+
+        // when
+        mvc.perform(post("/quizs/{id}/q/{qid}", quizId, questionId)
+            .content(objectMapper.writeValueAsString(dto))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+
+        //then
+        .andExpect(status().isAccepted());
     }
 }
