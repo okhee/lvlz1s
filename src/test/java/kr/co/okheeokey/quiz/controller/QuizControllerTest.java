@@ -1,6 +1,7 @@
 package kr.co.okheeokey.quiz.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
@@ -19,10 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -102,28 +100,40 @@ public class QuizControllerTest {
         String title = "ttiit_";
         String description = "ddedi1";
         Boolean closed = (Math.random() < 0.5);
-        List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
         Long questionNum = 156L;
 
+        String questionName = "qq11";
+        List<Question> songList = Collections.singletonList(new Question(questionName));
+        Map<Long, Long> responseMap = Collections.singletonMap(51L, 162L);
+        Map<Long, Boolean> scoreList = Collections.singletonMap(16L, true);
+        List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
+
         when(quizService.getQuizStatus(anyLong()))
-                .thenReturn(new QuizStatusValues(title, description, closed, responseExistList, questionNum));
+                .thenReturn(new QuizStatusValues(title, description, closed, questionNum,
+                        songList, responseMap, scoreList, responseExistList));
 
         // when
         mvc.perform(get("/quizs/" + quizId)
-            .accept(MediaType.APPLICATION_JSON_VALUE)
-        )
+                    .accept(MediaType.APPLICATION_JSON_VALUE)
+                )
         // then
-        .andExpect(status().isOk())
-        .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-        .andExpect(jsonPath("$.title").value(title))
-        .andExpect(jsonPath("$.description", is(description)))
-        .andExpect(jsonPath("$.closed", is(closed)))
-        .andExpect(jsonPath("$.responseExistList").isArray())
-        .andExpect(jsonPath("$.responseExistList", hasSize(3)))
-        .andExpect(jsonPath("$.responseExistList[0]", is(true)))
-        .andExpect(jsonPath("$.responseExistList[1]", is(false)))
-        .andExpect(jsonPath("$.responseExistList[2]", is(true)))
-        .andExpect(jsonPath("$.questionNum", is(questionNum.intValue())))
-        .andDo(print());
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.title").value(title))
+                .andExpect(jsonPath("$.description", is(description)))
+                .andExpect(jsonPath("$.closed", is(closed)))
+                .andExpect(jsonPath("$.questionNum", is(questionNum.intValue())))
+
+                .andExpect(jsonPath("$.questionList").isArray())
+                .andExpect(jsonPath("$.questionList[0].questionName", is(questionName)))
+                .andExpect(jsonPath("$.responseMap['51']", is(162)))
+                .andExpect(jsonPath("$.scoreList['16']", is(true)))
+
+                .andExpect(jsonPath("$.responseExistList").isArray())
+                .andExpect(jsonPath("$.responseExistList", hasSize(3)))
+                .andExpect(jsonPath("$.responseExistList[0]", is(true)))
+                .andExpect(jsonPath("$.responseExistList[1]", is(false)))
+                .andExpect(jsonPath("$.responseExistList[2]", is(true)))
+                .andDo(print());
     }
 }
