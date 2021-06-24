@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
-import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,13 +46,16 @@ public class QuizSetControllerTest {
         Long userId = 41L;
         String title = "This is ttttitle";
         String description = "thiS is descripttion";
-        List<Long> questionIdList = new ArrayList<>(Arrays.asList(1L, 2L, 3L, 4L));
+
+        List<Long> albumIdList = Collections.singletonList(142L);
+        List<Long> songIdList = Arrays.asList(1L, 2L, 3L, 4L);
 
         Long createdQuizSetId = 51L;
 
-        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, questionIdList);
+        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, albumIdList, songIdList,
+                true, true, true);
 
-        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(QuizSetCreateValues.class));
+        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
         when(quizSet.getId())
                 .thenReturn(createdQuizSetId);
 
@@ -72,12 +73,13 @@ public class QuizSetControllerTest {
     @Test
     public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
-        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetCreateValues.class));
+        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
 
         // when
         mvc.perform(post("/quizsets")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(objectMapper.writeValueAsString(new QuizSetAddDto(1L, "", "", Collections.emptyList())))
+            .content(objectMapper.writeValueAsString(new QuizSetAddDto(1L, "", "", Collections.emptyList(), Collections.emptyList(),
+                    true, true, true)))
         )
         // then
         .andExpect(status().isBadRequest())
