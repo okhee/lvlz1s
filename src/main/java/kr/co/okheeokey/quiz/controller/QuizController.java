@@ -1,15 +1,17 @@
 package kr.co.okheeokey.quiz.controller;
 
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
-import kr.co.okheeokey.quiz.vo.*;
-import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
+import kr.co.okheeokey.quiz.vo.QuizCreateValues;
+import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
+import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +42,13 @@ public class QuizController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getQuizInfo(@PathVariable("id") Long quizId) {
+    public ResponseEntity<?> getQuizInfo(@PathVariable("id") Long quizId) throws NoSuchElementException{
         QuizStatusValues quizStatus = quizService.getQuizStatus(quizId);
 
-        return ResponseEntity.ok().body(quizStatus);
+        return ResponseEntity.ok().body(
+                EntityModel.of(quizStatus,
+                        linkTo(methodOn(QuizController.class).getQuizInfo(quizId)).withSelfRel())
+        );
     }
 
     @GetMapping("/{id}/q/{qid}")
@@ -73,17 +78,7 @@ public class QuizController {
         quizService.closeQuiz(quizId);
 
         return ResponseEntity.accepted().body(
-            EntityModel.of(linkTo(methodOn(QuizController.class).quizResult(quizId)).withRel(IanaLinkRelations.NEXT))
-        );
-    }
-
-    @GetMapping(value = "/{id}/result", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> quizResult(@PathVariable("id") Long quizId) throws NoSuchElementException{
-        QuizResultValues values = quizService.getQuizResult(quizId);
-
-        return ResponseEntity.ok().body(
-                EntityModel.of(values,
-                        linkTo(methodOn(QuizController.class).quizResult(quizId)).withSelfRel())
+            EntityModel.of(linkTo(methodOn(QuizController.class).getQuizInfo(quizId)).withRel(IanaLinkRelations.NEXT))
         );
     }
 
