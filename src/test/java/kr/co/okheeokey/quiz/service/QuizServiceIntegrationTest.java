@@ -45,7 +45,7 @@ public class QuizServiceIntegrationTest {
     public void createDuplicatedQuiz() {
         // given
         Question question = questionRepository.save(new Question("soifnaeo"));
-        List<Question> songPool = Collections.singletonList(question);
+        List<Question> questionPool = Collections.singletonList(question);
 
         User user = userRepository.save(User.builder()
                 .name("eahr")
@@ -53,7 +53,7 @@ public class QuizServiceIntegrationTest {
                 .build());
         QuizSet quizSet = quizSetRepository.save(QuizSet.builder()
                 .ownerId(user.getId())
-                .songPool(songPool)
+                .questionPool(questionPool)
                 .title("ttiteafew")
                 .description("dfoeiw")
                 .build());

@@ -39,7 +39,7 @@ public class QuizServiceTest {
     @Mock private Quiz quiz;
     @Mock private User user;
     @Mock private QuizSet quizSet;
-    @Mock private List<Question> songPool;
+    @Mock private List<Question> questionPool;
     @Mock private List<Question> randomSongList;
     @Mock private Song song;
 
@@ -89,8 +89,8 @@ public class QuizServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getSongPool()).thenReturn(songPool);
-        when(songPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
+        when(quizSet.getQuestionPool()).thenReturn(questionPool);
+        when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
         when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomSongList, songNum, false));
 
         // when
@@ -127,7 +127,7 @@ public class QuizServiceTest {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getSongPool()).thenReturn(Collections.emptyList());
+        when(quizSet.getQuestionPool()).thenReturn(Collections.emptyList());
 
         assert songNum > 0;
 
