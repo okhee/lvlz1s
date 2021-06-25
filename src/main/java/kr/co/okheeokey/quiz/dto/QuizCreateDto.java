@@ -6,16 +6,16 @@ import lombok.Getter;
 
 @Getter
 public class QuizCreateDto {
-    private Long userId;
-    private Long quizSetId;
-    private Long songNum;
+    private final Long userId;
+    private final Long quizSetId;
+    private final Long questionNum;
 
     @JsonCreator
     public QuizCreateDto(@JsonProperty("userId") Long userId,
                          @JsonProperty("quizSetId") Long quizSetId,
-                         @JsonProperty("songNum") Long songNum) {
+                         @JsonProperty("questionNum") Long questionNum) {
         this.userId = userId;
         this.quizSetId = quizSetId;
-        this.songNum = songNum;
+        this.questionNum = questionNum;
     }
 }

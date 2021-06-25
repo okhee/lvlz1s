@@ -45,9 +45,9 @@ public class QuizServiceTest {
 
     private final Long userId = 51L;
     private final Long quizSetId = 73L;
-    private final Long songNum = 12L;
+    private final Long questionNum = 12L;
     private final Long quizId = 83L;
-    private final Long questionId = songNum - 2L;
+    private final Long questionId = questionNum - 2L;
     private final Long responseSongId = 15L;
 
     @Test
@@ -85,13 +85,13 @@ public class QuizServiceTest {
     @Test
     public void createNewQuiz() {
         // given
-        QuizCreateValues values = new QuizCreateValues(userId, quizSetId, songNum);
+        QuizCreateValues values = new QuizCreateValues(userId, quizSetId, questionNum);
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getQuestionPool()).thenReturn(questionPool);
         when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
-        when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomSongList, songNum, false));
+        when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomSongList, questionNum, false));
 
         // when
         Quiz newQuiz = quizService.createNewQuiz(values);
@@ -99,7 +99,7 @@ public class QuizServiceTest {
         // then
         assertNotNull(newQuiz);
         assertEquals(user, newQuiz.getOwner());
-        assertEquals(songNum, newQuiz.getQuestionNum());
+        assertEquals(questionNum, newQuiz.getQuestionNum());
         assertEquals(quizSet, newQuiz.getQuizSet());
         assertArrayEquals(randomSongList.toArray(), newQuiz.getQuestionList().toArray());
     }
@@ -109,7 +109,7 @@ public class QuizServiceTest {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         // when
-        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -119,26 +119,26 @@ public class QuizServiceTest {
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
-        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void createNewQuiz_withInvalidSongNum() {
+    public void createNewQuiz_withInvalidQuestionNum() {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getQuestionPool()).thenReturn(Collections.emptyList());
 
-        assert songNum > 0;
+        assert questionNum > 0;
 
         // when
-        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, songNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test
     public void saveQuestionResponse() {
         // given
-        Quiz quiz = new Quiz(quizSet, user, randomSongList, songNum, false);
+        Quiz quiz = new Quiz(quizSet, user, randomSongList, questionNum, false);
 
         when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
@@ -146,7 +146,7 @@ public class QuizServiceTest {
                 .thenReturn(Optional.of(song));
         when(song.getId()).thenReturn(responseSongId);
 
-        assert questionId <= songNum;
+        assert questionId <= questionNum;
         QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
 
         // when
@@ -160,15 +160,15 @@ public class QuizServiceTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void saveQuestionResponse_withInvalidQuestionId() {
         // given
-        Long questionId = songNum + 2L;
+        Long questionId = questionNum + 2L;
 
         when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
         when(songRepository.findById(anyLong()))
                 .thenReturn(Optional.of(song));
-        when(quiz.getQuestionNum()).thenReturn(songNum);
+        when(quiz.getQuestionNum()).thenReturn(questionNum);
 
-        assert questionId > songNum;
+        assert questionId > questionNum;
         QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
 
         // when

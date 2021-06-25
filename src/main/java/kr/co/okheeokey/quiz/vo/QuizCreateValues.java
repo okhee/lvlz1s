@@ -5,19 +5,19 @@ import lombok.Getter;
 
 @Getter
 public class QuizCreateValues {
-    private Long userId;
-    private Long quizSetId;
-    private Long songNum;
+    private final Long userId;
+    private final Long quizSetId;
+    private final Long questionNum;
 
     public QuizCreateValues(QuizCreateDto dto) {
         this.userId = dto.getUserId();
         this.quizSetId = dto.getQuizSetId();
-        this.songNum = dto.getSongNum();
+        this.questionNum = dto.getQuestionNum();
     }
 
-    public QuizCreateValues(Long userId, Long quizSetId, Long songNum) {
+    public QuizCreateValues(Long userId, Long quizSetId, Long questionNum) {
         this.userId = userId;
         this.quizSetId = quizSetId;
-        this.songNum = songNum;
+        this.questionNum = questionNum;
     }
 }

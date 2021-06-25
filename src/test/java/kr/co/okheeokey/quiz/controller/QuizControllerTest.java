@@ -53,13 +53,13 @@ public class QuizControllerTest {
 
     private final Long userId = 12L;
     private final Long quizSetId = 43L;
-    private final Long songNum = 9L;
+    private final Long questionNum = 9L;
     private final Long quizId = 425L;
 
     @Test
     public void createQuiz_noPreviousQuiz_thenReturns201() throws Exception {
         // given
-        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, songNum);
+        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, questionNum);
 
         when(quizService.previousQuiz(any(QuizExistQueryValues.class)))
                 .thenReturn(Optional.empty());
@@ -87,7 +87,7 @@ public class QuizControllerTest {
                 .thenReturn(Optional.of(quiz));
         when(quiz.getId()).thenReturn(quizId);
 
-        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, songNum);
+        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, questionNum);
 
         // when
         mvc.perform(post("/quizs")

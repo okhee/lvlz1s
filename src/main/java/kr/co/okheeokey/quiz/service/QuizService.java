@@ -45,13 +45,13 @@ public class QuizService {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
 
-        List<Question> randomQuestionList = chooseQuestion(quizSet.getQuestionPool(), values.getSongNum());
+        List<Question> randomQuestionList = chooseQuestion(quizSet.getQuestionPool(), values.getQuestionNum());
 
         Quiz newQuiz = Quiz.builder()
                             .quizSet(quizSet)
                             .owner(user)
                             .questionList(randomQuestionList)
-                            .questionNum(values.getSongNum())
+                            .questionNum(values.getQuestionNum())
                             .closed(false)
                             .build();
         return quizRepository.save(newQuiz);
@@ -104,12 +104,14 @@ public class QuizService {
         quizRepository.deleteById(quiz.getId());
     }
 
-    private List<Question> chooseQuestion(List<Question> questionPool, Long songNum) throws IndexOutOfBoundsException {
+    private List<Question> chooseQuestion(List<Question> questionPool, Long questionNum) throws IndexOutOfBoundsException {
         Collections.shuffle(questionPool);
-        return questionPool.subList(0, songNum.intValue());
+        return questionPool.subList(0, questionNum.intValue());
     }
 
     private void isAllowedToQuizSet(Long userId, QuizSet quizSet) throws IllegalAccessException {
+        if (quizSet.getReadyMade())
+            return;
         if (!userId.equals(quizSet.getOwnerId()))
             throw new IllegalAccessException("User { " + userId + " } not allowed to access quiz set { " + quizSet.getId() + " }");
     }

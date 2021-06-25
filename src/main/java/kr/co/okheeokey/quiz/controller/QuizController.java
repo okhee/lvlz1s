@@ -37,8 +37,7 @@ public class QuizController {
             .orElseGet(() ->
                 ResponseEntity.created(
                     URI.create("/quizs/" + quizService.createNewQuiz(new QuizCreateValues(dto)).getId())
-                ).build()
-            );
+                ).build());
     }
 
     @GetMapping("/{id}")
