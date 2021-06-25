@@ -1,7 +1,9 @@
 package kr.co.okheeokey.quizset.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,12 +21,16 @@ public class QuizSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Todo: Long ownerId must be changed into 'User owner'
-    private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "USER_ID")
+    private User owner;
 
     private String title;
 
     private String description;
+
+    private Boolean readyMade = false;
 
     @ManyToMany
     @JsonManagedReference
@@ -33,10 +39,11 @@ public class QuizSet {
     private Double averageDifficulty;
 
     @Builder
-    public QuizSet(Long ownerId, String title, String description, List<Question> questionPool) {
-        this.ownerId = ownerId;
+    public QuizSet(User owner, String title, String description, Boolean readyMade, List<Question> questionPool) {
+        this.owner = owner;
         this.title = title;
         this.description = description;
+        this.readyMade = readyMade;
         this.questionPool = questionPool;
         this.averageDifficulty = questionPool.stream()
                 .map(q -> q.getDifficulty().ordinal())

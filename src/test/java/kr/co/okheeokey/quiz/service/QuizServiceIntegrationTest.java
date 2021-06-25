@@ -52,7 +52,7 @@ public class QuizServiceIntegrationTest {
                 .isAlive(true)
                 .build());
         QuizSet quizSet = quizSetRepository.save(QuizSet.builder()
-                .ownerId(user.getId())
+                .owner(user)
                 .questionPool(questionPool)
                 .title("ttiteafew")
                 .description("dfoeiw")

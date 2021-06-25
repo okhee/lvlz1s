@@ -57,7 +57,8 @@ public class QuizServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getOwnerId()).thenReturn(userId);
+        when(quizSet.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
 
@@ -76,7 +77,8 @@ public class QuizServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getOwnerId()).thenReturn(userId + 1);
+        when(quizSet.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId + 1);
 
         // when
         quizService.previousQuiz(values);

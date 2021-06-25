@@ -10,6 +10,7 @@ import kr.co.okheeokey.song.domain.Album;
 import kr.co.okheeokey.song.domain.AlbumRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
+import kr.co.okheeokey.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,9 @@ import java.util.*;
 @Service
 public class QuizSetService {
     private final QuizSetRepository quizSetRepository;
-    private final QuestionRepository questionRepository;
-
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
+    private final UserRepository userRepository;
 
     public List<QuizSet> getAllQuizSet() {
         return quizSetRepository.findAll();
@@ -37,7 +37,7 @@ public class QuizSetService {
         EnumSet<QuestionDifficulty> difficultyMask = getDifficultyMask(dto.getEasy(), dto.getMedium(), dto.getHard());
 
         Set<Question> questionPool = new HashSet<>();
-        Set<Song> songs = Collections.synchronizedSet(new HashSet<>(songRepository.findAllById(dto.getSongIdList())));
+        Set<Song> songs = new HashSet<>(songRepository.findAllById(dto.getSongIdList()));
         List<Album> albums = albumRepository.findAllById(dto.getAlbumIdList());
 
         if(!albums.isEmpty())
@@ -53,9 +53,11 @@ public class QuizSetService {
 
         return quizSetRepository.save(
             QuizSet.builder()
-                    .ownerId(dto.getUserId())
+                    .owner(userRepository.findById(dto.getUserId())
+                            .orElseThrow(() -> new NoSuchElementException("No user exists with id { " + dto.getUserId() + " }")))
                     .title(dto.getTitle())
                     .description(dto.getDescription())
+                    .readyMade(false)
                     .questionPool(new ArrayList<>(questionPool))
                     .build()
         );

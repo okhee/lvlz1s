@@ -112,7 +112,7 @@ public class QuizService {
     private void isAllowedToQuizSet(Long userId, QuizSet quizSet) throws IllegalAccessException {
         if (quizSet.getReadyMade())
             return;
-        if (!userId.equals(quizSet.getOwnerId()))
+        if (!userId.equals(quizSet.getOwner().getId()))
             throw new IllegalAccessException("User { " + userId + " } not allowed to access quiz set { " + quizSet.getId() + " }");
     }
 
