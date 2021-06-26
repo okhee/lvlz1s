@@ -6,8 +6,8 @@ import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
-import kr.co.okheeokey.user.User;
-import kr.co.okheeokey.user.UserRepository;
+import kr.co.okheeokey.user.domain.User;
+import kr.co.okheeokey.user.domain.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +47,7 @@ public class QuizServiceIntegrationTest {
         Question question = questionRepository.save(new Question("soifnaeo"));
         List<Question> questionPool = Collections.singletonList(question);
 
-        User user = userRepository.save(User.builder()
-                .name("eahr")
-                .isAlive(true)
-                .build());
+        User user = userRepository.save(new User("naname", "pass", null));
         QuizSet quizSet = quizSetRepository.save(QuizSet.builder()
                 .owner(user)
                 .questionPool(questionPool)

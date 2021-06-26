@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.question.domain.Question;
-import kr.co.okheeokey.user.User;
+import kr.co.okheeokey.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

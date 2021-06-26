@@ -3,7 +3,7 @@ package kr.co.okheeokey.quizset.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.question.domain.Question;
-import kr.co.okheeokey.user.User;
+import kr.co.okheeokey.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

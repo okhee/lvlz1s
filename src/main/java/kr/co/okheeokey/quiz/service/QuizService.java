@@ -8,8 +8,8 @@ import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.question.domain.Question;
-import kr.co.okheeokey.user.User;
-import kr.co.okheeokey.user.UserRepository;
+import kr.co.okheeokey.user.domain.User;
+import kr.co.okheeokey.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

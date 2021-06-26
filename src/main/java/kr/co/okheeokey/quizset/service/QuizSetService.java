@@ -10,7 +10,7 @@ import kr.co.okheeokey.song.domain.Album;
 import kr.co.okheeokey.song.domain.AlbumRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
-import kr.co.okheeokey.user.UserRepository;
+import kr.co.okheeokey.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
