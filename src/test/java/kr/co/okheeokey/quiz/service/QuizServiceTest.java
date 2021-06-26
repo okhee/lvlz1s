@@ -12,7 +12,7 @@ import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.user.domain.User;
-import kr.co.okheeokey.user.domainUserRepository;
+import kr.co.okheeokey.user.domain.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
