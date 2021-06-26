@@ -13,16 +13,29 @@ spring:
 #    password:
 
   jpa:
-    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
-  h2:
-    console:
-      enabled: true
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 15MB
       file-size-threshold: 1MB
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
+#  h2:
+#    console:
+#      enabled: true
 # https://docs.spring.io/spring-boot/docs/2.1.18.RELEASE/reference/html/howto-database-initialization.html
