@@ -1,33 +1,28 @@
 package kr.co.okheeokey.auth.domain;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import kr.co.okheeokey.auth.exception.CustomJwtRuntimeException;
 import kr.co.okheeokey.user.domain.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 import java.util.Date;
 
 @Slf4j
-public class JwtAuthToken {
-    @Value("testKey")
-    private Key key;
-    @Value("10000000")
-    private Long expirationTimeInMS;
+public class JwtAuthTokenProvider {
+    private final Long expirationTimeInMS;
+    private final Key key;
 
-    private final String token;
-
-    public JwtAuthToken(String token) {
-        this.token = token;
+    public JwtAuthTokenProvider(String base64Secret, Long expirationTimeInMS) {
+        byte[] bytes = Decoders.BASE64.decode(base64Secret);
+        this.key = Keys.hmacShaKeyFor(bytes);
+        this.expirationTimeInMS = expirationTimeInMS;
     }
 
-    public JwtAuthToken(User user) {
-        this.token = createJwtAuthToken(user);
-    }
-
-    public String createJwtAuthToken(User user) {
+    public String createToken(User user) {
         Date now = new Date();
 
         return Jwts.builder()
@@ -39,11 +34,7 @@ public class JwtAuthToken {
                 .compact();
     }
 
-    public Boolean validate() {
-        return getSubject() != null;
-    }
-
-    public String getSubject() {
+    public String getSubject(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
         } catch (ExpiredJwtException e) {
@@ -63,7 +54,4 @@ public class JwtAuthToken {
             throw new CustomJwtRuntimeException();
         }
     }
-
-
-
 }
