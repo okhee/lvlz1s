@@ -3,9 +3,9 @@ package kr.co.okheeokey.auth.domain;
 import io.jsonwebtoken.JwtException;
 import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -17,24 +17,22 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Optional;
 
-@Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
     private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthTokenProvider jwtAuthTokenProvider;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        Optional<String> token = resolveToken((HttpServletRequest) request);
-        if (token.isPresent()){
-            JwtAuthToken jwtAuthToken = convertAuthToken(token.get());
-            if(jwtAuthToken.validate()) {
-                Optional.of(jwtAuthToken)
-                        .map(JwtAuthToken::getSubject)
-                        .map(userDetailsService::loadUserByUsername)
-                        .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()))
-                        .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
-            }
-        }
+        log.info("JwtAuthFilter : doFilter() called");
+
+        resolveToken((HttpServletRequest) request)
+                .map(jwtAuthTokenProvider::getSubject)
+                .map(userDetailsService::loadUserByUsername)
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()))
+                .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
+
         chain.doFilter(request, response);
     }
 
@@ -51,9 +49,5 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             throw new JwtException("Invalid Authorization header type");
 
         return Optional.of(typeAndCredential[1]);
-    }
-
-    private JwtAuthToken convertAuthToken(String token) {
-        return new JwtAuthToken(token);
     }
 }
