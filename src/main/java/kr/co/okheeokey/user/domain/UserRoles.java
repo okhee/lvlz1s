@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserRoles {
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID")

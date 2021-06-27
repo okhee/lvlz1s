@@ -1,5 +1,7 @@
 -- User -------------------------------------------------------------
-INSERT INTO user (name, password) VALUES ('myName1', '{noop}verysimplepassword');
+-- password : verysimplepassword
+INSERT INTO user (name, password) VALUES ('myName1', '$2a$10$KAgt9R2EsBJsOuoGPkx7TeYg6wTqlIYJA8.gEtr1vt1.tzVLQ6nSG');
+INSERT INTO user_roles (user_id, user_roles) VALUES ('1', 'ADMIN');
 
 -- Album ------------------------------------------------------------
 INSERT INTO album (album_name, released_date, album_cover) VALUES ('Girls'' Invasion', '2014-11-17', '/img/album-cover/girls_invasion.png');
