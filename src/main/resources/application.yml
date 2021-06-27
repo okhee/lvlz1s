@@ -20,7 +20,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
-        format_sql: true
+#        format_sql: true
 
   servlet:
     multipart:
@@ -28,13 +28,20 @@ spring:
       max-request-size: 15MB
       file-size-threshold: 1MB
 
-logging:
-  level:
-    org:
-      hibernate:
-        type:
-          descriptor:
-            sql: trace
+
+security:
+  jwt:
+    token:
+      base64-secret: ZnFmcTgydXhmMDk4aG51YnF1Z2g5aGYwOThuaDNkc2h2M2M0OWhnLTA5MzhuaGdmLTM=
+      expire-length: 1800000
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type:
+#          descriptor:
+#            sql: trace
 #  h2:
 #    console:
 #      enabled: true
