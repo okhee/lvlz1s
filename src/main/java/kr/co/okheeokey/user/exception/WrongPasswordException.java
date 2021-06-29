@@ -1,8 +1,9 @@
 package kr.co.okheeokey.user.exception;
 
-public class WrongPasswordException extends RuntimeException {
-    public WrongPasswordException() {
-    }
+
+import org.springframework.security.core.AuthenticationException;
+
+public class WrongPasswordException extends AuthenticationException {
 
     public WrongPasswordException(String message) {
         super(message);

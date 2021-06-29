@@ -16,12 +16,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User getUserIfRegistered(String name, String password) {
+    public User getUserIfRegistered(String name, String password) throws UsernameNotFoundException, WrongPasswordException {
         User user = userRepository.findByName(name)
                 .orElseThrow(() -> new UsernameNotFoundException("No such user name { " + name + " } exists"));
 
         return Optional.of(user)
                 .filter(u -> passwordEncoder.matches(password, u.getPassword()))
-                .orElseThrow(() -> new WrongPasswordException("Wrong password input"));
+                .orElseThrow(() -> new WrongPasswordException("Invalid password input for user { " + user.getName() + " }"));
     }
 }
