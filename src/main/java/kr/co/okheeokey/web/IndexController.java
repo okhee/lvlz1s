@@ -9,4 +9,9 @@ public class IndexController {
     public String index() {
         return "Hello! Welcome to Lvlz1s!";
     }
+
+    @GetMapping("/private")
+    public String privateDataTest() {
+        return "This data is private~!!";
+    }
 }
