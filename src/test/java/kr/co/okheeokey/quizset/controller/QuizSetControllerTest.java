@@ -1,6 +1,8 @@
 package kr.co.okheeokey.quizset.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.okheeokey.auth.domain.JwtAuthTokenProvider;
+import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
@@ -39,6 +41,12 @@ public class QuizSetControllerTest {
 
     @MockBean
     private QuizSet quizSet;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private JwtAuthTokenProvider jwtAuthTokenProvider;
 
     @Test
     public void createQuizSet_thenReturns201() throws Exception{
