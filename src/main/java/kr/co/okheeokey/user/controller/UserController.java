@@ -8,10 +8,8 @@ import kr.co.okheeokey.user.vo.UserCreateValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -20,6 +18,12 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping
+    public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok()
+                .body(user);
+    }
 
     @PostMapping
     public ResponseEntity<?> signUpNewUser(@RequestBody @Valid UserCreateDto dto) throws UsernameOccupiedException {
