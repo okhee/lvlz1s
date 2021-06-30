@@ -56,8 +56,8 @@ public class QuizServiceIntegrationTest {
                 .build());
 
         // when
-        Quiz quiz1 = quizService.createNewQuiz(new QuizCreateValues(user.getId(), quizSet.getId(), 0L));
-        Quiz quiz2 = quizService.createNewQuiz(new QuizCreateValues(user.getId(), quizSet.getId(), 0L));
+        Quiz quiz1 = quizService.createNewQuiz(new QuizCreateValues(user, quizSet.getId(), 0L));
+        Quiz quiz2 = quizService.createNewQuiz(new QuizCreateValues(user, quizSet.getId(), 0L));
 
         // then
         assertNotEquals(quiz1.getId(), quiz2.getId());
