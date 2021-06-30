@@ -45,12 +45,6 @@ public class QuizSetControllerTest {
 
     @MockBean private User user;
 
-    @MockBean
-    private CustomUserDetailsService customUserDetailsService;
-
-    @MockBean
-    private JwtAuthTokenProvider jwtAuthTokenProvider;
-
     @Test
     public void createQuizSet_thenReturns201() throws Exception{
         // given
