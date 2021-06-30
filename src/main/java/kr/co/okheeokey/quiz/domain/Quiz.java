@@ -57,6 +57,10 @@ public class Quiz {
         this.closed = closed;
     }
 
+    public void close() {
+        this.closed = true;
+    }
+
     public void saveResponse(Long questionIdx, Song response) {
         responseMap.put(questionIdx, response.getId());
     }
@@ -66,10 +70,6 @@ public class Quiz {
             Boolean isAnswer = this.questionList.get(i).getSong().getId().equals(this.responseMap.get((long) i));
             this.scoreList.put((long) i, isAnswer);
         }
-    }
-
-    public void close() {
-        this.closed = true;
     }
 
 }

@@ -27,10 +27,6 @@ public class UserRoles {
         this.userRoles = userRoles;
     }
 
-    public UserRoles(UserRole userRole) {
-        this.userRoles.add(userRole);
-    }
-
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return userRoles.stream().map(UserRole::name)
                 .map(SimpleGrantedAuthority::new)
