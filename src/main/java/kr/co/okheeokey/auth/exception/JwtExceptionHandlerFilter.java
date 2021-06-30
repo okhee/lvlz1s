@@ -2,6 +2,7 @@ package kr.co.okheeokey.auth.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,6 +23,9 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (JwtRuntimeException e) {
             log.error("JwtRuntimeException occurred.");
+            setErrorResponse(HttpStatus.BAD_REQUEST, response, e);
+        } catch (AuthenticationException e) {
+            log.error("AuthenticationException occurred.");
             setErrorResponse(HttpStatus.BAD_REQUEST, response, e);
         }
     }
