@@ -1,6 +1,6 @@
 -- User -------------------------------------------------------------
 -- password : verysimplepassword
-INSERT INTO user (name, password, enabled) VALUES ('myName1', '$2a$10$KAgt9R2EsBJsOuoGPkx7TeYg6wTqlIYJA8.gEtr1vt1.tzVLQ6nSG', 1);
+INSERT INTO user (name, password) VALUES ('myName1', '$2a$10$KAgt9R2EsBJsOuoGPkx7TeYg6wTqlIYJA8.gEtr1vt1.tzVLQ6nSG');
 INSERT INTO user_roles (user_id, user_roles) VALUES ('1', 'ADMIN');
 
 -- Album ------------------------------------------------------------

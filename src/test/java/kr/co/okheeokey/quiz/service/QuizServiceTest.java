@@ -43,6 +43,7 @@ public class QuizServiceTest {
     @Mock private List<Question> randomSongList;
     @Mock private Song song;
 
+    private final Long userId = 51L;
     private final Long quizSetId = 73L;
     private final Long questionNum = 12L;
     private final Long quizId = 83L;
@@ -52,11 +53,12 @@ public class QuizServiceTest {
     @Test
     public void previousQuiz() throws Exception {
         // given
-        QuizExistQueryValues values = new QuizExistQueryValues(user, quizSetId);
+        QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId);
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
 
@@ -71,10 +73,12 @@ public class QuizServiceTest {
     @Test(expected = IllegalAccessException.class)
     public void previousQuiz_withInvalidAuthority() throws Exception {
         // given
-        QuizExistQueryValues values = new QuizExistQueryValues(user, quizSetId);
+        QuizExistQueryValues values = new QuizExistQueryValues(userId, quizSetId);
 
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getOwner()).thenReturn(null);
+        when(quizSet.getOwner()).thenReturn(user);
+        when(user.getId()).thenReturn(userId + 1);
 
         // when
         quizService.previousQuiz(values);
@@ -83,7 +87,7 @@ public class QuizServiceTest {
     @Test
     public void createNewQuiz() {
         // given
-        QuizCreateValues values = new QuizCreateValues(user, quizSetId, questionNum);
+        QuizCreateValues values = new QuizCreateValues(userId, quizSetId, questionNum);
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
@@ -107,7 +111,7 @@ public class QuizServiceTest {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         // when
-        quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -117,7 +121,7 @@ public class QuizServiceTest {
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
-        quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -130,11 +134,11 @@ public class QuizServiceTest {
         assert questionNum > 0;
 
         // when
-        quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
+        quizService.createNewQuiz(new QuizCreateValues(userId, quizSetId, questionNum));
     }
 
     @Test
-    public void saveQuestionResponse() throws IllegalAccessException {
+    public void saveQuestionResponse() {
         // given
         Quiz quiz = new Quiz(quizSet, user, randomSongList, questionNum, false);
 
@@ -145,7 +149,7 @@ public class QuizServiceTest {
         when(song.getId()).thenReturn(responseSongId);
 
         assert questionId <= questionNum;
-        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionId, responseSongId);
+        QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
 
         // when
         Quiz returnQuiz = quizService.saveQuestionResponse(values);
@@ -156,7 +160,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void saveQuestionResponse_withInvalidQuestionId() throws IllegalAccessException {
+    public void saveQuestionResponse_withInvalidQuestionId() {
         // given
         Long questionId = questionNum + 2L;
 
@@ -164,18 +168,17 @@ public class QuizServiceTest {
                 .thenReturn(Optional.of(quiz));
         when(songRepository.findById(anyLong()))
                 .thenReturn(Optional.of(song));
-        when(quiz.getOwner()).thenReturn(user);
         when(quiz.getQuestionNum()).thenReturn(questionNum);
 
         assert questionId > questionNum;
-        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionId, responseSongId);
+        QuestionSubmitValues values = new QuestionSubmitValues(quizId, questionId, responseSongId);
 
         // when
         quizService.saveQuestionResponse(values);
     }
 
     @Test
-    public void getQuizStatus() throws IllegalAccessException {
+    public void getQuizStatus() {
         // given
         String title = "180h12f";
         String description = "f1803xz";
@@ -191,7 +194,6 @@ public class QuizServiceTest {
         Map<Long, Boolean> scoreList = Collections.singletonMap(questionId, true);
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(quiz.getOwner()).thenReturn(user);
         when(quiz.getQuizSet()).thenReturn(quizSet);
         when(quiz.getClosed()).thenReturn(closed);
         when(quiz.getQuestionNum()).thenReturn(questionNum);
@@ -203,7 +205,7 @@ public class QuizServiceTest {
         when(quizSet.getDescription()).thenReturn(description);
 
         // when
-        QuizStatusValues values = quizService.getQuizStatus(user, quizId);
+        QuizStatusValues values = quizService.getQuizStatus(quizId);
 
         // then
         assertThat(values.getTitle(), is(title));

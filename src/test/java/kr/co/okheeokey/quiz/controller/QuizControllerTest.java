@@ -1,8 +1,6 @@
 package kr.co.okheeokey.quiz.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.okheeokey.auth.domain.JwtAuthTokenProvider;
-import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
@@ -12,9 +10,10 @@ import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
-import kr.co.okheeokey.user.domain.User;
+import kr.co.okheeokey.quizset.domain.QuizSet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -44,13 +43,15 @@ public class QuizControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean private QuizService quizService;
-    @MockBean private CustomUserDetailsService customUserDetailsService;
-    @MockBean private JwtAuthTokenProvider jwtAuthTokenProvider;
+    @MockBean
+    private QuizService quizService;
 
     @MockBean private Quiz quiz;
-    @MockBean private User user;
+    @MockBean private QuizSet quizSet;
 
+    @Mock private QuestionSubmitDto questionSubmitDto;
+
+    private final Long userId = 12L;
     private final Long quizSetId = 43L;
     private final Long questionNum = 9L;
     private final Long quizId = 425L;
@@ -58,10 +59,7 @@ public class QuizControllerTest {
     @Test
     public void createQuiz_noPreviousQuiz_thenReturns201() throws Exception {
         // given
-        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
-        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
-
-        QuizCreateDto dto = new QuizCreateDto(quizSetId, questionNum);
+        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, questionNum);
 
         when(quizService.previousQuiz(any(QuizExistQueryValues.class)))
                 .thenReturn(Optional.empty());
@@ -71,7 +69,6 @@ public class QuizControllerTest {
 
         // when
         mvc.perform(post("/quizs")
-            .header("Authorization", "Bearer lalala")
             .content(objectMapper.writeValueAsString(dto))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -86,18 +83,14 @@ public class QuizControllerTest {
     @Test
     public void createQuiz_previousQuizExists_thenReturns301() throws Exception {
         // given
-        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
-        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
-
         when(quizService.previousQuiz(any(QuizExistQueryValues.class)))
                 .thenReturn(Optional.of(quiz));
         when(quiz.getId()).thenReturn(quizId);
 
-        QuizCreateDto dto = new QuizCreateDto(quizSetId, questionNum);
+        QuizCreateDto dto = new QuizCreateDto(userId, quizSetId, questionNum);
 
         // when
         mvc.perform(post("/quizs")
-            .header("Authorization", "Bearer lalala")
             .content(objectMapper.writeValueAsString(dto))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -110,9 +103,6 @@ public class QuizControllerTest {
     @Test
     public void getQuizInfo() throws Exception {
         // given
-        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
-        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
-
         String title = "ttiit_";
         String description = "ddedi1";
         Boolean closed = (Math.random() < 0.5);
@@ -124,13 +114,12 @@ public class QuizControllerTest {
         Map<Long, Boolean> scoreList = Collections.singletonMap(16L, true);
         List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
 
-        when(quizService.getQuizStatus(any(User.class), anyLong()))
+        when(quizService.getQuizStatus(anyLong()))
                 .thenReturn(new QuizStatusValues(title, description, closed, questionNum,
                         songList, responseMap, scoreList, responseExistList));
 
         // when
         mvc.perform(get("/quizs/" + quizId)
-                    .header("Authorization", "Bearer lalala")
                     .accept(MediaType.APPLICATION_JSON_VALUE)
                 )
         // then
@@ -157,9 +146,6 @@ public class QuizControllerTest {
     @Test
     public void submitQuestion() throws Exception {
         // given
-        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
-        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
-
         Long quizId = 1625L;
         Long questionId = 515L;
         Long responseSongId = 72L;
@@ -171,7 +157,6 @@ public class QuizControllerTest {
 
         // when
         mvc.perform(post("/quizs/{id}/q/{qid}", quizId, questionId)
-            .header("Authorization", "Bearer lalala")
             .content(objectMapper.writeValueAsString(dto))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
