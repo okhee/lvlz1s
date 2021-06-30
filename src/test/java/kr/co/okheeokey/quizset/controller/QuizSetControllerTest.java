@@ -1,9 +1,13 @@
 package kr.co.okheeokey.quizset.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.okheeokey.auth.domain.JwtAuthTokenProvider;
+import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
+import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
+import kr.co.okheeokey.user.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +38,19 @@ public class QuizSetControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private QuizSetService quizSetService;
+    @MockBean private QuizSetService quizSetService;
+    @MockBean private QuizSet quizSet;
+    @MockBean private CustomUserDetailsService customUserDetailsService;
+    @MockBean private JwtAuthTokenProvider jwtAuthTokenProvider;
 
-    @MockBean
-    private QuizSet quizSet;
+    @MockBean private User user;
 
     @Test
     public void createQuizSet_thenReturns201() throws Exception{
         // given
+        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
+        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
+
         Long userId = 41L;
         String title = "This is ttttitle";
         String description = "thiS is descripttion";
@@ -52,15 +60,16 @@ public class QuizSetControllerTest {
 
         Long createdQuizSetId = 51L;
 
-        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, albumIdList, songIdList,
+        QuizSetAddDto dto = new QuizSetAddDto(title, description, albumIdList, songIdList,
                 true, true, true);
 
-        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
+        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(User.class), any(QuizSetCreateValues.class));
         when(quizSet.getId())
                 .thenReturn(createdQuizSetId);
 
         // when
         mvc.perform(post("/quizsets")
+                .header("Authorization", "Bearer lalala")
                 .content(objectMapper.writeValueAsString(dto))
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -73,13 +82,17 @@ public class QuizSetControllerTest {
     @Test
     public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
-        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
+        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
+        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
+
+        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(User.class), any(QuizSetCreateValues.class));
 
         // when
         mvc.perform(post("/quizsets")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(objectMapper.writeValueAsString(new QuizSetAddDto(1L, "", "", Collections.emptyList(), Collections.emptyList(),
-                    true, true, true)))
+                .header("Authorization", "Bearer lalala")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new QuizSetAddDto("", "", Collections.emptyList(), Collections.emptyList(),
+                        true, true, true)))
         )
         // then
         .andExpect(status().isBadRequest())

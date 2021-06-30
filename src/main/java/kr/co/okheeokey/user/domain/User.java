@@ -1,5 +1,6 @@
 package kr.co.okheeokey.user.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,24 +11,31 @@ import java.util.Collection;
 
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String password;
 
     @Embedded
+    @EqualsAndHashCode.Exclude
     private UserRoles userRoles;
+
+    @Column(nullable = false)
+    private Boolean enabled;
 
     public User(String name, String password, UserRoles userRoles) {
         this.name = name;
         this.password = password;
         this.userRoles = userRoles;
+        this.enabled = true;
     }
 
     public Boolean isAdmin() {
@@ -65,6 +73,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 }

@@ -2,15 +2,14 @@ package kr.co.okheeokey.quizset.service;
 
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionDifficulty;
-import kr.co.okheeokey.question.domain.QuestionRepository;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
-import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
+import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
 import kr.co.okheeokey.song.domain.Album;
 import kr.co.okheeokey.song.domain.AlbumRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
-import kr.co.okheeokey.user.domain.UserRepository;
+import kr.co.okheeokey.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +21,29 @@ public class QuizSetService {
     private final QuizSetRepository quizSetRepository;
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
-    private final UserRepository userRepository;
 
-    public List<QuizSet> getAllQuizSet() {
-        return quizSetRepository.findAll();
+    public List<QuizSet> getAllQuizSet(User user) {
+        List<QuizSet> availableQuizSets = quizSetRepository.findAllByReadyMadeIsTrue();
+        if(user != null)
+            availableQuizSets.addAll(quizSetRepository.findAllByOwner(user));
+
+        return availableQuizSets;
     }
 
-    public QuizSet getQuizSet(Long quizSetId) throws NoSuchElementException {
-        return quizSetRepository.findById(quizSetId)
+    public QuizSet getQuizSet(User user, Long quizSetId) throws NoSuchElementException, IllegalAccessException {
+        QuizSet quizSet = quizSetRepository.findById(quizSetId)
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + quizSetId + " }"));
+        return Optional.of(quizSet)
+                .filter(qs -> qs.getOwner().equals(user) || qs.getReadyMade())
+                .orElseThrow(() -> new IllegalAccessException("Unauthorized access to quiz set with id { " + quizSet.getId() + " }"));
     }
 
-    public QuizSet createNewQuizSet(QuizSetAddDto dto) throws IllegalArgumentException{
-        EnumSet<QuestionDifficulty> difficultyMask = getDifficultyMask(dto.getEasy(), dto.getMedium(), dto.getHard());
+    public QuizSet createNewQuizSet(User user, QuizSetCreateValues values) throws IllegalArgumentException {
+        EnumSet<QuestionDifficulty> difficultyMask = getDifficultyMask(values.getEasy(), values.getMedium(), values.getHard());
 
         Set<Question> questionPool = new HashSet<>();
-        Set<Song> songs = new HashSet<>(songRepository.findAllById(dto.getSongIdList()));
-        List<Album> albums = albumRepository.findAllById(dto.getAlbumIdList());
+        Set<Song> songs = new HashSet<>(songRepository.findAllById(values.getSongIdList()));
+        List<Album> albums = albumRepository.findAllById(values.getAlbumIdList());
 
         if(!albums.isEmpty())
             albums.forEach(a -> songs.addAll(a.getSongList()));
@@ -53,10 +58,9 @@ public class QuizSetService {
 
         return quizSetRepository.save(
             QuizSet.builder()
-                    .owner(userRepository.findById(dto.getUserId())
-                            .orElseThrow(() -> new NoSuchElementException("No user exists with id { " + dto.getUserId() + " }")))
-                    .title(dto.getTitle())
-                    .description(dto.getDescription())
+                    .owner(user)
+                    .title(values.getTitle())
+                    .description(values.getDescription())
                     .readyMade(false)
                     .questionPool(new ArrayList<>(questionPool))
                     .build()
