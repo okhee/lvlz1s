@@ -58,9 +58,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/private").authenticated()
 
+                .antMatchers("/quizs/**").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/quizsets").authenticated()
+
                 .antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.GET, "/user").authenticated()
-//                .antMatchers("~~").hasRole(UserRole.USER.name())
+
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter,
