@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 public class QuizSetAddDto {
-    private final Long userId;
     private final String title;
     private final String description;
     private final List<Long> albumIdList;
@@ -18,15 +17,13 @@ public class QuizSetAddDto {
     private final Boolean hard;
 
     @JsonCreator
-    public QuizSetAddDto(@JsonProperty("userId") Long userId,
-                         @JsonProperty("title") String title,
+    public QuizSetAddDto(@JsonProperty("title") String title,
                          @JsonProperty("description") String description,
                          @JsonProperty("albumIdList") List<Long> albumIdList,
                          @JsonProperty("songIdList") List<Long> songIdList,
                          @JsonProperty("easy") Boolean easy,
                          @JsonProperty("medium") Boolean medium,
                          @JsonProperty("hard") Boolean hard) {
-        this.userId = userId;
         this.title = title;
         this.description = description;
         this.albumIdList = albumIdList;

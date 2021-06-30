@@ -1,10 +1,14 @@
 package kr.co.okheeokey.quizset.controller;
 
+import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
+import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
+import kr.co.okheeokey.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -28,8 +32,9 @@ public class QuizSetController {
     }
 
     @PostMapping
-    public ResponseEntity<?> newQuizSet(@RequestBody QuizSetAddDto quizSetAddDto) throws IllegalArgumentException {
-        QuizSet quizSet = quizSetService.createNewQuizSet(quizSetAddDto);
+    public ResponseEntity<?> newQuizSet(@AuthenticationPrincipal User user, @RequestBody QuizSetAddDto quizSetAddDto)
+            throws IllegalArgumentException {
+        QuizSet quizSet = quizSetService.createNewQuizSet(user, new QuizSetCreateValues(quizSetAddDto));
 
         return ResponseEntity.created(URI.create("/quizsets/" + quizSet.getId()))
             .build();
