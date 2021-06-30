@@ -22,13 +22,20 @@ public class QuizSetService {
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
 
-    public List<QuizSet> getAllQuizSet() {
-        return quizSetRepository.findAll();
+    public List<QuizSet> getAllQuizSet(User user) {
+        List<QuizSet> availableQuizSets = quizSetRepository.findAllByReadyMadeIsTrue();
+        if(user != null)
+            availableQuizSets.addAll(quizSetRepository.findAllByOwner(user));
+
+        return availableQuizSets;
     }
 
-    public QuizSet getQuizSet(Long quizSetId) throws NoSuchElementException {
-        return quizSetRepository.findById(quizSetId)
+    public QuizSet getQuizSet(User user, Long quizSetId) throws NoSuchElementException, IllegalAccessException {
+        QuizSet quizSet = quizSetRepository.findById(quizSetId)
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + quizSetId + " }"));
+        return Optional.of(quizSet)
+                .filter(qs -> qs.getOwner().equals(user) || qs.getReadyMade())
+                .orElseThrow(() -> new IllegalAccessException("Unauthorized access to quiz set with id { " + quizSet.getId() + " }"));
     }
 
     public QuizSet createNewQuizSet(User user, QuizSetCreateValues values) throws IllegalArgumentException {

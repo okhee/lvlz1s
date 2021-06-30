@@ -1,5 +1,6 @@
 package kr.co.okheeokey.user.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import java.util.Collection;
 
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 public class User implements UserDetails {
     @Id
@@ -23,6 +25,7 @@ public class User implements UserDetails {
     private String password;
 
     @Embedded
+    @EqualsAndHashCode.Exclude
     private UserRoles userRoles;
 
     @Column(nullable = false)

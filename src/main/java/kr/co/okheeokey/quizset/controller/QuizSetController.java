@@ -22,13 +22,14 @@ public class QuizSetController {
     private final QuizSetService quizSetService;
 
     @GetMapping
-    public ResponseEntity<List<QuizSet>> quizSetList() {
-        return ResponseEntity.ok().body(quizSetService.getAllQuizSet());
+    public ResponseEntity<List<QuizSet>> quizSetList(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok().body(quizSetService.getAllQuizSet(user));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<QuizSet> getQuizSet(@PathVariable("id") Long id) throws NoSuchElementException {
-        return ResponseEntity.ok(quizSetService.getQuizSet(id));
+    public ResponseEntity<QuizSet> getQuizSet(@AuthenticationPrincipal User user, @PathVariable("id") Long id)
+            throws NoSuchElementException, IllegalAccessException {
+        return ResponseEntity.ok(quizSetService.getQuizSet(user, id));
     }
 
     @PostMapping

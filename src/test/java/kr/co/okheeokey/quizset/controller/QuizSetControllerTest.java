@@ -6,6 +6,8 @@ import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
+import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
+import kr.co.okheeokey.user.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +62,10 @@ public class QuizSetControllerTest {
 
         Long createdQuizSetId = 51L;
 
-        QuizSetAddDto dto = new QuizSetAddDto(userId, title, description, albumIdList, songIdList,
+        QuizSetAddDto dto = new QuizSetAddDto(title, description, albumIdList, songIdList,
                 true, true, true);
 
-        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
+        doReturn(quizSet).when(quizSetService).createNewQuizSet(any(User.class), any(QuizSetCreateValues.class));
         when(quizSet.getId())
                 .thenReturn(createdQuizSetId);
 
@@ -81,12 +83,12 @@ public class QuizSetControllerTest {
     @Test
     public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
-        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(QuizSetAddDto.class));
+        doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(User.class), any(QuizSetCreateValues.class));
 
         // when
         mvc.perform(post("/quizsets")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(objectMapper.writeValueAsString(new QuizSetAddDto(1L, "", "", Collections.emptyList(), Collections.emptyList(),
+            .content(objectMapper.writeValueAsString(new QuizSetAddDto("", "", Collections.emptyList(), Collections.emptyList(),
                     true, true, true)))
         )
         // then
