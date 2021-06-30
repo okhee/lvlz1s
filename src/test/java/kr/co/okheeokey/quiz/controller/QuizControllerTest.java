@@ -1,6 +1,8 @@
 package kr.co.okheeokey.quiz.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.co.okheeokey.auth.domain.JwtAuthTokenProvider;
+import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
@@ -43,11 +45,13 @@ public class QuizControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private QuizService quizService;
+    @MockBean private QuizService quizService;
+    @MockBean private CustomUserDetailsService customUserDetailsService;
+    @MockBean private JwtAuthTokenProvider jwtAuthTokenProvider;
 
     @MockBean private Quiz quiz;
     @MockBean private QuizSet quizSet;
+
 
     @Mock private QuestionSubmitDto questionSubmitDto;
 
