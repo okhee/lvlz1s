@@ -37,5 +37,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### audio file ###
-**/src/main/resources/static/audio/
