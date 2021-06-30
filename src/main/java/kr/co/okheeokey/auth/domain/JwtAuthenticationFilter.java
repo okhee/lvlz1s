@@ -6,6 +6,7 @@ import kr.co.okheeokey.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -27,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException, JwtRuntimeException {
+            throws ServletException, IOException, JwtRuntimeException, AuthenticationException {
         log.info("JwtAuthFilter : doFilterInternal() called");
 
         // Check whether user has JwtToken that can prove his/her identity
