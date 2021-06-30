@@ -1,6 +1,5 @@
 package kr.co.okheeokey.quiz.domain;
 
-import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
