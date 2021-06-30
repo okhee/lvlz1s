@@ -1,6 +1,5 @@
 package kr.co.okheeokey.quizset.controller;
 
-import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;

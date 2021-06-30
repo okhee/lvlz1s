@@ -38,21 +38,19 @@ public class QuizSetControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private QuizSetService quizSetService;
+    @MockBean private QuizSetService quizSetService;
+    @MockBean private QuizSet quizSet;
+    @MockBean private CustomUserDetailsService customUserDetailsService;
+    @MockBean private JwtAuthTokenProvider jwtAuthTokenProvider;
 
-    @MockBean
-    private QuizSet quizSet;
-
-    @MockBean
-    private CustomUserDetailsService customUserDetailsService;
-
-    @MockBean
-    private JwtAuthTokenProvider jwtAuthTokenProvider;
+    @MockBean private User user;
 
     @Test
     public void createQuizSet_thenReturns201() throws Exception{
         // given
+        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
+        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
+
         Long userId = 41L;
         String title = "This is ttttitle";
         String description = "thiS is descripttion";
@@ -71,6 +69,7 @@ public class QuizSetControllerTest {
 
         // when
         mvc.perform(post("/quizsets")
+                .header("Authorization", "Bearer lalala")
                 .content(objectMapper.writeValueAsString(dto))
                 .contentType(MediaType.APPLICATION_JSON)
         )
@@ -83,13 +82,17 @@ public class QuizSetControllerTest {
     @Test
     public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
+        when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
+        when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
+
         doThrow(new IllegalArgumentException()).when(quizSetService).createNewQuizSet(any(User.class), any(QuizSetCreateValues.class));
 
         // when
         mvc.perform(post("/quizsets")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(objectMapper.writeValueAsString(new QuizSetAddDto("", "", Collections.emptyList(), Collections.emptyList(),
-                    true, true, true)))
+                .header("Authorization", "Bearer lalala")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(new QuizSetAddDto("", "", Collections.emptyList(), Collections.emptyList(),
+                        true, true, true)))
         )
         // then
         .andExpect(status().isBadRequest())
