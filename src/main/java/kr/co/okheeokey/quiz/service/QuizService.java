@@ -55,14 +55,14 @@ public class QuizService {
         return quizRepository.save(newQuiz);
     }
 
-    public Question getQuestion(User user, Long quizId, Long questionId)
+    public Question getQuestion(User user, Long quizId, Long questionIndex)
             throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
         isAllowedToQuiz(user, quiz);
 
-        return quiz.getQuestionList().get(questionId.intValue() - 1);
+        return quiz.getQuestionList().get(questionIndex.intValue() - 1);
     }
 
     @Transactional
@@ -76,11 +76,11 @@ public class QuizService {
                 .orElseThrow(() -> new NoSuchElementException("No song exists with id { " + values.getResponseSongId() + " }"));
 
         // if out of bounds, redirect to submit page
-        if (values.getQuestionId() > quiz.getQuestionNum())
-            throw new IndexOutOfBoundsException("Question index { " + values.getQuestionId() + " } out of bounds. " +
+        if (values.getQuestionIndex() > quiz.getQuestionNum())
+            throw new IndexOutOfBoundsException("Question index { " + values.getQuestionIndex() + " } out of bounds. " +
                     "Current quiz has total " + quiz.getQuestionNum() + " question(s).");
 
-        quiz.saveResponse(values.getQuestionId() - 1L, song);
+        quiz.saveResponse(values.getQuestionIndex(), song);
         return quiz;
     }
 

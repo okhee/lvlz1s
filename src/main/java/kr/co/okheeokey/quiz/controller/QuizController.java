@@ -50,25 +50,25 @@ public class QuizController {
 
     @GetMapping("/{id}/q/{qid}")
     public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user,
-            @PathVariable("id") Long quizId, @PathVariable("qid") Long questionId)
+            @PathVariable("id") Long quizId, @PathVariable("qid") Long questionIndex)
             throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
-        Question question = quizService.getQuestion(user, quizId, questionId);
+        Question question = quizService.getQuestion(user, quizId, questionIndex);
 
         return ResponseEntity.ok().body(
                 EntityModel.of(Collections.singletonMap("filename", question.getQuestionName()),
-                linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionId)).withSelfRel(),
-                linkTo(methodOn(QuizController.class).submitQuestion(user, quizId, questionId, null)).withRel("submit"))
+                linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionIndex)).withSelfRel(),
+                linkTo(methodOn(QuizController.class).submitQuestion(user, quizId, questionIndex, null)).withRel("submit"))
         );
     }
 
     @PostMapping("/{id}/q/{qid}")
     public ResponseEntity<?> submitQuestion(@AuthenticationPrincipal User user, @PathVariable("id") Long quizId,
-            @PathVariable("qid") Long questionId, @RequestBody QuestionSubmitDto submitDto)
+            @PathVariable("qid") Long questionIndex, @RequestBody QuestionSubmitDto submitDto)
             throws NoSuchElementException, IndexOutOfBoundsException, IllegalAccessException {
-        quizService.saveQuestionResponse(new QuestionSubmitValues(user, quizId, questionId, submitDto.getResponseSongId()));
+        quizService.saveQuestionResponse(new QuestionSubmitValues(user, quizId, questionIndex, submitDto.getResponseSongId()));
 
         return ResponseEntity.accepted().body(
-            EntityModel.of(linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionId+1)).withRel(IanaLinkRelations.NEXT))
+            EntityModel.of(linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionIndex+1)).withRel(IanaLinkRelations.NEXT))
         );
     }
 

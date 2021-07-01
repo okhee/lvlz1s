@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class QuestionSubmitDto {
-    private Long responseSongId;
+    private final Long responseSongId;
 
     @JsonCreator
     public QuestionSubmitDto(@JsonProperty("responseSongId") Long responseSongId) {

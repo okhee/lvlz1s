@@ -57,8 +57,8 @@ public class Quiz {
         this.closed = closed;
     }
 
-    public void saveResponse(Long questionIdx, Song response) {
-        responseMap.put(questionIdx, response.getId());
+    public void saveResponse(Long questionIndex, Song response) {
+        responseMap.put(questionIndex - 1L, response.getId());
     }
 
     public void scoreResponse() {
