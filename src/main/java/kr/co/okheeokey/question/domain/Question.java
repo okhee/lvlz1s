@@ -48,7 +48,7 @@ public class Question {
     public void diffEmptyCheck(Long difficulty) throws AudioFileAlreadyExistsException {
         if (this.audioList.containsKey(difficulty)) {
             throw new AudioFileAlreadyExistsException("Audio file already exists in Question id { " + id
-                                                    + " }, difficulty { " + difficulty + " }; Use PUT request");
+                                                    + " }, difficulty { " + difficulty + " }; Use update request");
         }
     }
 

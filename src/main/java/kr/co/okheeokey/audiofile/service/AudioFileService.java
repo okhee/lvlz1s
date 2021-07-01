@@ -5,6 +5,7 @@ import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.domain.AudioFileContentStore;
 import kr.co.okheeokey.audiofile.domain.AudioFileRepository;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
+import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
@@ -32,19 +33,30 @@ public class AudioFileService {
 
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
-            throws NoSuchElementException, AudioFileAlreadyExistsException, IOException, GeneralSecurityException {
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, GeneralSecurityException {
         Question question = questionRepository.findById(values.getQuestionId())
                 .orElseThrow(NoSuchElementException::new);
-        question.diffEmptyCheck(values.getDifficulty());
 
         String mimeType = verifyMultipartFile(values.getFile());
 
-        AudioFile audioFile = AudioFile.builder()
-                .difficulty(values.getDifficulty())
-                .mimeType(mimeType)
-                .build();
-        audioFile.setQuestion(question);
-        audioFileRepository.save(audioFile);
+        AudioFile audioFile;
+        if(!values.getOverwrite()){
+            question.diffEmptyCheck(values.getDifficulty());
+
+            audioFile = AudioFile.builder()
+                    .difficulty(values.getDifficulty())
+                    .mimeType(mimeType)
+                    .build();
+            audioFile.setQuestion(question);
+            audioFileRepository.save(audioFile);
+        }
+        else {
+            audioFile = audioFileRepository.findByQuestionAndDifficulty(question, values.getDifficulty())
+                    .orElseThrow(() -> new NoAudioFileExistsException("Audio file does not exists in Question id { "
+                            + question.getId() + " }, difficulty { " + values.getDifficulty() + " }; Add audio file first"));
+            audioFile.setMimeType(mimeType);
+            audioFileContentStore.unsetContent(audioFile);
+        }
         audioFileContentStore.setContent(audioFile, values.getFile().getInputStream());
 
         return cryptoUtils.encryptUuid(audioFile.getUuid());
@@ -79,4 +91,5 @@ public class AudioFileService {
 
         throw new InvalidFormatException("Uploaded file is not mp3 nor flac");
     }
+
 }
