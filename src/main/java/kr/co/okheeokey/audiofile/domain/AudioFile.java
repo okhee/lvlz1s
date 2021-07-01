@@ -11,15 +11,16 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 public class AudioFile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id @GeneratedValue
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID uuid;
 
     @ManyToOne
     @JsonBackReference
