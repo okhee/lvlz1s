@@ -1,19 +1,20 @@
-package kr.co.okheeokey.question.controller;
+package kr.co.okheeokey.audiofile.controller;
 
 import kr.co.okheeokey.audiofile.domain.AudioFileContentStore;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
-import kr.co.okheeokey.question.service.QuestionService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.transaction.Transactional;
@@ -21,21 +22,16 @@ import java.io.FileInputStream;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class QuestionControllerTest {
+public class AudioFileControllerTest {
     @Autowired
     private MockMvc mvc;
-
-    @Autowired
-    private QuestionController questionController;
-
-    @Autowired
-    private QuestionService questionService;
 
     @Autowired
     private QuestionRepository repository;
@@ -45,24 +41,28 @@ public class QuestionControllerTest {
 
     @Test
     @Transactional
-    public void setContent() throws Exception {
+    public void setAudioFileTest() throws Exception {
         MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
                     new FileInputStream("src/main/resources/static/audio/11001.mp3"));
-        Long id = 1L;
+        Long questionId = 1L;
+        Long difficulty = 0L;
 
-        mvc.perform(MockMvcRequestBuilders.multipart("/questions/" + id)
+        ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/questions/1?diff=0"));
+                .andDo(print());
 
-        Question question = repository.findById(id).orElseThrow(NoSuchElementException::new);
+        String url = resultActions.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
+
+        Question question = repository.findById(questionId).orElseThrow(NoSuchElementException::new);
         assertArrayEquals(file1.getBytes(),
-                IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(0L))));
+                IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(difficulty))));
 
-        mvc.perform(MockMvcRequestBuilders.get("/questions/1?diff=0"))
+        assert url != null;
+        mvc.perform(MockMvcRequestBuilders.get(url))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(IOUtils.toByteArray(file1.getInputStream())));
     }
@@ -72,23 +72,27 @@ public class QuestionControllerTest {
     public void audioFileAlreadyExist() throws Exception {
         MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
                 new FileInputStream("src/main/resources/static/audio/11001.mp3"));
-        Long id = 1L;
+        Long questionId = 1L;
+        Long difficulty = 0L;
 
-        mvc.perform(MockMvcRequestBuilders.multipart("/questions/" + id)
+        ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/questions/1?diff=0"));
+                .andDo(print());
 
-        mvc.perform(MockMvcRequestBuilders.multipart("/questions/" + id)
+        String url = resultActions.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
+
+        mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message",
-                        is("Audio file already exists in Question id { " + id + " }, difficulty { " + 0 + " }; Use PUT request")));
+                        is("Audio file already exists in Question id { " + questionId + " }, difficulty { " + difficulty + " }; Use PUT request")))
+                .andDo(print());
     }
 }
