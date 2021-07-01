@@ -14,8 +14,8 @@ import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +38,7 @@ public class QuizService {
         return quizRepository.findByOwnerAndQuizSetAndClosed(values.getUser(), quizSet, false);
     }
 
+    @Transactional
     public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IndexOutOfBoundsException {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
@@ -110,6 +111,7 @@ public class QuizService {
 
         quizRepository.deleteById(quiz.getId());
     }
+
     private List<Question> chooseQuestion(List<Question> questionPool, Long questionNum) throws IndexOutOfBoundsException {
         Collections.shuffle(questionPool);
         return questionPool.subList(0, questionNum.intValue());
