@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -30,10 +31,11 @@ public class AudioFileContentStoreTest {
         AudioFile audioFile = new AudioFile();
 
         repository.save(audioFile);
-        Long fid = audioFile.getId();
+        UUID uuid = audioFile.getUuid();
 
         // when
-        AudioFile returnAudioFile = repository.findById(fid).orElseThrow(NoSuchElementException::new);
+        AudioFile returnAudioFile = repository.findByUuid(uuid)
+                .orElseThrow(NoSuchElementException::new);
         contentStore.setContent(returnAudioFile,
                 new FileInputStream("src/main/resources/static/audio/11001.mp3"));
 
