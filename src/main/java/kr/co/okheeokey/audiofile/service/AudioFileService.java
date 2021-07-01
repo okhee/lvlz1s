@@ -1,26 +1,22 @@
 package kr.co.okheeokey.audiofile.service;
 
+import com.sun.media.sound.InvalidFormatException;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.domain.AudioFileContentStore;
 import kr.co.okheeokey.audiofile.domain.AudioFileRepository;
+import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
-import kr.co.okheeokey.question.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.question.vo.AudioFileValues;
 import kr.co.okheeokey.util.CryptoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -36,7 +32,7 @@ public class AudioFileService {
 
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
-            throws NoSuchElementException, AudioFileAlreadyExistsException, IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+            throws NoSuchElementException, AudioFileAlreadyExistsException, IOException, GeneralSecurityException {
         Question question = questionRepository.findById(values.getQuestionId())
                 .orElseThrow(NoSuchElementException::new);
         question.diffEmptyCheck(values.getDifficulty());
@@ -54,7 +50,8 @@ public class AudioFileService {
         return cryptoUtils.encryptUuid(audioFile.getUuid());
     }
 
-    public AudioFileValues getAudioFile(String encryptUuid) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public AudioFileValues getAudioFile(String encryptUuid)
+            throws IllegalArgumentException, GeneralSecurityException {
         UUID uuid = cryptoUtils.decryptUuid(encryptUuid);
         AudioFile audioFile = audioFileRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid uuid value"));
@@ -72,7 +69,7 @@ public class AudioFileService {
         byte[] buffer = new byte[4];
 
         if (file.getInputStream().read(buffer) < 0)
-            throw new IOException("Uploaded file is not mp3 nor flac");
+            throw new InvalidFormatException("Uploaded file is not mp3 nor flac");
 
         if (Arrays.equals(mp3MagicNumber, Arrays.copyOfRange(buffer, 0, mp3MagicNumber.length)))
             return "audio/mpeg";
@@ -80,6 +77,6 @@ public class AudioFileService {
         if (Arrays.equals(flacMagicNumber, Arrays.copyOfRange(buffer, 0, flacMagicNumber.length)))
             return "audio/flac";
 
-        throw new IOException("Uploaded file is not mp3 nor flac");
+        throw new InvalidFormatException("Uploaded file is not mp3 nor flac");
     }
 }
