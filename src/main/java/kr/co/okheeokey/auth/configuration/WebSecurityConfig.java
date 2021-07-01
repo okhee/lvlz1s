@@ -2,6 +2,7 @@ package kr.co.okheeokey.auth.configuration;
 
 import kr.co.okheeokey.auth.domain.JwtAuthenticationFilter;
 import kr.co.okheeokey.auth.exception.JwtExceptionHandlerFilter;
+import kr.co.okheeokey.user.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,6 +58,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/private").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/questions/**").hasRole(UserRole.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/questions/**").authenticated()
 
                 .antMatchers("/quizs/**").authenticated()
 
