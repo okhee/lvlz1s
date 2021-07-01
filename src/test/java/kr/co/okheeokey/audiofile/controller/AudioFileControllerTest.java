@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -65,6 +66,43 @@ public class AudioFileControllerTest {
         mvc.perform(MockMvcRequestBuilders.get(url))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(IOUtils.toByteArray(file1.getInputStream())));
+    }
+
+    @Test
+    @Transactional
+    public void modifyAudioFile() throws Exception {
+        // given
+        MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
+                new FileInputStream("src/main/resources/static/audio/11001.mp3"));
+        MockMultipartFile file2 = new MockMultipartFile("file", "11002.mp3", "audio/mpeg",
+                new FileInputStream("src/main/resources/static/audio/11002.mp3"));
+        Long questionId = 1L;
+        Long difficulty = 0L;
+
+        mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
+                .file(file1)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        Question question = repository.findById(questionId).orElseThrow(NoSuchElementException::new);
+        assertArrayEquals(file1.getBytes(),
+                IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(difficulty))));
+
+        // when
+        mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty + "&update=true")
+                .file(file2)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8"))
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        // then
+        assertArrayEquals(file2.getBytes(),
+                IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(difficulty))));
     }
 
     @Test

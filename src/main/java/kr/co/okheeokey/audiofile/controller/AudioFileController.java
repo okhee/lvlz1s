@@ -22,13 +22,12 @@ public class AudioFileController {
 
     @PostMapping
     public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestParam("q") Long questionId,
-                                          @RequestParam("diff") Long difficulty) throws Exception {
-        String encryptUuid = audioFileService.setAudioFile(new AudioFileSetValues(file, questionId, difficulty));
+          @RequestParam("diff") Long difficulty, @RequestParam(value = "update", defaultValue = "false") Boolean overwrite)
+            throws Exception {
+        String encryptUuid = audioFileService.setAudioFile(new AudioFileSetValues(file, questionId, difficulty, overwrite));
 
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
     }
-
-//    @PutMapping
 
     @GetMapping("/{enc_uuid}")
     public ResponseEntity<?> getAudioFile(@PathVariable("enc_uuid") String encryptUuid) throws Exception {

@@ -10,4 +10,5 @@ public class AudioFileSetValues {
     private final MultipartFile file;
     private final Long questionId;
     private final Long difficulty;
+    private final Boolean overwrite;
 }
