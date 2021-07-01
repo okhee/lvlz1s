@@ -1,4 +1,4 @@
-package kr.co.okheeokey.question.exception;
+package kr.co.okheeokey.audiofile.exception;
 
 public class NoAudioFileExistsException extends RuntimeException {
     public NoAudioFileExistsException(String message) {
