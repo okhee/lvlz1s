@@ -48,6 +48,7 @@ dependencies {
     // Testing Environment
     implementation 'junit:junit:4.12'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'io.rest-assured:rest-assured'
 }
