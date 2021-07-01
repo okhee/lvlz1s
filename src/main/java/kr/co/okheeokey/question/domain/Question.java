@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.question.exception.AudioFileAlreadyExistsException;
-import kr.co.okheeokey.question.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
+import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,7 +67,7 @@ public class Question {
         song.getQuestion().add(this);
     }
 
-    public AudioFile getAudio(Long difficulty) throws NoAudioFileExistsException{
+    public AudioFile getAudio(Long difficulty) throws NoAudioFileExistsException {
         if (!this.audioList.containsKey(difficulty)) {
             throw new NoAudioFileExistsException("No audio file exists in Question id { " + id
                                                 + " }, difficulty { " + difficulty + " }");

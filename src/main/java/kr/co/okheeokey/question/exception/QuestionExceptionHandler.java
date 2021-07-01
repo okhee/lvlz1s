@@ -12,18 +12,6 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice("kr.co.okheeokey.question")
 public class QuestionExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(value = NoAudioFileExistsException.class)
-    public ResponseEntity<?> noAudioFileExist(NoAudioFileExistsException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap("message", e.getMessage()));
-    }
-
-    @ExceptionHandler(value = AudioFileAlreadyExistsException.class)
-    public ResponseEntity<?> audioFileAlreadyExist(AudioFileAlreadyExistsException e){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Collections.singletonMap("message", e.getMessage()));
-    }
-
     @ExceptionHandler(value = NoSuchElementException.class)
     public ResponseEntity<?> noQuestionExist(NoSuchElementException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
