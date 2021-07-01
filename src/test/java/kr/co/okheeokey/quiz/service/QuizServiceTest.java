@@ -85,7 +85,6 @@ public class QuizServiceTest {
         // given
         QuizCreateValues values = new QuizCreateValues(user, quizSetId, questionNum);
 
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getQuestionPool()).thenReturn(questionPool);
         when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
