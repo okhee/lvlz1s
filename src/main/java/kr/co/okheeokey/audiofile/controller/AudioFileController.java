@@ -1,6 +1,5 @@
 package kr.co.okheeokey.audiofile.controller;
 
-import kr.co.okheeokey.audiofile.dto.AudioFileSetDto;
 import kr.co.okheeokey.audiofile.service.AudioFileService;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
 import kr.co.okheeokey.question.vo.AudioFileValues;
@@ -22,8 +21,9 @@ public class AudioFileController {
     private final AudioFileService audioFileService;
 
     @PostMapping
-    public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestBody AudioFileSetDto dto) throws Exception {
-        String encryptUuid = audioFileService.setAudioFile(new AudioFileSetValues(file, dto.getQuestionId(), dto.getDifficulty()));
+    public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestParam("q") Long questionId,
+                                          @RequestParam("diff") Long difficulty) throws Exception {
+        String encryptUuid = audioFileService.setAudioFile(new AudioFileSetValues(file, questionId, difficulty));
 
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
     }
@@ -39,7 +39,6 @@ public class AudioFileController {
         headers.setContentLength(values.getContentLength());
 
         return new ResponseEntity<>(new InputStreamResource(values.getAudioStream()), headers, HttpStatus.OK);
-
     }
 
 }
