@@ -32,7 +32,7 @@ public class CryptoUtils {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 
-        return Base64.getEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
+        return Base64.getUrlEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
     }
 
     public UUID decryptUuid(String encryptUuid)
@@ -40,7 +40,7 @@ public class CryptoUtils {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
-        return asUuid(cipher.doFinal(Base64.getDecoder().decode(encryptUuid)));
+        return asUuid(cipher.doFinal(Base64.getUrlDecoder().decode(encryptUuid)));
     }
 
     private static UUID asUuid(byte[] bytes) {
