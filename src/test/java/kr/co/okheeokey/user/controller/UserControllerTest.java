@@ -12,36 +12,77 @@ import static org.junit.Assert.assertTrue;
 
 
 public class UserControllerTest {
+    @Test
+    public void usernamePatternTest() throws Exception {
+        String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{5,20}$";
+        Predicate<String> matchPredicate = Pattern.compile(NAME_REGEXP).asPredicate();
+
+        List<String> validUsernameList = Arrays.asList(
+                "iloveryu._",
+                "9.3.0521",
+                "myungnee_",
+                "babysoullvlz",
+                "_flower_kei",
+                "queen.chu_s",
+                "happpy_yein",
+                "jeezepizza",
+                "abcdefgh1",
+                "ABCDEFGH1"
+        );
+        List<String> invalidUsernameList = Arrays.asList(
+                "c561",
+                "fa3w51fa65w13f6a5w31f6a5wf1a65af3w",
+                ""
+        );
+
+        System.out.println("Testing valid username list");
+        validUsernameList.forEach(p -> System.out.println(matchPredicate.test(p) + ": " + p));
+
+        System.out.println("Testing valid username list");
+        invalidUsernameList.forEach(p -> System.out.println(matchPredicate.test(p) + ": " + p));
+
+        assertTrue(validUsernameList.stream()
+                .map(matchPredicate::test)
+                .reduce(Boolean::logicalAnd).get());
+
+        assertFalse(invalidUsernameList.stream()
+                .map(matchPredicate::test)
+                .reduce(Boolean::logicalOr).get());
+
+    }
 
     @Test
     public void passwordPatternTest() throws Exception {
-        String PASSWORD_SPECIAL_CHARS = "@#$%^`<>&+=\"!ºª·#~%&'¿¡€,:;*/+-.=_\\[\\]\\(\\)\\|\\_\\?\\\\";
-        int PASSWORD_MIN_SIZE = 8;
-        int PASSWORD_MAX_SIZE = 20;
-        String PASSWORD_REGEXP = "^(?=.*[0-9a-zA-Z" + PASSWORD_SPECIAL_CHARS + "])(?=\\S+$).{"+PASSWORD_MIN_SIZE+"," + PASSWORD_MAX_SIZE + "}$";
-
+        String PASSWORD_REGEXP = "^(?=.*\\d)(?=.*[a-zA-Z]).{8,20}$";
         Predicate<String> matchPredicate = Pattern.compile(PASSWORD_REGEXP).asPredicate();
 
         List<String> validPasswordList = Arrays.asList(
+                "password1",
                 "sadf4w3a",
                 "FJ38F)J*3ji",
                 "Fjf038#FJ1390",
-                "12345678",
-                "abcdefgh",
-                "ABCDEFGH",
-                "@$^#&=+!"
+                "12345678 a",
+                "abcdefgh1",
+                "ABCDEFGH1",
+                "@$^#&=+1!a"
         );
-        List<String> inValidPasswordList = Arrays.asList(
-                "1234567", // size: 7
-                "safcw3csd ", // including whitespace
+        List<String> invalidPasswordList = Arrays.asList(
+                "12345678",
+                "a1b2c3d",
                 ""
         );
+
+        System.out.println("Testing valid password list");
+        validPasswordList.forEach(p -> System.out.println(matchPredicate.test(p) + ": " + p));
+
+        System.out.println("Testing invalid password list");
+        invalidPasswordList.forEach(p -> System.out.println(matchPredicate.test(p) + ": " + p));
 
         assertTrue(validPasswordList.stream()
                 .map(matchPredicate::test)
                 .reduce(Boolean::logicalAnd).get());
 
-        assertFalse(inValidPasswordList.stream()
+        assertFalse(invalidPasswordList.stream()
                 .map(matchPredicate::test)
                 .reduce(Boolean::logicalOr).get());
     }

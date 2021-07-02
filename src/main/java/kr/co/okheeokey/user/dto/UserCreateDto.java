@@ -8,15 +8,8 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 public class UserCreateDto {
-    private static final int NAME_MIN_SIZE = 5;
-    private static final int NAME_MAX_SIZE = 20;
-    private static final String NAME_REGEXP = "^(?=.*[a-z0-9-_]).{" + NAME_MIN_SIZE + "," + NAME_MAX_SIZE + "}$";
-
-    private static final String PASSWORD_SPECIAL_CHARS = "@#$%^`<>&+=\"!ºª·#~%&'¿¡€,:;*/+-.=_\\[]\\(\\)\\|_\\?\\\\";
-    private static final int PASSWORD_MIN_SIZE = 8;
-    private static final int PASSWORD_MAX_SIZE = 20;
-    private static final String PASSWORD_REGEXP = "^(?=.*[0-9a-zA-Z" + PASSWORD_SPECIAL_CHARS + "])(?=\\S+$).{"+
-            PASSWORD_MIN_SIZE+"," + PASSWORD_MAX_SIZE + "}$";
+    private static final String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{5,20}$";
+    private static final String PASSWORD_REGEXP = "^(?=.*\\d)(?=.*[a-zA-Z]).{8,20}$";
 
     @Pattern(regexp = NAME_REGEXP)
     private final String name;
