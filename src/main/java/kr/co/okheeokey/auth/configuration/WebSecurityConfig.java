@@ -57,7 +57,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .antMatchers("/private").authenticated()
+
+                .antMatchers("/private").hasAuthority(UserRole.ADMIN.name())
+
+                .antMatchers(HttpMethod.POST, "/audiofiles/**").hasAuthority(UserRole.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/audiofiles/**").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/questions/**").hasAuthority(UserRole.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/questions/**").authenticated()
 
                 .antMatchers(HttpMethod.POST, "/questions/**").hasRole(UserRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/questions/**").authenticated()

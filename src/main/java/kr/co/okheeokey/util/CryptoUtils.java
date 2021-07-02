@@ -1,7 +1,5 @@
 package kr.co.okheeokey.util;
 
-import org.springframework.stereotype.Component;
-
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import java.nio.ByteBuffer;
@@ -12,33 +10,38 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
 
-@Component
 public class CryptoUtils {
-    private final SecretKey key;
-    private final IvParameterSpec iv;
+    private static SecretKey KEY;
+    private static IvParameterSpec IV;
 
-    public CryptoUtils() throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+    static {
+        KeyGenerator keyGenerator = null;
+        try {
+            keyGenerator = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        assert keyGenerator != null;
         keyGenerator.init(128, new SecureRandom());
-        this.key = keyGenerator.generateKey();
+        CryptoUtils.KEY = keyGenerator.generateKey();
 
         byte[] iv = new byte[16];
         new SecureRandom().nextBytes(iv);
-        this.iv = new IvParameterSpec(iv);
+        CryptoUtils.IV = new IvParameterSpec(iv);
     }
 
-    public String encryptUuid(UUID uuid)
+    public static String encryptUuid(UUID uuid)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, iv);
+        cipher.init(Cipher.ENCRYPT_MODE, KEY, IV);
 
         return Base64.getUrlEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
     }
 
-    public UUID decryptUuid(String encryptUuid)
+    public static UUID decryptUuid(String encryptUuid)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, key, iv);
+        cipher.init(Cipher.DECRYPT_MODE, KEY, IV);
 
         return asUuid(cipher.doFinal(Base64.getUrlDecoder().decode(encryptUuid)));
     }

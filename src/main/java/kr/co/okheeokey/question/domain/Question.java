@@ -47,15 +47,13 @@ public class Question {
 
     public void diffEmptyCheck(Long difficulty) throws AudioFileAlreadyExistsException {
         if (this.audioList.containsKey(difficulty)) {
-            throw new AudioFileAlreadyExistsException("Audio file already exists in Question id { " + id
-                                                    + " }, difficulty { " + difficulty + " }; Use update request");
+            throw new AudioFileAlreadyExistsException(this.getId(), difficulty);
         }
     }
 
     public void diffExistCheck(Long difficulty) throws NoAudioFileExistsException {
         if (!this.audioList.containsKey(difficulty)) {
-            throw new NoAudioFileExistsException("Audio file does not exists in Question id { " + id
-                                        + " }, difficulty { " + difficulty + " }; Add audio file first");
+            throw new NoAudioFileExistsException(this.getId(), difficulty);
         }
     }
 
@@ -69,8 +67,7 @@ public class Question {
 
     public AudioFile getAudio(Long difficulty) throws NoAudioFileExistsException {
         if (!this.audioList.containsKey(difficulty)) {
-            throw new NoAudioFileExistsException("No audio file exists in Question id { " + id
-                                                + " }, difficulty { " + difficulty + " }");
+            throw new NoAudioFileExistsException(this.getId(), difficulty);
         }
         return this.audioList.get(difficulty);
     }

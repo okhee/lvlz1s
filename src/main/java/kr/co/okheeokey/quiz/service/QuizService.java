@@ -1,12 +1,10 @@
 package kr.co.okheeokey.quiz.service;
 
+import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
-import kr.co.okheeokey.quiz.vo.QuizCreateValues;
-import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
-import kr.co.okheeokey.quiz.vo.QuizStatusValues;
+import kr.co.okheeokey.quiz.vo.*;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
@@ -14,8 +12,8 @@ import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +36,7 @@ public class QuizService {
         return quizRepository.findByOwnerAndQuizSetAndClosed(values.getUser(), quizSet, false);
     }
 
+    @Transactional
     public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IndexOutOfBoundsException {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
@@ -54,14 +53,19 @@ public class QuizService {
         return quizRepository.save(newQuiz);
     }
 
-    public Question getQuestion(User user, Long quizId, Long questionId)
-            throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
+    public QuestionInfoValues getQuestion(User user, Long quizId, Long questionIndex)
+            throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException, NoAudioFileExistsException {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
         isAllowedToQuiz(user, quiz);
 
-        return quiz.getQuestionList().get(questionId.intValue() - 1);
+        Long hintCost = quiz.isHintAvailable(questionIndex);
+        return QuestionInfoValues.builder()
+                .encryptUuid(quiz.getAudioFileUuid(questionIndex))
+                .hintAvailable(hintCost > 0)
+                .nextHintCost(hintCost)
+                .build();
     }
 
     @Transactional
@@ -75,11 +79,11 @@ public class QuizService {
                 .orElseThrow(() -> new NoSuchElementException("No song exists with id { " + values.getResponseSongId() + " }"));
 
         // if out of bounds, redirect to submit page
-        if (values.getQuestionId() > quiz.getQuestionNum())
-            throw new IndexOutOfBoundsException("Question index { " + values.getQuestionId() + " } out of bounds. " +
+        if (values.getQuestionIndex() > quiz.getQuestionNum())
+            throw new IndexOutOfBoundsException("Question index { " + values.getQuestionIndex() + " } out of bounds. " +
                     "Current quiz has total " + quiz.getQuestionNum() + " question(s).");
 
-        quiz.saveResponse(values.getQuestionId() - 1L, song);
+        quiz.saveResponse(values.getQuestionIndex(), song);
         return quiz;
     }
 
@@ -110,12 +114,13 @@ public class QuizService {
 
         quizRepository.deleteById(quiz.getId());
     }
+
     private List<Question> chooseQuestion(List<Question> questionPool, Long questionNum) throws IndexOutOfBoundsException {
         Collections.shuffle(questionPool);
         return questionPool.subList(0, questionNum.intValue());
     }
 
-    private void isAllowedToQuiz(User user, Quiz quiz) throws IllegalAccessException{
+    private void isAllowedToQuiz(User user, Quiz quiz) throws IllegalAccessException {
         if (user.equals(quiz.getOwner()))
             return;
         throw new IllegalAccessException("User { " + user.getName() + " } not allowed to access quiz { " + quiz.getId() + " }");

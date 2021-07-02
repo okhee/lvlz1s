@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -28,8 +28,6 @@ public class AudioFileService {
     private final QuestionRepository questionRepository;
     private final AudioFileRepository audioFileRepository;
     private final AudioFileContentStore audioFileContentStore;
-
-    private final CryptoUtils cryptoUtils;
 
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
@@ -59,12 +57,12 @@ public class AudioFileService {
         }
         audioFileContentStore.setContent(audioFile, values.getFile().getInputStream());
 
-        return cryptoUtils.encryptUuid(audioFile.getUuid());
+        return CryptoUtils.encryptUuid(audioFile.getUuid());
     }
 
     public AudioFileValues getAudioFile(String encryptUuid)
             throws IllegalArgumentException, GeneralSecurityException {
-        UUID uuid = cryptoUtils.decryptUuid(encryptUuid);
+        UUID uuid = CryptoUtils.decryptUuid(encryptUuid);
         AudioFile audioFile = audioFileRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid uuid value"));
 

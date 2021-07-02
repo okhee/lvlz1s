@@ -3,8 +3,10 @@ package kr.co.okheeokey.quiz.vo;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.user.domain.User;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class QuizCreateValues {
     private final User user;
     private final Long quizSetId;
@@ -14,11 +16,5 @@ public class QuizCreateValues {
         this.user = user;
         this.quizSetId = dto.getQuizSetId();
         this.questionNum = dto.getQuestionNum();
-    }
-
-    public QuizCreateValues(User user, Long quizSetId, Long questionNum) {
-        this.user = user;
-        this.quizSetId = quizSetId;
-        this.questionNum = questionNum;
     }
 }
