@@ -66,9 +66,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/questions/**").hasAuthority(UserRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/questions/**").authenticated()
 
-                .antMatchers(HttpMethod.POST, "/questions/**").hasRole(UserRole.ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/questions/**").authenticated()
-
                 .antMatchers("/quizs/**").authenticated()
 
                 .antMatchers(HttpMethod.POST, "/quizsets").authenticated()
