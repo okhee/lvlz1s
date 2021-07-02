@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class UserControllerTest {
     @Test
     public void usernamePatternTest() throws Exception {
-        String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{5,20}$";
+        String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{4,20}$";
         Predicate<String> matchPredicate = Pattern.compile(NAME_REGEXP).asPredicate();
 
         List<String> validUsernameList = Arrays.asList(
@@ -27,7 +27,8 @@ public class UserControllerTest {
                 "happpy_yein",
                 "jeezepizza",
                 "abcdefgh1",
-                "ABCDEFGH1"
+                "ABCDEFGH1",
+                "candy"
         );
         List<String> invalidUsernameList = Arrays.asList(
                 "c561",

@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 
 @Getter
 public class UserCreateDto {
-    private static final String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{5,20}$";
+    private static final String NAME_REGEXP = "^(?!.*\\.\\.)(?!.*\\.$)[^\\W][\\w.]{4,20}$";
     private static final String PASSWORD_REGEXP = "^(?=.*\\d)(?=.*[a-zA-Z]).{8,20}$";
 
     @Pattern(regexp = NAME_REGEXP)
