@@ -29,8 +29,6 @@ public class AudioFileService {
     private final AudioFileRepository audioFileRepository;
     private final AudioFileContentStore audioFileContentStore;
 
-    private final CryptoUtils cryptoUtils;
-
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
             throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, GeneralSecurityException {
@@ -59,12 +57,12 @@ public class AudioFileService {
         }
         audioFileContentStore.setContent(audioFile, values.getFile().getInputStream());
 
-        return cryptoUtils.encryptUuid(audioFile.getUuid());
+        return CryptoUtils.encryptUuid(audioFile.getUuid());
     }
 
     public AudioFileValues getAudioFile(String encryptUuid)
             throws IllegalArgumentException, GeneralSecurityException {
-        UUID uuid = cryptoUtils.decryptUuid(encryptUuid);
+        UUID uuid = CryptoUtils.decryptUuid(encryptUuid);
         AudioFile audioFile = audioFileRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid uuid value"));
 
