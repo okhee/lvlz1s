@@ -1,6 +1,5 @@
 package kr.co.okheeokey.quiz.controller;
 
-import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
@@ -15,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -52,10 +50,11 @@ public class QuizController {
     public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user,
             @PathVariable("id") Long quizId, @PathVariable("qid") Long questionIndex)
             throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
-        Question question = quizService.getQuestion(user, quizId, questionIndex);
+        QuestionInfoValues values = quizService.getQuestion(user, quizId, questionIndex);
+//        Collections.singletonMap("filename", "/audiofiles/" + values.getEncryptUuid())
 
         return ResponseEntity.ok().body(
-                EntityModel.of(Collections.singletonMap("filename", question.getQuestionName()),
+                EntityModel.of(values,
                 linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionIndex)).withSelfRel(),
                 linkTo(methodOn(QuizController.class).submitQuestion(user, quizId, questionIndex, null)).withRel("submit"))
         );

@@ -2,19 +2,20 @@ package kr.co.okheeokey.quiz.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import kr.co.okheeokey.audiofile.domain.AudioFile;
+import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.user.domain.User;
+import kr.co.okheeokey.util.CryptoUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.GeneralSecurityException;
+import java.util.*;
 
 @NoArgsConstructor
 @Entity
@@ -44,6 +45,11 @@ public class Quiz {
     @ElementCollection
     private final Map<Long, Boolean> scoreList = new HashMap<>();
 
+    @ElementCollection
+    private final Map<Long, Long> hintMap = new HashMap<>();
+
+    private Long hintTokenUsed = 0L;
+
     private Long questionNum;
 
     private Boolean closed;
@@ -55,6 +61,44 @@ public class Quiz {
         this.questionList = questionList;
         this.questionNum = questionNum;
         this.closed = closed;
+
+        for (int i = 0; i < this.questionNum; i++)
+            this.hintMap.put((long) i, 0L);
+    }
+
+    public String getAudioFileUuid(Long questionIndex) throws IndexOutOfBoundsException, NoAudioFileExistsException {
+        questionIndex -= 1L;
+
+        Question question = this.getQuestionList().get(questionIndex.intValue());
+
+        Long finalQuestionIndex = questionIndex;
+        AudioFile audioFile = Optional.ofNullable(question.getAudioList().get(hintMap.get(questionIndex)))
+                .orElseThrow(() -> new NoAudioFileExistsException(question.getId(), hintMap.get(finalQuestionIndex)));
+
+        String uuid = null;
+        try {
+            uuid = CryptoUtils.encryptUuid(audioFile.getUuid());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return uuid;
+    }
+
+    // check if additional hint is available and return its cost
+    // if not, return -1
+    public Long isHintAvailable(Long questionIndex) throws IndexOutOfBoundsException {
+        questionIndex -= 1L;
+
+        Question question = this.getQuestionList().get(questionIndex.intValue());
+        boolean available = question.getAudioList().containsKey(hintMap.get(questionIndex) + 1);
+        if(available)
+            return hintMap.get(questionIndex) + 1;
+        else
+            return -1L;
+    }
+
+    public void getHint(Long questionIndex) {
+        hintTokenUsed += 1L;
     }
 
     public void saveResponse(Long questionIndex, Song response) {

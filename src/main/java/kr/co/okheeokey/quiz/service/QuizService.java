@@ -1,12 +1,10 @@
 package kr.co.okheeokey.quiz.service;
 
+import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
-import kr.co.okheeokey.quiz.vo.QuizCreateValues;
-import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
-import kr.co.okheeokey.quiz.vo.QuizStatusValues;
+import kr.co.okheeokey.quiz.vo.*;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
@@ -55,14 +53,19 @@ public class QuizService {
         return quizRepository.save(newQuiz);
     }
 
-    public Question getQuestion(User user, Long quizId, Long questionIndex)
-            throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
+    public QuestionInfoValues getQuestion(User user, Long quizId, Long questionIndex)
+            throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException, NoAudioFileExistsException {
         Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
                 .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
 
         isAllowedToQuiz(user, quiz);
 
-        return quiz.getQuestionList().get(questionIndex.intValue() - 1);
+        Long hintCost = quiz.isHintAvailable(questionIndex);
+        return QuestionInfoValues.builder()
+                .encryptUuid(quiz.getAudioFileUuid(questionIndex))
+                .hintAvailable(hintCost > 0)
+                .nextHintCost(hintCost)
+                .build();
     }
 
     @Transactional
@@ -117,7 +120,7 @@ public class QuizService {
         return questionPool.subList(0, questionNum.intValue());
     }
 
-    private void isAllowedToQuiz(User user, Quiz quiz) throws IllegalAccessException{
+    private void isAllowedToQuiz(User user, Quiz quiz) throws IllegalAccessException {
         if (user.equals(quiz.getOwner()))
             return;
         throw new IllegalAccessException("User { " + user.getName() + " } not allowed to access quiz { " + quiz.getId() + " }");
