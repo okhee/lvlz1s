@@ -5,7 +5,6 @@ import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
-import kr.co.okheeokey.quiz.vo.QuizExistQueryValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
@@ -40,7 +39,7 @@ public class QuizServiceTest {
     @Mock private User user;
     @Mock private QuizSet quizSet;
     @Mock private List<Question> questionPool;
-    @Mock private List<Question> randomSongList;
+    @Mock private List<Question> randomQuestionList;
     @Mock private Song song;
 
     private final Long quizSetId = 73L;
@@ -50,45 +49,18 @@ public class QuizServiceTest {
     private final Long responseSongId = 15L;
 
     @Test
-    public void previousQuiz() throws Exception {
+    public void createNewQuiz() throws Exception {
         // given
-        QuizExistQueryValues values = new QuizExistQueryValues(user, quizSetId);
-
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getReadyMade()).thenReturn(false);
         when(quizSet.getOwner()).thenReturn(user);
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
-                .thenReturn(Optional.of(quiz));
-
-        // when
-        Optional<Quiz> previousQuiz = quizService.previousQuiz(values);
-
-        // then
-        assertTrue(previousQuiz.isPresent());
-        assertEquals(quiz, previousQuiz.get());
-    }
-
-    @Test(expected = IllegalAccessException.class)
-    public void previousQuiz_withInvalidAuthority() throws Exception {
-        // given
-        QuizExistQueryValues values = new QuizExistQueryValues(user, quizSetId);
-
-        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
-        when(quizSet.getOwner()).thenReturn(null);
-
-        // when
-        quizService.previousQuiz(values);
-    }
-
-    @Test
-    public void createNewQuiz() {
-        // given
-        QuizCreateValues values = new QuizCreateValues(user, quizSetId, questionNum);
-
-        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+                .thenReturn(Optional.empty());
         when(quizSet.getQuestionPool()).thenReturn(questionPool);
-        when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomSongList);
-        when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomSongList, questionNum, false));
+        when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomQuestionList);
+        when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomQuestionList, questionNum, false));
+
+        QuizCreateValues values = new QuizCreateValues(user, quizSetId, questionNum);
 
         // when
         Quiz newQuiz = quizService.createNewQuiz(values);
@@ -98,11 +70,56 @@ public class QuizServiceTest {
         assertEquals(user, newQuiz.getOwner());
         assertEquals(questionNum, newQuiz.getQuestionNum());
         assertEquals(quizSet, newQuiz.getQuizSet());
-        assertArrayEquals(randomSongList.toArray(), newQuiz.getQuestionList().toArray());
+        assertArrayEquals(randomQuestionList.toArray(), newQuiz.getQuestionList().toArray());
+    }
+
+    @Test
+    public void createNewQuiz_ifPreviousQuizExists() throws Exception {
+        // given
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getReadyMade()).thenReturn(false);
+        when(quizSet.getOwner()).thenReturn(user);
+        when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
+
+        // when
+        Quiz resultQuiz = quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
+
+        // then
+        assertEquals(quiz, resultQuiz);
+    }
+
+    @Test
+    public void createNewQuiz_readyMadeQuizSet() throws Exception {
+        // given
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getReadyMade()).thenReturn(true);
+        when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
+                .thenReturn(Optional.empty());
+
+        // when
+        Quiz resultQuiz = quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
+
+        // then
+        assertEquals(user, resultQuiz.getOwner());
+        assertEquals(quizSet, resultQuiz.getQuizSet());
+        assertEquals(questionNum, resultQuiz.getQuestionNum());
+        assertFalse(resultQuiz.getClosed());
+    }
+
+    @Test(expected = IllegalAccessException.class)
+    public void createNewQuiz_withInvalidAuthority() throws Exception {
+        // given
+        when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getReadyMade()).thenReturn(false);
+        when(quizSet.getOwner()).thenReturn(null);
+
+        // when
+        quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void createNewQuiz_withInvalidUser() {
+    public void createNewQuiz_withInvalidUser() throws Exception {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         // when
@@ -110,7 +127,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void createNewQuiz_withInvalidQuizSet() {
+    public void createNewQuiz_withInvalidQuizSet() throws Exception {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -120,7 +137,7 @@ public class QuizServiceTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void createNewQuiz_withInvalidQuestionNum() {
+    public void createNewQuiz_withInvalidQuestionNum() throws Exception {
         // given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
@@ -135,7 +152,7 @@ public class QuizServiceTest {
     @Test
     public void saveQuestionResponse() throws IllegalAccessException {
         // given
-        Quiz quiz = new Quiz(quizSet, user, randomSongList, questionNum, false);
+        Quiz quiz = new Quiz(quizSet, user, randomQuestionList, questionNum, false);
 
         when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
