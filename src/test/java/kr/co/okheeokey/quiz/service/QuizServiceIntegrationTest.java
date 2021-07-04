@@ -42,7 +42,7 @@ public class QuizServiceIntegrationTest {
     // Testing whether two new quiz instance can be created with identical information.
     // In QuizController, however, createQuiz method ensures that
     // only one ongoing quiz can exist at the same time with same (User, QuizSet) information.
-    public void createDuplicatedQuiz() {
+    public void createDuplicatedQuiz() throws Exception {
         // given
         Question question = questionRepository.save(new Question("soifnaeo"));
         List<Question> questionPool = Collections.singletonList(question);
