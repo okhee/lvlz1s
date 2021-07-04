@@ -12,20 +12,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.FileInputStream;
 import java.util.NoSuchElementException;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -42,12 +43,15 @@ public class AudioFileControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(authorities = {"ADMIN"})
     public void setAudioFileTest() throws Exception {
+        // given
         MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
                     new FileInputStream("src/main/resources/static/audio/11001.mp3"));
         Long questionId = 1L;
         Long difficulty = 0L;
 
+        // when
         ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -58,6 +62,7 @@ public class AudioFileControllerTest {
 
         String url = resultActions.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
 
+        // then
         Question question = repository.findById(questionId).orElseThrow(NoSuchElementException::new);
         assertArrayEquals(file1.getBytes(),
                 IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(difficulty))));
@@ -70,6 +75,7 @@ public class AudioFileControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(authorities = {"ADMIN"})
     public void modifyAudioFile() throws Exception {
         // given
         MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
@@ -107,11 +113,13 @@ public class AudioFileControllerTest {
 
     @Test
     @Transactional
+    @WithMockUser(authorities = {"ADMIN"})
     public void audioFileAlreadyExist() throws Exception {
+        // given
         MockMultipartFile file1 = new MockMultipartFile("file", "11001.mp3", "audio/mpeg",
                 new FileInputStream("src/main/resources/static/audio/11001.mp3"));
-        Long questionId = 1L;
-        Long difficulty = 0L;
+        long questionId = 1L;
+        long difficulty = 0L;
 
         ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
@@ -123,14 +131,19 @@ public class AudioFileControllerTest {
 
         String url = resultActions.andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
 
+        // when
         mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty)
                 .file(file1)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"))
+
+        // then
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message",
-                        is("Audio file already exists in Question id { " + questionId + " }, difficulty { " + difficulty + " }; Use PUT request")))
+                        is("Audio file already exists in Question id { " + questionId + " }, difficulty { " + difficulty + " }; Use update request")))
                 .andDo(print());
+
+
     }
 }
