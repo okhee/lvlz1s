@@ -4,7 +4,10 @@ import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
-import kr.co.okheeokey.quiz.vo.*;
+import kr.co.okheeokey.quiz.vo.QuestionInfoValues;
+import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
+import kr.co.okheeokey.quiz.vo.QuizCreateValues;
+import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
@@ -17,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -26,31 +28,24 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final QuizSetRepository quizSetRepository;
 
-    // Check if previous ongoing quiz exists using (User, QuizSet)
-    // If exist, return such quiz
-    public Optional<Quiz> previousQuiz(QuizExistQueryValues values) throws NoSuchElementException, IllegalAccessException {
+    @Transactional
+    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IndexOutOfBoundsException, IllegalAccessException {
         QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
         isAllowedToQuizSet(values.getUser(), quizSet);
 
-        return quizRepository.findByOwnerAndQuizSetAndClosed(values.getUser(), quizSet, false);
-    }
-
-    @Transactional
-    public Quiz createNewQuiz(QuizCreateValues values) throws NoSuchElementException, IndexOutOfBoundsException {
-        QuizSet quizSet = quizSetRepository.findById(values.getQuizSetId())
-                .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
-
-        List<Question> randomQuestionList = chooseQuestion(quizSet.getQuestionPool(), values.getQuestionNum());
-
-        Quiz newQuiz = Quiz.builder()
+        return quizRepository.findByOwnerAndQuizSetAndClosed(values.getUser(), quizSet, false)
+                .orElseGet(() -> {
+                    Quiz newQuiz = Quiz.builder()
                             .quizSet(quizSet)
                             .owner(values.getUser())
-                            .questionList(randomQuestionList)
+                            .questionList(chooseQuestion(quizSet.getQuestionPool(), values.getQuestionNum()))
                             .questionNum(values.getQuestionNum())
                             .closed(false)
                             .build();
-        return quizRepository.save(newQuiz);
+
+                    return quizRepository.save(newQuiz);
+                });
     }
 
     public QuestionInfoValues getQuestion(User user, Long quizId, Long questionIndex)
