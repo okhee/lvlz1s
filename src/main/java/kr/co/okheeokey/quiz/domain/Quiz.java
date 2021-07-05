@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @NoArgsConstructor
 @Entity
@@ -45,10 +46,11 @@ public class Quiz {
     @ElementCollection
     private final Map<Long, Boolean> scoreList = new HashMap<>();
 
+    // Todo: make hintMap thread-safe
     @ElementCollection
     private final Map<Long, Long> hintMap = new HashMap<>();
 
-    private Long hintTokenUsed = 0L;
+    private AtomicLong hintTokenUsed = new AtomicLong(0L);
 
     private Long questionNum;
 
@@ -97,8 +99,17 @@ public class Quiz {
             return -1L;
     }
 
-    public void getHint(Long questionIndex) {
-        hintTokenUsed += 1L;
+    public void getHint(Long questionIndex) throws IndexOutOfBoundsException {
+        questionIndex -= 1L;
+
+        Question question = this.getQuestionList().get(questionIndex.intValue());
+        if (question.getAudioList().containsKey(hintMap.get(questionIndex) + 1)){
+            long newHintIndex = hintMap.get(questionIndex) + 1;
+            hintMap.put(questionIndex, newHintIndex);
+
+            long hintCost = newHintIndex;
+            hintTokenUsed.addAndGet(hintCost);
+        }
     }
 
     public void saveResponse(Long questionIndex, Song response) {
