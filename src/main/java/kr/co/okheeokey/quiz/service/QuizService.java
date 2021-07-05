@@ -34,12 +34,14 @@ public class QuizService {
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + values.getQuizSetId() + " }"));
         isAllowedToQuizSet(values.getUser(), quizSet);
 
+        List<Question> questionList = chooseQuestion(quizSet.getQuestionPool(), values.getQuestionNum());
+
         return quizRepository.findByOwnerAndQuizSetAndClosed(values.getUser(), quizSet, false)
                 .orElseGet(() -> {
                     Quiz newQuiz = Quiz.builder()
                             .quizSet(quizSet)
                             .owner(values.getUser())
-                            .questionList(chooseQuestion(quizSet.getQuestionPool(), values.getQuestionNum()))
+                            .questionList(questionList)
                             .questionNum(values.getQuestionNum())
                             .closed(false)
                             .build();
@@ -61,6 +63,15 @@ public class QuizService {
                 .hintAvailable(hintCost > 0)
                 .nextHintCost(hintCost)
                 .build();
+    }
+
+    public void getAccessToNewHint(User user, Long quizId, Long questionIndex)
+        throws NoSuchElementException, IllegalAccessException, IndexOutOfBoundsException {
+        Quiz quiz = quizRepository.findByIdAndClosed(quizId, false)
+                .orElseThrow(() -> new NoSuchElementException("No ongoing quiz exists with id { " + quizId + " }"));
+        isAllowedToQuiz(user, quiz);
+
+        quiz.getHint(questionIndex);
     }
 
     @Transactional

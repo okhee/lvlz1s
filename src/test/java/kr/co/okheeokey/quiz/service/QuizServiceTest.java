@@ -1,8 +1,10 @@
 package kr.co.okheeokey.quiz.service;
 
+import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
+import kr.co.okheeokey.quiz.vo.QuestionInfoValues;
 import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
@@ -11,7 +13,7 @@ import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
 import kr.co.okheeokey.user.domain.User;
-import kr.co.okheeokey.user.domain.UserRepository;
+import kr.co.okheeokey.util.CryptoUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,7 +33,6 @@ public class QuizServiceTest {
     private QuizService quizService;
 
     @Mock private SongRepository songRepository;
-    @Mock private UserRepository userRepository;
     @Mock private QuizRepository quizRepository;
     @Mock private QuizSetRepository quizSetRepository;
 
@@ -41,11 +42,12 @@ public class QuizServiceTest {
     @Mock private List<Question> questionPool;
     @Mock private List<Question> randomQuestionList;
     @Mock private Song song;
+    @Mock private AudioFile audioFile;
 
     private final Long quizSetId = 73L;
     private final Long questionNum = 12L;
     private final Long quizId = 83L;
-    private final Long questionId = questionNum - 2L;
+    private final Long questionIndex = questionNum - 2L;
     private final Long responseSongId = 15L;
 
     @Test
@@ -57,6 +59,9 @@ public class QuizServiceTest {
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.empty());
         when(quizSet.getQuestionPool()).thenReturn(questionPool);
+
+        randomQuestionList = new ArrayList<>();
+        randomQuestionList.add(new Question());
         when(questionPool.subList(anyInt(), anyInt())).thenReturn(randomQuestionList);
         when(quizRepository.save(any(Quiz.class))).thenReturn(new Quiz(quizSet, user, randomQuestionList, questionNum, false));
 
@@ -79,6 +84,8 @@ public class QuizServiceTest {
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
         when(quizSet.getReadyMade()).thenReturn(false);
         when(quizSet.getOwner()).thenReturn(user);
+        when(quizSet.getQuestionPool()).thenReturn(questionPool);
+        when(questionPool.subList(anyInt(), anyInt())).thenReturn(new ArrayList<>());
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
 
@@ -96,15 +103,15 @@ public class QuizServiceTest {
         when(quizSet.getReadyMade()).thenReturn(true);
         when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
                 .thenReturn(Optional.empty());
+        when(quizSet.getQuestionPool()).thenReturn(questionPool);
+        when(questionPool.subList(anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(quizRepository.save(any())).thenReturn(quiz);
 
         // when
         Quiz resultQuiz = quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
 
         // then
-        assertEquals(user, resultQuiz.getOwner());
-        assertEquals(quizSet, resultQuiz.getQuizSet());
-        assertEquals(questionNum, resultQuiz.getQuestionNum());
-        assertFalse(resultQuiz.getClosed());
+        assertEquals(quiz, resultQuiz);
     }
 
     @Test(expected = IllegalAccessException.class)
@@ -119,17 +126,8 @@ public class QuizServiceTest {
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void createNewQuiz_withInvalidUser() throws Exception {
-        // given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-        // when
-        quizService.createNewQuiz(new QuizCreateValues(user, quizSetId, questionNum));
-    }
-
-    @Test(expected = NoSuchElementException.class)
     public void createNewQuiz_withInvalidQuizSet() throws Exception {
         // given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
@@ -139,9 +137,11 @@ public class QuizServiceTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void createNewQuiz_withInvalidQuestionNum() throws Exception {
         // given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(quizSetRepository.findById(anyLong())).thenReturn(Optional.of(quizSet));
+        when(quizSet.getReadyMade()).thenReturn(true);
         when(quizSet.getQuestionPool()).thenReturn(Collections.emptyList());
+        when(quizRepository.findByOwnerAndQuizSetAndClosed(any(User.class), any(QuizSet.class), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
 
         assert questionNum > 0;
 
@@ -150,9 +150,105 @@ public class QuizServiceTest {
     }
 
     @Test
+    public void getQuestion() throws Exception {
+        // given
+        List<Question> randomQuestionList = new ArrayList<>();
+
+        randomQuestionList.add(new Question());
+        randomQuestionList.get(0).appendAudio(0L, audioFile);
+        randomQuestionList.get(0).appendAudio(1L, audioFile);
+
+        randomQuestionList.add(new Question());
+        randomQuestionList.get(1).appendAudio(0L, audioFile);
+
+        UUID uuid = UUID.randomUUID();
+        when(audioFile.getUuid()).thenReturn(uuid);
+
+        Quiz quiz = Quiz.builder()
+                    .quizSet(quizSet)
+                    .owner(user)
+                    .questionList(randomQuestionList)
+                    .questionNum((long) randomQuestionList.size())
+                    .closed(false)
+                    .build();
+
+        when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
+                .thenReturn(Optional.ofNullable(quiz));
+
+        QuestionInfoValues values;
+
+        // when 1
+        values = quizService.getQuestion(user, quizId, 1L);
+        // then 1
+        assertEquals(CryptoUtils.encryptUuid(uuid), values.getEncryptUuid());
+        assertTrue(values.getHintAvailable());
+        assertEquals(1L, (long) values.getNextHintCost());
+
+        // when 2
+        values = quizService.getQuestion(user, quizId, 2L);
+        // then 2
+        assertFalse(values.getHintAvailable());
+        assertEquals(-1L, (long) values.getNextHintCost());
+    }
+
+    @Test
+    public void getHint() throws Exception {
+        // given
+        List<Question> randomQuestionList = new ArrayList<>();
+        AudioFile audioFile1 = new AudioFile(); audioFile1.setUuid(UUID.randomUUID());
+        AudioFile audioFile2 = new AudioFile(); audioFile2.setUuid(UUID.randomUUID());
+        AudioFile audioFile3 = new AudioFile(); audioFile3.setUuid(UUID.randomUUID());
+
+        randomQuestionList.add(new Question());
+        randomQuestionList.get(0).appendAudio(0L, audioFile1);
+        randomQuestionList.get(0).appendAudio(1L, audioFile2);
+
+        randomQuestionList.add(new Question());
+        randomQuestionList.get(1).appendAudio(0L, audioFile3);
+        Quiz quiz = Quiz.builder()
+                .quizSet(quizSet)
+                .owner(user)
+                .questionList(randomQuestionList)
+                .questionNum((long) randomQuestionList.size())
+                .closed(false)
+                .build();
+
+        when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
+                .thenReturn(Optional.of(quiz));
+
+        // Case 1: if additional hint is available, update and present new audio file
+        // when 1
+        assertEquals(CryptoUtils.encryptUuid(audioFile1.getUuid()),
+                quizService.getQuestion(user, quizId, 1L).getEncryptUuid());
+
+        quizService.getAccessToNewHint(user, quizId, 1L);
+
+        // then 1
+        assertEquals(CryptoUtils.encryptUuid(audioFile2.getUuid()),
+                quizService.getQuestion(user, quizId, 1L).getEncryptUuid());
+
+        // Case 2: if additional hint is not available, nothing happens
+        // when 2
+        assertEquals(CryptoUtils.encryptUuid(audioFile3.getUuid()),
+                quizService.getQuestion(user, quizId, 2L).getEncryptUuid());
+
+        quizService.getAccessToNewHint(user, quizId, 2L);
+
+        // then 2
+        assertEquals(CryptoUtils.encryptUuid(audioFile3.getUuid()),
+                quizService.getQuestion(user, quizId, 2L).getEncryptUuid());
+    }
+
+    @Test
     public void saveQuestionResponse() throws IllegalAccessException {
         // given
-        Quiz quiz = new Quiz(quizSet, user, randomQuestionList, questionNum, false);
+        quiz = Quiz.builder()
+                .quizSet(quizSet)
+                .owner(user)
+                .questionList(randomQuestionList)
+                .questionNum(questionNum)
+                .closed(false)
+                .build();
 
         when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
@@ -160,21 +256,21 @@ public class QuizServiceTest {
                 .thenReturn(Optional.of(song));
         when(song.getId()).thenReturn(responseSongId);
 
-        assert questionId <= questionNum;
-        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionId, responseSongId);
+        assert questionIndex <= questionNum;
+        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionIndex, responseSongId);
 
         // when
         Quiz returnQuiz = quizService.saveQuestionResponse(values);
 
         // then
         assertEquals(quiz, returnQuiz);
-        assertEquals(responseSongId, returnQuiz.getResponseMap().get(questionId - 1L));
+        assertEquals(responseSongId, returnQuiz.getResponseMap().get(questionIndex - 1L));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void saveQuestionResponse_withInvalidQuestionId() throws IllegalAccessException {
+    public void saveQuestionResponse_withInvalidQuestionIndex() throws IllegalAccessException {
         // given
-        Long questionId = questionNum + 2L;
+        Long questionIndex = questionNum + 2L;
 
         when(quizRepository.findByIdAndClosed(anyLong(), anyBoolean()))
                 .thenReturn(Optional.of(quiz));
@@ -183,8 +279,8 @@ public class QuizServiceTest {
         when(quiz.getOwner()).thenReturn(user);
         when(quiz.getQuestionNum()).thenReturn(questionNum);
 
-        assert questionId > questionNum;
-        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionId, responseSongId);
+        assert questionIndex > questionNum;
+        QuestionSubmitValues values = new QuestionSubmitValues(user, quizId, questionIndex, responseSongId);
 
         // when
         quizService.saveQuestionResponse(values);
@@ -204,7 +300,7 @@ public class QuizServiceTest {
             if (Math.random() < 0.35)
                 responseMap.put((long) i, 55L);
         }
-        Map<Long, Boolean> scoreList = Collections.singletonMap(questionId, true);
+        Map<Long, Boolean> scoreList = Collections.singletonMap(questionIndex, true);
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
         when(quiz.getOwner()).thenReturn(user);
@@ -228,7 +324,7 @@ public class QuizServiceTest {
         assertThat(values.getQuestionNum(), is(questionNum));
 
         assertThat(values.getQuestionList().size(), is(2));
-        assertThat(values.getScoreList().get(questionId), is(true));
+        assertThat(values.getScoreList().get(questionIndex), is(true));
 
         List<Boolean> responseList = values.getResponseExistList();
         for(int i = 0; i < questionNum; i++){

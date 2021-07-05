@@ -116,13 +116,43 @@ public class QuizController {
             @PathVariable("id") Long quizId, @PathVariable("qid") Long questionIndex)
             throws IndexOutOfBoundsException, NoSuchElementException, IllegalAccessException {
         QuestionInfoValues values = quizService.getQuestion(user, quizId, questionIndex);
-//        Collections.singletonMap("filename", "/audiofiles/" + values.getEncryptUuid())
 
         return ResponseEntity.ok().body(
                 EntityModel.of(values,
                 linkTo(methodOn(QuizController.class).getQuestion(user, quizId, questionIndex)).withSelfRel(),
                 linkTo(methodOn(QuizController.class).submitQuestion(user, quizId, questionIndex, null)).withRel("submit"))
         );
+    }
+
+    /**
+     * POST "/quizs/{quizId}/q/{questionIndex}/hint" - Request additional hint for question
+     *
+     * @param user [Authenticated]
+     * @param quizId Id of {@code quiz}
+     * @param questionIndex 1-based indexing; Index of question from {@code questionList} that user wants hint for
+     *
+     * @return
+     * {@code 301 Moved Permanently} <br>
+     * {@code Location}: "/quizs/{quizId}/q/{questionIndex}"
+     *
+     * @throws IndexOutOfBoundsException
+     *         If {@code questionIndex} is greater than {@code questionNum}
+     * @throws IllegalAccessException
+     *         If {@code user} is not owner of quiz
+     * @throws NoSuchElementException
+     *         If ongoing quiz with id ({@code quizId}) does not exist
+     *
+     * @see QuizController#getQuestion(User, Long, Long) 
+     */
+    @PostMapping("/{id}/q/{qid}/hint")
+    public ResponseEntity<?> getHint(@AuthenticationPrincipal User user,
+            @PathVariable("id") Long quizId, @PathVariable("qid") Long questionIndex)
+            throws IndexOutOfBoundsException, IllegalAccessException, NoSuchElementException {
+        quizService.getAccessToNewHint(user, quizId, questionIndex);
+
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                .location(URI.create("/quizs/" + quizId + "/q/" + questionIndex))
+                .build();
     }
 
     /**
