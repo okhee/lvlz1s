@@ -3,10 +3,7 @@ package kr.co.okheeokey.util;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -30,20 +27,28 @@ public class CryptoUtils {
         CryptoUtils.IV = new IvParameterSpec(iv);
     }
 
-    public static String encryptUuid(UUID uuid)
-            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, KEY, IV);
-
-        return Base64.getUrlEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
+    public static String encryptUuid(UUID uuid) {
+        String encryptUuid = null;
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, KEY, IV);
+            encryptUuid = Base64.getUrlEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return encryptUuid;
     }
 
-    public static UUID decryptUuid(String encryptUuid)
-            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, KEY, IV);
-
-        return asUuid(cipher.doFinal(Base64.getUrlDecoder().decode(encryptUuid)));
+    public static UUID decryptUuid(String encryptUuid) {
+        UUID uuid = null;
+        try {
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, KEY, IV);
+            uuid = asUuid(cipher.doFinal(Base64.getUrlDecoder().decode(encryptUuid)));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return uuid;
     }
 
     private static UUID asUuid(byte[] bytes) {
