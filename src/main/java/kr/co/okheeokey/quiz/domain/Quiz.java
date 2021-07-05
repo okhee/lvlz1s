@@ -77,13 +77,7 @@ public class Quiz {
         AudioFile audioFile = Optional.ofNullable(question.getAudioList().get(hintMap.get(questionIndex)))
                 .orElseThrow(() -> new NoAudioFileExistsException(question.getId(), hintMap.get(finalQuestionIndex)));
 
-        String uuid = null;
-        try {
-            uuid = CryptoUtils.encryptUuid(audioFile.getUuid());
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-        return uuid;
+        return CryptoUtils.encryptUuid(audioFile.getUuid());
     }
 
     // check if additional hint is available and return its cost

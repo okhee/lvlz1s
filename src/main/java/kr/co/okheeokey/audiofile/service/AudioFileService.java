@@ -31,9 +31,9 @@ public class AudioFileService {
 
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
-            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, GeneralSecurityException {
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
         Question question = questionRepository.findById(values.getQuestionId())
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("No question exists with id { " + values.getQuestionId() + " }"));
 
         String mimeType = verifyMultipartFile(values.getFile());
 
@@ -60,8 +60,7 @@ public class AudioFileService {
         return CryptoUtils.encryptUuid(audioFile.getUuid());
     }
 
-    public AudioFileValues getAudioFile(String encryptUuid)
-            throws IllegalArgumentException, GeneralSecurityException {
+    public AudioFileValues getAudioFile(String encryptUuid) throws IllegalArgumentException {
         UUID uuid = CryptoUtils.decryptUuid(encryptUuid);
         AudioFile audioFile = audioFileRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid uuid value"));

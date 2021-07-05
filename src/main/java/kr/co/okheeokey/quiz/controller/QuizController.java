@@ -25,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Controller class that provides endpoint of "/quizs/**"
+ * Controller class of "/quizs/**" endpoints
  *
  * @see QuizService
  */
