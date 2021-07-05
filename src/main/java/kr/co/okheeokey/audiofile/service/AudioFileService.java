@@ -33,7 +33,7 @@ public class AudioFileService {
     public String setAudioFile(AudioFileSetValues values)
             throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
         Question question = questionRepository.findById(values.getQuestionId())
-                .orElseThrow(NoSuchElementException::new);
+                .orElseThrow(() -> new NoSuchElementException("No question exists with id { " + values.getQuestionId() + " }"));
 
         String mimeType = verifyMultipartFile(values.getFile());
 
