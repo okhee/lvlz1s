@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -39,10 +38,7 @@ public class QuizServiceIntegrationTest {
     private QuestionRepository questionRepository;
 
     @Test
-    // Testing whether two new quiz instance can be created with identical information.
-    // In QuizController, however, createQuiz method ensures that
-    // only one ongoing quiz can exist at the same time with same (User, QuizSet) information.
-    public void createDuplicatedQuiz() throws Exception {
+    public void createDuplicatedQuiz_resultInSameQuiz() throws Exception {
         // given
         Question question = questionRepository.save(new Question("soifnaeo"));
         List<Question> questionPool = Collections.singletonList(question);
@@ -50,9 +46,10 @@ public class QuizServiceIntegrationTest {
         User user = userRepository.save(new User("naname", "pass", null));
         QuizSet quizSet = quizSetRepository.save(QuizSet.builder()
                 .owner(user)
-                .questionPool(questionPool)
                 .title("ttiteafew")
                 .description("dfoeiw")
+                .questionPool(questionPool)
+                .readyMade(true)
                 .build());
 
         // when
@@ -60,12 +57,10 @@ public class QuizServiceIntegrationTest {
         Quiz quiz2 = quizService.createNewQuiz(new QuizCreateValues(user, quizSet.getId(), 0L));
 
         // then
-        assertNotEquals(quiz1.getId(), quiz2.getId());
+        assertEquals(quiz1.getId(), quiz2.getId());
         assertThat(quiz1.getOwner(), is(quiz2.getOwner()));
         assertThat(quiz1.getQuizSet(), is(quiz2.getQuizSet()));
         assertThat(quiz1.getQuestionNum(), is(quiz2.getQuestionNum()));
     }
-
-
 
 }

@@ -98,7 +98,7 @@ public class AudioFileControllerTest {
                 IOUtils.toByteArray(audioFileContentStore.getContent(question.getAudioList().get(difficulty))));
 
         // when
-        mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty + "&update=true")
+        mvc.perform(MockMvcRequestBuilders.multipart("/audiofiles?q=" + questionId + "&diff=" + difficulty + "&overwrite=true")
                 .file(file2)
                 .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
@@ -141,7 +141,7 @@ public class AudioFileControllerTest {
         // then
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message",
-                        is("Audio file already exists in Question id { " + questionId + " }, difficulty { " + difficulty + " }; Use update request")))
+                        is("Audio file already exists in Question id { " + questionId + " }, difficulty { " + difficulty + " }; Use overwrite request")))
                 .andDo(print());
 
 
