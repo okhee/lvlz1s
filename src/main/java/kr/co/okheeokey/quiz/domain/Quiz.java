@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.common.domain.TimeStampEntity;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.domain.Song;
@@ -14,14 +15,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @NoArgsConstructor
 @Entity
 @Getter
-public class Quiz {
+public class Quiz extends TimeStampEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
