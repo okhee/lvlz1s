@@ -38,7 +38,7 @@ public class QuizSetController {
      * {@code List<QuizSetInfoValues>}
      */
     @GetMapping
-    public ResponseEntity<List<QuizSet>> quizSetList(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<QuizSetInfoValues>> getAllQuizSet(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok().body(quizSetService.getAllQuizSet(user));
     }
 
@@ -59,9 +59,9 @@ public class QuizSetController {
      *         If the quiz set is neither ready-made nor owned by {@code user}
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<QuizSet> getQuizSet(@AuthenticationPrincipal User user, @PathVariable("id") Long id)
+    public ResponseEntity<QuizSetInfoValues> getQuizSet(@AuthenticationPrincipal User user, @PathVariable("id") Long quizSetId)
             throws NoSuchElementException, IllegalAccessException {
-        return ResponseEntity.ok(quizSetService.getQuizSet(user, id));
+        return ResponseEntity.ok(quizSetService.getQuizSet(user, quizSetId));
     }
 
     /**
