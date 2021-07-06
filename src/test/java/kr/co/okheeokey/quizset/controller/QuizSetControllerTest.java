@@ -7,29 +7,35 @@ import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.dto.QuizSetAddDto;
 import kr.co.okheeokey.quizset.service.QuizSetService;
 import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
+import kr.co.okheeokey.quizset.vo.QuizSetInfoValues;
 import kr.co.okheeokey.user.domain.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = QuizSetController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class QuizSetControllerTest {
 
     @Autowired
@@ -46,7 +52,67 @@ public class QuizSetControllerTest {
     @MockBean private User user;
 
     @Test
-    public void createQuizSet_thenReturns201() throws Exception{
+    @WithMockUser
+    public void getAllQuizSet() throws Exception {
+        // given
+        long id = 14L; String title = "125"; String description = "hse3";
+        boolean readyMade = false; long questionPoolSize = 15L;
+        double averageDifficulty = 17.1;
+
+        QuizSetInfoValues values1 = QuizSetInfoValues.builder().id(id)
+                .title(title)
+                .description(description)
+                .readyMade(readyMade)
+                .questionPoolSize(questionPoolSize)
+                .averageDifficulty(averageDifficulty)
+                .build();
+
+        id = 151L; title = "j4w5"; description = "ns541";
+        readyMade = true; questionPoolSize = 75L;
+        averageDifficulty = 198.457;
+
+        QuizSetInfoValues values2 = QuizSetInfoValues.builder().id(id)
+                .title(title)
+                .description(description)
+                .readyMade(readyMade)
+                .questionPoolSize(questionPoolSize)
+                .averageDifficulty(averageDifficulty)
+                .build();
+
+        List<QuizSetInfoValues> valuesList = new ArrayList<>();
+        valuesList.add(values1);
+        valuesList.add(values2);
+
+        when(quizSetService.getAllQuizSet(any()))
+                .thenReturn(valuesList);
+
+        // when
+        mvc.perform(get("/quizsets"))
+
+        // then
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+
+                .andExpect(jsonPath("$[0].id", is(values1.getId().intValue())))
+                .andExpect(jsonPath("$[0].title", is(values1.getTitle())))
+                .andExpect(jsonPath("$[0].description", is(values1.getDescription())))
+                .andExpect(jsonPath("$[0].readyMade", is(values1.getReadyMade())))
+                .andExpect(jsonPath("$[0].questionPoolSize", is(values1.getQuestionPoolSize().intValue())))
+                .andExpect(jsonPath("$[0].averageDifficulty", is(values1.getAverageDifficulty())))
+
+                .andExpect(jsonPath("$[1].id", is(values2.getId().intValue())))
+                .andExpect(jsonPath("$[1].title", is(values2.getTitle())))
+                .andExpect(jsonPath("$[1].description", is(values2.getDescription())))
+                .andExpect(jsonPath("$[1].readyMade", is(values2.getReadyMade())))
+                .andExpect(jsonPath("$[1].questionPoolSize", is(values2.getQuestionPoolSize().intValue())))
+                .andExpect(jsonPath("$[1].averageDifficulty", is(values2.getAverageDifficulty())))
+
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser
+    public void createQuizSet_thenReturns201() throws Exception {
         // given
         when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
         when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(user);
@@ -80,6 +146,7 @@ public class QuizSetControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void createQuizSet_withInvalidQuestionId_thenThrowsException() throws Exception {
         // given
         when(jwtAuthTokenProvider.getSubject(anyString())).thenReturn("nname");
