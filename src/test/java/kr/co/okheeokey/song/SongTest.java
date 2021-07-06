@@ -16,8 +16,7 @@ import java.time.LocalDate;
 public class SongTest {
     @Autowired
     private SongRepository songRepository;
-    @Autowired
-    private SongHashRepository songHashRepository;
+
     @Autowired
     private QuestionRepository questionRepository;
 
@@ -33,16 +32,6 @@ public class SongTest {
                 .songName("Hi~")
                 .build();
 
-        SongHash sh1 = SongHash.builder()
-                .songHash("Candy!!")
-                .build();
-        SongHash sh2 = SongHash.builder()
-                .songHash("Jelly!!")
-                .build();
-        SongHash sh3 = SongHash.builder()
-                .songHash("Hello~!")
-                .build();
-
         Question file1 = Question.builder()
                 .questionName("02_0807_Candy_jelly_love.mp3")
                 .build();
@@ -56,11 +45,6 @@ public class SongTest {
                 .releasedDate(LocalDate.of(2014, 11, 17))
                 .albumCover("tlksjdfoi.jpg")
                 .build();
-
-        sh1.setSong(s1);
-        sh2.setSong(s1);
-
-        sh3.setSong(s2);
 
         file1.setSong(s1);
         file2.setSong(s1);

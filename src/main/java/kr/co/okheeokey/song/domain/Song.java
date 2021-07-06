@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.question.domain.Question;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-@NoArgsConstructor
 @Entity
 @Getter
+@NoArgsConstructor
+@EqualsAndHashCode(of = {"id", "songName", "album"})
 public class Song {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,29 +26,12 @@ public class Song {
 
     @OneToMany(mappedBy = "song")
     @JsonManagedReference
-    private List<SongHash> songHash = new ArrayList<>();
-
-    @OneToMany(mappedBy = "song")
-    @JsonManagedReference
     private List<Question> question = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "ALBUM_ID")
     private Album album;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Song song = (Song) o;
-        return id.equals(song.id) && songName.equals(song.songName) && album.equals(song.album);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, songName, album);
-    }
 
     @Builder
     public Song(String songName) {
