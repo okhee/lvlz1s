@@ -35,10 +35,10 @@ public class AudioFileController {
      * <p>{@code difficulty} value must be contiguous with previous values.</p>
      * <p>Overwriting existing audio file is possible</p>
      *
-     * @param file - MultipartFile for actual audio file
-     * @param questionId - Id of {@code question}
-     * @param difficulty - 0-based indexing; Greater the {@code difficulty} value, the longer the audio file is.
-     * @param overwrite - Overwrite existing audio file
+     * @param file MultipartFile for actual audio file
+     * @param questionId Id of {@code question}
+     * @param difficulty 0-based indexing; Greater the {@code difficulty} value, the longer the audio file is.
+     * @param overwrite Overwrite existing audio file
      *
      * @return
      * {@code 201 Created} <br>
