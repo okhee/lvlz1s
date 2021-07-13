@@ -1,34 +1,7 @@
 spring:
-  datasource:
-    platform: mysql
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST}/${DB_NAME}?serverTimezone=UTC&characterEncoding=UTF-8
-    username: ${DB_USER_NAME}
-    password: ${DB_PASSWORD}
-    initialization-mode: always
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    generate-ddl: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        show_sql: true
-#        format_sql: true
-
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 15MB
-      file-size-threshold: 1MB
-
-
-security:
-  jwt:
-    token:
-      base64-secret: ZnFmcTgydXhmMDk4aG51YnF1Z2g5aGYwOThuaDNkc2h2M2M0OWhnLTA5MzhuaGdmLTM=
-      expire-length: 1800000
+  profiles:
+    active: dev
+#    active: prod
 
 #logging:
 #  level:
