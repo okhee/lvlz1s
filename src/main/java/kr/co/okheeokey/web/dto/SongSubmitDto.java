@@ -5,13 +5,11 @@ import lombok.Getter;
 
 @Getter
 public class SongSubmitDto {
-    private String songHash;
     private Long songId;
     private Long nextSongId;
 
     @Builder
-    public SongSubmitDto(String songHash, Long songId, Long nextSongId) {
-        this.songHash = songHash;
+    public SongSubmitDto(Long songId, Long nextSongId) {
         this.songId = songId;
         this.nextSongId = nextSongId;
     }

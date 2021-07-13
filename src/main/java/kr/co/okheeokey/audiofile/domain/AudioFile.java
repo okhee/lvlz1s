@@ -13,20 +13,22 @@ import org.springframework.content.commons.annotations.MimeType;
 import javax.persistence.*;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
+@Table(name = "audio_file")
 public class AudioFile {
     @Id @GeneratedValue
     @Column(columnDefinition = "BINARY(16)")
     private UUID uuid;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "QUESTION_ID")
+    @JoinColumn(name = "question_id")
     private Question question;
 
+    @Column(nullable = false)
     private Long difficulty = 0L;
 
     @ContentId
@@ -36,6 +38,7 @@ public class AudioFile {
     private Long contentLength;
 
     @MimeType
+    @Column(nullable = false, length = 20)
     private String mimeType = "audio/flac";
 
     @Builder

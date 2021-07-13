@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    platform: h2
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:lvlz1sTest
+    username: sa
+    password:
+    initialization-mode: always
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+  h2:
+    console:
+      enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 15MB
+      file-size-threshold: 1MB
+
+security:
+  jwt:
+    token:
+      base64-secret: ZnFmcTgydXhmMDk4aG51YnF1Z2g5aGYwOThuaDNkc2h2M2M0OWhnLTA5MzhuaGdmLTM=
+      expire-length: 1800000

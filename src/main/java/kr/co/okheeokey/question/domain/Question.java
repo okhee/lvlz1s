@@ -3,47 +3,46 @@ package kr.co.okheeokey.question.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
-import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
-import lombok.Builder;
+import kr.co.okheeokey.song.domain.Song;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
+@Getter
 @NoArgsConstructor
 @Entity
-@Getter
+@Table(name = "question")
+@SequenceGenerator(name = "QUESTION_SEQ_GENERATOR",
+                    sequenceName = "QUESTION_SEQ",
+                    initialValue = 1, allocationSize = 1)
 public class Question {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "QUESTION_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "SONG_ID")
+    @JoinColumn(name = "song_id")
     private Song song;
 
-    // TODO: change to 'song information'
     @Column(nullable = false)
-    private String questionName;
+    private Long answerLocationInSecond;
 
-    @Column(columnDefinition = "varchar(255) not null default 'EASY'")
     @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'EASY'")
     private QuestionDifficulty difficulty = QuestionDifficulty.EASY;
+
+    private String questionInfo;
 
     // key(Long): stage; length of audio file
     // value(AudioFile): audioFile
     @OneToMany(mappedBy = "question")
     @JsonManagedReference
     private final Map<Long, AudioFile> audioList = new HashMap<>();
-
-    @Builder
-    public Question(String questionName) {
-        this.questionName = questionName;
-    }
 
     public void diffEmptyCheck(Long difficulty) throws AudioFileAlreadyExistsException {
         if (this.audioList.containsKey(difficulty)) {

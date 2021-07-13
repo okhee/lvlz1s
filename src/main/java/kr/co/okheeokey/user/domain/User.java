@@ -1,5 +1,6 @@
 package kr.co.okheeokey.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +14,19 @@ import java.util.Collection;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Entity
+@Table(name = "user")
+@SequenceGenerator(name = "USER_SEQ_GENERATOR",
+        sequenceName = "USER_SEQ",
+        initialValue = 1, allocationSize = 1)
 public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SEQ_GENERATOR")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 40)
     private String name;
 
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     @Column(nullable = false)
     private String password;
 

@@ -6,6 +6,6 @@ public class AudioFileAlreadyExistsException extends RuntimeException {
     }
     public AudioFileAlreadyExistsException(Long questionId, Long difficulty) {
         super("Audio file already exists in Question id { " + questionId
-                + " }, difficulty { " + difficulty + " }; Use update request");
+                + " }, difficulty { " + difficulty + " }; Use overwrite request");
     }
 }

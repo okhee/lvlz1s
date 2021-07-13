@@ -83,8 +83,7 @@ public class QuizControllerTest {
         Boolean closed = (Math.random() < 0.5);
         Long questionNum = 156L;
 
-        String questionName = "qq11";
-        List<Question> questionList = Collections.singletonList(new Question(questionName));
+        List<Question> questionList = Collections.singletonList(new Question());
         Map<Long, Long> responseMap = Collections.singletonMap(51L, 162L);
         Map<Long, Boolean> scoreList = Collections.singletonMap(16L, true);
         List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
@@ -106,7 +105,6 @@ public class QuizControllerTest {
                 .andExpect(jsonPath("$.questionNum", is(questionNum.intValue())))
 
                 .andExpect(jsonPath("$.questionList").isArray())
-                .andExpect(jsonPath("$.questionList[0].questionName", is(questionName)))
                 .andExpect(jsonPath("$.responseMap['51']", is(162)))
                 .andExpect(jsonPath("$.scoreList['16']", is(true)))
 

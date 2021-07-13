@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
+import kr.co.okheeokey.common.domain.TimeStampEntity;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.song.domain.Song;
@@ -14,26 +15,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Getter
 @NoArgsConstructor
 @Entity
-@Getter
-public class Quiz {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Table(name = "quiz")
+@SequenceGenerator(name = "QUIZ_SEQ_GENERATOR",
+                    sequenceName = "QUIZ_SEQ",
+                    initialValue = 1, allocationSize = 1)
+public class Quiz extends TimeStampEntity {
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                        generator = "QUIZ_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "QUIZ_SET_ID")
+    @JoinColumn(name = "quiz_set_id")
     private QuizSet quizSet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private User owner;
 
     @ManyToMany
@@ -50,10 +54,13 @@ public class Quiz {
     @ElementCollection
     private final Map<Long, Long> hintMap = new HashMap<>();
 
+    @Column(nullable = false, columnDefinition = "bigint(20) DEFAULT '0'")
     private AtomicLong hintTokenUsed = new AtomicLong(0L);
 
+    @Column(nullable = false)
     private Long questionNum;
 
+    @Column(nullable = false)
     private Boolean closed;
 
     @Builder

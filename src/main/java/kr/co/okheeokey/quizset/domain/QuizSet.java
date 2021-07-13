@@ -7,29 +7,34 @@ import kr.co.okheeokey.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
-@ToString
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 @Entity
+@Table(name = "quiz_set")
+@SequenceGenerator(name = "QUIZ_SET_SEQ_GENERATOR",
+                    sequenceName = "QUIZ_SET_SEQ",
+                    initialValue = 1, allocationSize = 1)
 public class QuizSet {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                        generator = "QUIZ_SET_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private User owner;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false, columnDefinition = "bit(1) DEFAULT '0'")
     private Boolean readyMade = false;
 
     @ManyToMany

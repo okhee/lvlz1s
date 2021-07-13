@@ -5,6 +5,7 @@ import kr.co.okheeokey.question.domain.QuestionDifficulty;
 import kr.co.okheeokey.quizset.domain.QuizSet;
 import kr.co.okheeokey.quizset.domain.QuizSetRepository;
 import kr.co.okheeokey.quizset.vo.QuizSetCreateValues;
+import kr.co.okheeokey.quizset.vo.QuizSetInfoValues;
 import kr.co.okheeokey.song.domain.Album;
 import kr.co.okheeokey.song.domain.AlbumRepository;
 import kr.co.okheeokey.song.domain.Song;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,19 +24,21 @@ public class QuizSetService {
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
 
-    public List<QuizSet> getAllQuizSet(User user) {
+    public List<QuizSetInfoValues> getAllQuizSet(User user) {
         List<QuizSet> availableQuizSets = quizSetRepository.findAllByReadyMadeIsTrue();
         if(user != null)
             availableQuizSets.addAll(quizSetRepository.findAllByOwner(user));
 
-        return availableQuizSets;
+        return availableQuizSets.stream().map(QuizSetInfoValues::new).collect(Collectors.toList());
     }
 
-    public QuizSet getQuizSet(User user, Long quizSetId) throws NoSuchElementException, IllegalAccessException {
+    public QuizSetInfoValues getQuizSet(User user, Long quizSetId) throws NoSuchElementException, IllegalAccessException {
         QuizSet quizSet = quizSetRepository.findById(quizSetId)
                 .orElseThrow(() -> new NoSuchElementException("No quiz set exists with id { " + quizSetId + " }"));
+
         return Optional.of(quizSet)
                 .filter(qs -> qs.getOwner().equals(user) || qs.getReadyMade())
+                .map(QuizSetInfoValues::new)
                 .orElseThrow(() -> new IllegalAccessException("Unauthorized access to quiz set with id { " + quizSet.getId() + " }"));
     }
 
