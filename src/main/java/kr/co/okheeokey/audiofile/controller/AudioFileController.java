@@ -62,6 +62,16 @@ public class AudioFileController {
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
     }
 
+    @PostMapping("/multiple")
+    public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files) {
+        for (MultipartFile file : files) {
+            System.out.println(file.getOriginalFilename());
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+
     /**
      * GET "/audiofiles/{encryptUuid}" - Get InputStreamResource of specific audio file
      * <p>Audio file is identified with 'encrypted' uuid value <br>
