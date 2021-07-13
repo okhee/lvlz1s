@@ -12,13 +12,13 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id", "songName", "album"})
+@EqualsAndHashCode
+@Entity
+@Table(name = "song")
 public class Song {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -26,11 +26,12 @@ public class Song {
 
     @OneToMany(mappedBy = "song")
     @JsonManagedReference
+    @EqualsAndHashCode.Exclude
     private List<Question> question = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "ALBUM_ID")
+    @JoinColumn(name = "album_id")
     private Album album;
 
     @Builder

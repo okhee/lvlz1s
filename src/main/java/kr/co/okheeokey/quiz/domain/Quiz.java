@@ -18,22 +18,26 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Getter
 @NoArgsConstructor
 @Entity
-@Getter
+@Table(name = "quiz")
+@SequenceGenerator(name = "QUIZ_SEQ_GENERATOR",
+                    sequenceName = "QUIZ_SEQ",
+                    initialValue = 1, allocationSize = 1)
 public class Quiz extends TimeStampEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                        generator = "QUIZ_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "QUIZ_SET_ID")
+    @JoinColumn(name = "quiz_set_id")
     private QuizSet quizSet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "user_id")
     private User owner;
 
     @ManyToMany
@@ -50,10 +54,13 @@ public class Quiz extends TimeStampEntity {
     @ElementCollection
     private final Map<Long, Long> hintMap = new HashMap<>();
 
+    @Column(nullable = false, columnDefinition = "bigint(20) DEFAULT '0'")
     private AtomicLong hintTokenUsed = new AtomicLong(0L);
 
+    @Column(nullable = false)
     private Long questionNum;
 
+    @Column(nullable = false)
     private Boolean closed;
 
     @Builder

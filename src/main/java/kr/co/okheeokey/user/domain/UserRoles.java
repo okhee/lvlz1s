@@ -17,8 +17,8 @@ import java.util.stream.Stream;
 public class UserRoles {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "USER_ROLES",
-            joinColumns = @JoinColumn(name = "USER_ID")
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
     )
     @Enumerated(EnumType.STRING)
     private Set<UserRole> userRoles = new HashSet<>();
