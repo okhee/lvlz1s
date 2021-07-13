@@ -40,7 +40,7 @@ public class QuizServiceIntegrationTest {
     @Test
     public void createDuplicatedQuiz_resultInSameQuiz() throws Exception {
         // given
-        Question question = questionRepository.save(new Question("soifnaeo"));
+        Question question = questionRepository.save(new Question());
         List<Question> questionPool = Collections.singletonList(question);
 
         User user = userRepository.save(new User("naname", "pass", null));
@@ -48,8 +48,8 @@ public class QuizServiceIntegrationTest {
                 .owner(user)
                 .title("ttiteafew")
                 .description("dfoeiw")
-                .questionPool(questionPool)
                 .readyMade(true)
+                .questionPool(questionPool)
                 .build());
 
         // when

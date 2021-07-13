@@ -32,13 +32,8 @@ public class SongTest {
                 .songName("Hi~")
                 .build();
 
-        Question file1 = Question.builder()
-                .questionName("02_0807_Candy_jelly_love.mp3")
-                .build();
-
-        Question file2 = Question.builder()
-                .questionName("02_0181_Candy_jelly_love.mp3")
-                .build();
+        Question file1 = new Question();
+        Question file2 = new Question();
 
         Album sample_album = Album.builder()
                 .albumName("Girls' Invasion")
