@@ -20,6 +20,8 @@ dependencies {
 
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.apache.tika:tika-core:2.0.0-ALPHA'
+    implementation 'org.apache.tika:tika-parsers:2.0.0-ALPHA'
 
     // HATEOAS
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
