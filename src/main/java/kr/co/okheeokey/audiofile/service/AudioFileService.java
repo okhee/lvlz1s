@@ -72,6 +72,27 @@ public class AudioFileService {
                 .build();
     }
 
+    private AudioFileSetValues parseFile(MultipartFile file) throws IllegalArgumentException {
+        String fileName = file.getOriginalFilename();
+        if (fileName == null)
+            throw new IllegalArgumentException("Empty file name is not allowed!");
+
+        String[] split = fileName.split("[\\s_-]");
+        if (split.length != 2)
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+
+        String questionId = split[0].replaceAll("\\D", "");
+        String difficulty = split[1];
+        if (difficulty.contains("."))
+            difficulty = difficulty.substring(0, difficulty.lastIndexOf('.'));
+        difficulty = difficulty.replaceAll("\\D", "");
+
+        if (questionId.isEmpty() || difficulty.isEmpty())
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+
+        return new AudioFileSetValues(file, Long.valueOf(questionId), Long.valueOf(difficulty), true);
+    }
+
     private String verifyMultipartFile(MultipartFile file) throws IOException {
         String mediaType = new Tika().detect(file.getInputStream());
 
