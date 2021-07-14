@@ -67,6 +67,39 @@ public class AudioFileController {
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
     }
 
+    /**
+     * POST "/audiofiles/multiple" - Upload and set multiple audiofiles
+     * <p>ADMIN authority required</p>
+     * <p>{@code difficulty} value must be contiguous with previous values.</p>
+     * <p>It will always replace previous audio file, if it exists.</p>
+     *
+     * @param files Multiple MultipartFile(s) for actual audio file <br>
+     *              It can be from HTML &lt;input multiple&gt; tag or {@code curl} with multiple {@code -F "files=@<<some_file>>"} flags <br>
+     *              file name must follow certain format <br>
+     *              FILENAME: QUESTIONID SPLIT DIFFICULTY FILEEXTENSION <br>
+     *              QUESTIONID:    (regex) \D*\d+ <br>
+     *              SPLIT:         (regex) [\s_-] <br>
+     *              DIFFICULTY:    (regex) \D*\d+ <br>
+     *              FILEEXTENSION: (regex) [\.][^\.]* <br>
+     *              example: q001-d002.mp3, question123_diff002.flac, "1 2"
+     *
+     * @return
+     * {@code 201 Created} <br>
+     * {@code body}: List of {encryptUuid}
+     *
+     * @throws NoSuchElementException
+     *         If the question with id ({@code questionId}) does not exist
+     * @throws AudioFileAlreadyExistsException
+     *         If {@code overwrite} is false, but there exists an audio file already
+     * @throws NoAudioFileExistsException
+     *         If {@code overwrite} is true, but there exists no audio file
+     * @throws IOException
+     *         If the given file can not be read
+     * @throws InvalidFormatException
+     *         If the given file is not audio file format
+     * @throws IllegalArgumentException
+     *         If any of specified file has invalid file name.
+     */
     @PostMapping("/multiple")
     public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files)
             throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, IllegalArgumentException {
