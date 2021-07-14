@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.UUID;
