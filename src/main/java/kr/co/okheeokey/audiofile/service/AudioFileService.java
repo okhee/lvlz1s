@@ -45,22 +45,22 @@ public class AudioFileService {
         String mimeType = verifyMultipartFile(values.getFile());
 
         AudioFile audioFile;
-        if(!values.getOverwrite()){
-            question.diffEmptyCheck(values.getDifficulty());
+        Optional<AudioFile> previousAudioFile = audioFileRepository.findByQuestionAndDifficulty(question, values.getDifficulty());
+        if(values.getOverwrite() && previousAudioFile.isPresent()){
+            audioFile = previousAudioFile.get();
 
-            audioFile = AudioFile.builder()
-                    .difficulty(values.getDifficulty())
-                    .mimeType(mimeType)
-                    .build();
-            audioFile.setQuestion(question);
-            audioFileRepository.save(audioFile);
-        }
-        else {
-            audioFile = audioFileRepository.findByQuestionAndDifficulty(question, values.getDifficulty())
-                    .orElseThrow(() -> new NoAudioFileExistsException("Audio file does not exists in Question id { "
-                            + question.getId() + " }, difficulty { " + values.getDifficulty() + " }; Add audio file first"));
             audioFile.setMimeType(mimeType);
             audioFileContentStore.unsetContent(audioFile);
+        }
+        else {
+            question.diffEmptyCheck(values.getDifficulty());
+            audioFile = AudioFile.builder()
+                        .difficulty(values.getDifficulty())
+                        .mimeType(mimeType)
+                        .build();
+
+            audioFile.setQuestion(question);
+            audioFileRepository.save(audioFile);
         }
         audioFileContentStore.setContent(audioFile, values.getFile().getInputStream());
 
