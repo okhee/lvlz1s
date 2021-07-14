@@ -1,5 +1,6 @@
 package kr.co.okheeokey.audiofile.controller;
 
+import com.sun.media.sound.InvalidFormatException;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.service.AudioFileService;
@@ -16,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -51,7 +54,9 @@ public class AudioFileController {
      * @throws NoAudioFileExistsException
      *         If {@code overwrite} is true, but there exists no audio file
      * @throws IOException
-     *         If the given audio file is an invalid file
+     *         If the given file can not be read
+     * @throws InvalidFormatException
+     *         If the given file is not audio file format
      */
     @PostMapping
     public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestParam("q") Long questionId,

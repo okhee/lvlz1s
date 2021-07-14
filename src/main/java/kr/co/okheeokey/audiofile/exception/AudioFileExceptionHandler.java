@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.IllegalFormatException;
 
 @ControllerAdvice("kr.co.okheeokey.audiofile")
 public class AudioFileExceptionHandler {
@@ -31,12 +30,12 @@ public class AudioFileExceptionHandler {
     }
 
     @ExceptionHandler(value = InvalidFormatException.class)
-    public ResponseEntity<?> invalidAudioFormatException(IllegalFormatException e) {
+    public ResponseEntity<?> invalidFormatException(InvalidFormatException e) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler(IOException.class)
+    @ExceptionHandler(value = IOException.class)
     public ResponseEntity<?> ioException(Exception e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));
