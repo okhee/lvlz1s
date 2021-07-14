@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.IllegalFormatException;
 
 @ControllerAdvice("kr.co.okheeokey.audiofile")
 public class AudioFileExceptionHandler {
@@ -25,19 +23,19 @@ public class AudioFileExceptionHandler {
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler(value = GeneralSecurityException.class)
-    public ResponseEntity<?> generalSecurityException(GeneralSecurityException e) {
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<?> illegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
     @ExceptionHandler(value = InvalidFormatException.class)
-    public ResponseEntity<?> invalidAudioFormatException(IllegalFormatException e) {
+    public ResponseEntity<?> invalidFormatException(InvalidFormatException e) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler(IOException.class)
+    @ExceptionHandler(value = IOException.class)
     public ResponseEntity<?> ioException(Exception e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap("message", e.getMessage()));

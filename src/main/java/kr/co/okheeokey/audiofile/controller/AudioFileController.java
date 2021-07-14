@@ -1,5 +1,6 @@
 package kr.co.okheeokey.audiofile.controller;
 
+import com.sun.media.sound.InvalidFormatException;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.service.AudioFileService;
@@ -16,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -51,7 +54,9 @@ public class AudioFileController {
      * @throws NoAudioFileExistsException
      *         If {@code overwrite} is true, but there exists no audio file
      * @throws IOException
-     *         If the given audio file is an invalid file
+     *         If the given file can not be read
+     * @throws InvalidFormatException
+     *         If the given file is not audio file format
      */
     @PostMapping
     public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestParam("q") Long questionId,
@@ -62,15 +67,49 @@ public class AudioFileController {
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
     }
 
+    /**
+     * POST "/audiofiles/multiple" - Upload and set multiple audiofiles
+     * <p>ADMIN authority required</p>
+     * <p>{@code difficulty} value must be contiguous with previous values.</p>
+     * <p>It will always replace previous audio file, if it exists.</p>
+     *
+     * @param files Multiple MultipartFile(s) for actual audio file <br>
+     *              It can be from HTML &lt;input multiple&gt; tag or {@code curl} with multiple {@code -F "files=@<<some_file>>"} flags <br>
+     *              file name must follow certain format <br>
+     *              FILENAME: QUESTIONID SPLIT DIFFICULTY FILEEXTENSION <br>
+     *              QUESTIONID:    (regex) \D*\d+ <br>
+     *              SPLIT:         (regex) [\s_-] <br>
+     *              DIFFICULTY:    (regex) \D*\d+ <br>
+     *              FILEEXTENSION: (regex) [\.][^\.]* <br>
+     *              example: q001-d002.mp3, question123_diff002.flac, "1 2"
+     *
+     * @return
+     * {@code 201 Created} <br>
+     * {@code body}: List of {encryptUuid}
+     *
+     * @throws NoSuchElementException
+     *         If the question with id ({@code questionId}) does not exist
+     * @throws AudioFileAlreadyExistsException
+     *         If {@code overwrite} is false, but there exists an audio file already
+     * @throws NoAudioFileExistsException
+     *         If {@code overwrite} is true, but there exists no audio file
+     * @throws IOException
+     *         If the given file can not be read
+     * @throws InvalidFormatException
+     *         If the given file is not audio file format
+     * @throws IllegalArgumentException
+     *         If any of specified file has invalid file name.
+     */
     @PostMapping("/multiple")
-    public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files)
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, IllegalArgumentException {
+        List<String> encryptUuidList = new ArrayList<>();
         for (MultipartFile file : files) {
-            System.out.println(file.getOriginalFilename());
+            encryptUuidList.add(audioFileService.setAudioFile(file));
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(encryptUuidList);
     }
-
 
     /**
      * GET "/audiofiles/{encryptUuid}" - Get InputStreamResource of specific audio file

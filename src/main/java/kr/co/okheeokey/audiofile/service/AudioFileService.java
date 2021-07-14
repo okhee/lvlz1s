@@ -12,14 +12,14 @@ import kr.co.okheeokey.question.domain.QuestionRepository;
 import kr.co.okheeokey.question.vo.AudioFileValues;
 import kr.co.okheeokey.util.CryptoUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -30,6 +30,13 @@ public class AudioFileService {
     private final AudioFileContentStore audioFileContentStore;
 
     @Transactional
+    public String setAudioFile(MultipartFile file)
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, IllegalArgumentException {
+        AudioFileSetValues values = parseFile(file);
+        return setAudioFile(values);
+    }
+
+    @Transactional
     public String setAudioFile(AudioFileSetValues values)
             throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
         Question question = questionRepository.findById(values.getQuestionId())
@@ -38,22 +45,22 @@ public class AudioFileService {
         String mimeType = verifyMultipartFile(values.getFile());
 
         AudioFile audioFile;
-        if(!values.getOverwrite()){
-            question.diffEmptyCheck(values.getDifficulty());
+        Optional<AudioFile> previousAudioFile = audioFileRepository.findByQuestionAndDifficulty(question, values.getDifficulty());
+        if(values.getOverwrite() && previousAudioFile.isPresent()){
+            audioFile = previousAudioFile.get();
 
-            audioFile = AudioFile.builder()
-                    .difficulty(values.getDifficulty())
-                    .mimeType(mimeType)
-                    .build();
-            audioFile.setQuestion(question);
-            audioFileRepository.save(audioFile);
-        }
-        else {
-            audioFile = audioFileRepository.findByQuestionAndDifficulty(question, values.getDifficulty())
-                    .orElseThrow(() -> new NoAudioFileExistsException("Audio file does not exists in Question id { "
-                            + question.getId() + " }, difficulty { " + values.getDifficulty() + " }; Add audio file first"));
             audioFile.setMimeType(mimeType);
             audioFileContentStore.unsetContent(audioFile);
+        }
+        else {
+            question.diffEmptyCheck(values.getDifficulty());
+            audioFile = AudioFile.builder()
+                        .difficulty(values.getDifficulty())
+                        .mimeType(mimeType)
+                        .build();
+
+            audioFile.setQuestion(question);
+            audioFileRepository.save(audioFile);
         }
         audioFileContentStore.setContent(audioFile, values.getFile().getInputStream());
 
@@ -72,21 +79,34 @@ public class AudioFileService {
                 .build();
     }
 
+    private AudioFileSetValues parseFile(MultipartFile file) throws IllegalArgumentException {
+        String fileName = file.getOriginalFilename();
+        if (fileName == null)
+            throw new IllegalArgumentException("Empty file name is not allowed!");
+
+        String[] split = fileName.split("[\\s_-]");
+        if (split.length != 2)
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+
+        String questionId = split[0].replaceAll("\\D", "");
+        String difficulty = split[1];
+        if (difficulty.contains("."))
+            difficulty = difficulty.substring(0, difficulty.lastIndexOf('.'));
+        difficulty = difficulty.replaceAll("\\D", "");
+
+        if (questionId.isEmpty() || difficulty.isEmpty())
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+
+        return new AudioFileSetValues(file, Long.valueOf(questionId), Long.valueOf(difficulty), true);
+    }
+
     private String verifyMultipartFile(MultipartFile file) throws IOException {
-        byte[] mp3MagicNumber = new byte[]{0x49, 0x44, 0x33};
-        byte[] flacMagicNumber = new byte[]{0x66, 0x4C, 0x61, 0x43};
-        byte[] buffer = new byte[4];
+        String mediaType = new Tika().detect(file.getInputStream());
 
-        if (file.getInputStream().read(buffer) < 0)
-            throw new InvalidFormatException("Uploaded file is not mp3 nor flac");
+        if (!mediaType.contains("audio/"))
+            throw new InvalidFormatException("The uploaded file is not an audio file");
 
-        if (Arrays.equals(mp3MagicNumber, Arrays.copyOfRange(buffer, 0, mp3MagicNumber.length)))
-            return "audio/mpeg";
-
-        if (Arrays.equals(flacMagicNumber, Arrays.copyOfRange(buffer, 0, flacMagicNumber.length)))
-            return "audio/flac";
-
-        throw new InvalidFormatException("Uploaded file is not mp3 nor flac");
+        return mediaType;
     }
 
 }
