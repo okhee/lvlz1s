@@ -68,14 +68,15 @@ public class AudioFileController {
     }
 
     @PostMapping("/multiple")
-    public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<?> setMultipleAudioFile(@RequestParam("files") MultipartFile[] files)
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, IllegalArgumentException {
+        List<String> encryptUuidList = new ArrayList<>();
         for (MultipartFile file : files) {
-            System.out.println(file.getOriginalFilename());
+            encryptUuidList.add(audioFileService.setAudioFile(file));
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(encryptUuidList);
     }
-
 
     /**
      * GET "/audiofiles/{encryptUuid}" - Get InputStreamResource of specific audio file

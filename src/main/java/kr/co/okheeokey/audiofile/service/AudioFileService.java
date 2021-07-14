@@ -30,6 +30,13 @@ public class AudioFileService {
     private final AudioFileContentStore audioFileContentStore;
 
     @Transactional
+    public String setAudioFile(MultipartFile file)
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, IllegalArgumentException {
+        AudioFileSetValues values = parseFile(file);
+        return setAudioFile(values);
+    }
+
+    @Transactional
     public String setAudioFile(AudioFileSetValues values)
             throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
         Question question = questionRepository.findById(values.getQuestionId())
