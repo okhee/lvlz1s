@@ -90,10 +90,12 @@ INSERT INTO `song` (`song_name`, `album_id`) VALUES
 
 -- Question ------------------------------------------------------------
 INSERT INTO `question` (`id`, `song_id`, `answer_location_in_second`, `difficulty`, `question_info`) VALUES
-    (NEXT VALUE FOR question_seq, 1, 3, 'MEDIUM', 'Intro of Introducing the Candy'),
-    (NEXT VALUE FOR question_seq, 1, 5, 'MEDIUM', 'Outro #2 of Introducing the Candy'),
+    (NEXT VALUE FOR question_seq, 1,  0, 'MEDIUM', 'Intro of Introducing the Candy'),
+    (NEXT VALUE FOR question_seq, 1, 21, 'HARD', '도시도솔, 따단, Introducing the Candy'),
+    (NEXT VALUE FOR question_seq, 1, 26, 'MEDIUM', '시 레 도시도 솔파미도 Introducing the Candy'),
+    (NEXT VALUE FOR question_seq, 1, 48, 'MEDIUM', '마지막 부분, 시도레 도레 미 시 Introducing the Candy'),
 
-    (NEXT VALUE FOR question_seq, 2, 1, 'EASY',   'Intro #1 of Candy Jelly Love'),
-    (NEXT VALUE FOR question_seq, 2, 4, 'MEDIUM', 'Intro #2 of Candy Jelly Love'),
-    (NEXT VALUE FOR question_seq, 2, 7, 'HARD',   'Outro #1 of Candy Jelly Love');
+    (NEXT VALUE FOR question_seq, 2, 24, 'MEDIUM',  '굴리다 Candy Jelly Love'),
+    (NEXT VALUE FOR question_seq, 2, 60, 'HARD', '캔디 젤리 럽~ 배경 인스트 of Candy Jelly Love'),
+    (NEXT VALUE FOR question_seq, 2, 95, 'MEDIUM',   '행복이 번져~ 이후 인스트 of Candy Jelly Love');
 
