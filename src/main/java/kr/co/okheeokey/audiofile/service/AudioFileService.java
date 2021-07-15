@@ -103,10 +103,13 @@ public class AudioFileService {
     private String verifyMultipartFile(MultipartFile file) throws IOException {
         String mediaType = new Tika().detect(file.getInputStream());
 
-        if (!mediaType.contains("audio/"))
-            throw new InvalidFormatException("The uploaded file is not an audio file");
+        if (mediaType.contains("audio/"))
+            return mediaType;
 
-        return mediaType;
+        if (mediaType.equals("video/mp4"))
+            return "audio/aac";
+
+        throw new InvalidFormatException("The uploaded file is not an audio file");
     }
 
 }
