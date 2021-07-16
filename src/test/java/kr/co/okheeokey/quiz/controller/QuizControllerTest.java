@@ -61,14 +61,14 @@ public class QuizControllerTest {
         QuizCreateDto dto = new QuizCreateDto(quizSetId, questionNum);
 
         // when
-        mvc.perform(post("/quizs")
+        mvc.perform(post("/quiz")
             .content(objectMapper.writeValueAsString(dto))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .characterEncoding("UTF-8"))
 
         // then
         .andExpect(status().isAccepted())
-        .andExpect(header().string("Location", "/quizs/" + quizId))
+        .andExpect(header().string("Location", "/quiz/" + quizId))
         .andDo(print());
 
         verify(quiz, times(1)).getId();
@@ -93,7 +93,7 @@ public class QuizControllerTest {
                         questionList, responseMap, scoreList, responseExistList));
 
         // when
-        mvc.perform(get("/quizs/" + quizId))
+        mvc.perform(get("/quiz/" + quizId))
                 .andDo(print())
 
         // then
@@ -130,7 +130,7 @@ public class QuizControllerTest {
                 .thenReturn(new Quiz());
 
         // when
-        mvc.perform(post("/quizs/{id}/q/{qid}", quizId, questionIndex)
+        mvc.perform(post("/quiz/{id}/q/{qid}", quizId, questionIndex)
             .content(objectMapper.writeValueAsString(dto))
             .contentType(MediaType.APPLICATION_JSON_VALUE))
 

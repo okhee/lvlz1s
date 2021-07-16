@@ -25,18 +25,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * Controller class of "/quizs/**" endpoints
+ * Controller class of "/quiz/**" endpoints
  *
  * @see QuizService
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/quizs")
+@RequestMapping(value = "/quiz")
 public class QuizController {
     private final QuizService quizService;
 
     /**
-     * POST "/quizs" - Create new quiz instance
+     * POST "/quiz" - Create new quiz instance
      *
      * <p> If user has previous ongoing quiz with same quiz set id,
      * return such quiz instance instead </p>
@@ -46,7 +46,7 @@ public class QuizController {
      *
      * @return
      * {@code 202 Accepted} <br>
-     * {@code Location}: "/quizs/{quizId}"
+     * {@code Location}: "/quiz/{quizId}"
      *
      * @throws NoSuchElementException
      *         If {@code quizSetId} is invalid
@@ -61,11 +61,11 @@ public class QuizController {
         Quiz quiz = quizService.createNewQuiz(new QuizCreateValues(user, dto));
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .location(URI.create("/quizs/" + quiz.getId())).build();
+                .location(URI.create("/quiz/" + quiz.getId())).build();
     }
 
     /**
-     * GET "/quizs/{quizId}" - Get information of ongoing/finished quiz instance
+     * GET "/quiz/{quizId}" - Get information of ongoing/finished quiz instance
      *
      * @param user [Authenticated]
      * @param quizId Id of {@code quiz}
@@ -89,7 +89,7 @@ public class QuizController {
     }
 
     /**
-     * GET "/quizs/{quizId}/q/{questionIndex}" - Get question info
+     * GET "/quiz/{quizId}/q/{questionIndex}" - Get question info
      *
      * @param user [Authenticated]
      * @param quizId Id of {@code quiz}
@@ -125,7 +125,7 @@ public class QuizController {
     }
 
     /**
-     * POST "/quizs/{quizId}/q/{questionIndex}/hint" - Request additional hint for question
+     * POST "/quiz/{quizId}/q/{questionIndex}/hint" - Request additional hint for question
      *
      * @param user [Authenticated]
      * @param quizId Id of {@code quiz}
@@ -133,7 +133,7 @@ public class QuizController {
      *
      * @return
      * {@code 301 Moved Permanently} <br>
-     * {@code Location}: "/quizs/{quizId}/q/{questionIndex}"
+     * {@code Location}: "/quiz/{quizId}/q/{questionIndex}"
      *
      * @throws IndexOutOfBoundsException
      *         If {@code questionIndex} is greater than {@code questionNum}
@@ -151,12 +151,12 @@ public class QuizController {
         quizService.getAccessToNewHint(user, quizId, questionIndex);
 
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                .location(URI.create("/quizs/" + quizId + "/q/" + questionIndex))
+                .location(URI.create("/quiz/" + quizId + "/q/" + questionIndex))
                 .build();
     }
 
     /**
-     * POST "/quizs/{quizId}/q/{questionIndex}" - Submit answer response of question
+     * POST "/quiz/{quizId}/q/{questionIndex}" - Submit answer response of question
      *
      * @param user [Authenticated]
      * @param quizId Id of {@code quiz}
@@ -185,7 +185,7 @@ public class QuizController {
     }
 
     /**
-     * POST "/quizs/{quizId}" - Finish and submit quiz instance
+     * POST "/quiz/{quizId}" - Finish and submit quiz instance
      * <p>It accepts either every question is answered or not</p>
      *
      * @param user [Authenticated]
@@ -209,7 +209,7 @@ public class QuizController {
     }
 
     /**
-     * DELETE "/quizs/{quizId}" - Give up ongoing quiz instance
+     * DELETE "/quiz/{quizId}" - Give up ongoing quiz instance
      * <p>It has no effect on finished quiz instance.</p>
      *
      * @param user [Authenticated]

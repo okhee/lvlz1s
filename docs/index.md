@@ -1,7 +1,7 @@
 # lvlz1s Documentation
 
 This site contains the API documentation for lvlz1s(https://github.com/okhee/lvlz1s), 
-a RESTful API that supports quiz solving, uploading audio file and creating quiz sets and quizs.
+a RESTful API that supports quiz solving, uploading audio file and creating quiz sets and quizzes.
 
 ## Quiz
 
@@ -41,7 +41,7 @@ Instance of running, finished quiz (exam, test).
 
 ### Create `Quiz` instance
 
-> `POST` `/quizs`
+> `POST` `/quiz`
 
 Check authority to given `QuizSet`.
 
@@ -54,7 +54,7 @@ Randomly choose `songNum` `Questions` from `songPool` of `QuizSet`.
 
 If previous `Quiz` exists, return such `Quiz`.
 
-Response header "Location" specifies corresponding URL, `/quizs/{qid}`.
+Response header "Location" specifies corresponding URL, `/quiz/{qid}`.
 
 #### parameters
 
@@ -66,11 +66,11 @@ Response header "Location" specifies corresponding URL, `/quizs/{qid}`.
 
 ### Get current status of `Quiz` (before submission)
 
-> `GET` `/quizs/{quizId}`
+> `GET` `/quiz/{quizId}`
 
 ### Get `Question`
 
-> `GET` `/quizs/{quizId}/q/{questionId}`
+> `GET` `/quiz/{quizId}/q/{questionId}`
 
 Get `Question` of `quizId` and `questionId`
 
@@ -82,7 +82,7 @@ Get `Question` of `quizId` and `questionId`
 
 ### Submit `Question` response
 
-> `POST` `/quizs/{quizId}/q/{questionId}`
+> `POST` `/quiz/{quizId}/q/{questionId}`
 
 Save response to `responseMap` of `Quiz` instance
 
@@ -98,17 +98,17 @@ If not, proceed to next `Question`
 
 ### Submit `Quiz`
 
-> `POST` `/quizs/{quizId}`
+> `POST` `/quiz/{quizId}`
 
 Finish and submit quiz
 
 ### Check result of `Quiz`
 
-> `GET` `/quizs/{quizId}/result`
+> `GET` `/quiz/{quizId}/result`
 
 ### Give up ongoing `Quiz`
 
-> `DELETE`  `/quizs/{quizId}`
+> `DELETE`  `/quiz/{quizId}`
 
 ## QuizSet
 
