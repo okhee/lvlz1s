@@ -55,7 +55,7 @@ public class Quiz extends TimeStampEntity {
     private final Map<Long, Long> hintMap = new HashMap<>();
 
     @Column(nullable = false, columnDefinition = "bigint(20) DEFAULT '0'")
-    private AtomicLong hintTokenUsed = new AtomicLong(0L);
+    private Long hintTokenUsed = 0L;
 
     @Column(nullable = false)
     private Long questionNum;
@@ -109,7 +109,7 @@ public class Quiz extends TimeStampEntity {
             hintMap.put(questionIndex, newHintIndex);
 
             long hintCost = newHintIndex;
-            hintTokenUsed.addAndGet(hintCost);
+            hintCost += hintCost;
         }
     }
 

@@ -58,20 +58,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 
+                .antMatchers(HttpMethod.POST, "/user").permitAll()
+                .antMatchers(HttpMethod.GET, "/user").authenticated()
+
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
+
                 .antMatchers("/private").hasAuthority(UserRole.ADMIN.name())
+
+                .antMatchers(HttpMethod.POST, "/quizsets").authenticated()
+                .antMatchers(HttpMethod.GET, "/quizsets").permitAll()
+
+                .antMatchers("/quiz/**").authenticated()
+
+                .antMatchers("/questions/**").hasAuthority(UserRole.ADMIN.name())
 
                 .antMatchers(HttpMethod.POST, "/audiofiles/**").hasAuthority(UserRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/audiofiles/**").authenticated()
-
-                .antMatchers(HttpMethod.POST, "/questions/**").hasAuthority(UserRole.ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/questions/**").authenticated()
-
-                .antMatchers("/quizs/**").authenticated()
-
-                .antMatchers(HttpMethod.POST, "/quizsets").authenticated()
-
-                .antMatchers(HttpMethod.POST, "/user").permitAll()
-                .antMatchers(HttpMethod.GET, "/user").authenticated()
 
                 .anyRequest().permitAll()
                 .and()

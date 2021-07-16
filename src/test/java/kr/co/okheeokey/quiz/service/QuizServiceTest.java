@@ -326,7 +326,7 @@ public class QuizServiceTest {
         assertThat(values.getQuestionList().size(), is(2));
         assertThat(values.getScoreList().get(questionIndex), is(true));
 
-        List<Boolean> responseList = values.getResponseExistList();
+        List<Boolean> responseList = values.getResponseList();
         for(int i = 0; i < questionNum; i++){
             assertEquals(responseList.get(i), responseMap.containsKey((long) i));
         }
