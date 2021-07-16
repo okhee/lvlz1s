@@ -99,3 +99,16 @@ INSERT INTO `question` (`id`, `song_id`, `answer_location_in_second`, `difficult
     (NEXT VALUE FOR question_seq, 2, 60, 'HARD', '캔디 젤리 럽~ 배경 인스트 of Candy Jelly Love'),
     (NEXT VALUE FOR question_seq, 2, 95, 'MEDIUM',   '행복이 번져~ 이후 인스트 of Candy Jelly Love');
 
+-- QuizSet -------------------------------------------------------------
+INSERT INTO `quiz_set` (`id`, `user_id`, `title`, `description`, `ready_made`, `average_difficulty`) VALUES
+    (NEXT VALUE FOR quiz_set_seq, 1, '캔디, 젤리, 러브', '첫 번째 앨범 [Girls'' Invasion]의 수록곡으로 구성된 퀴즈 셋', 1, null);
+
+-- QuizSet QuestionPool ------------------------------------------------
+INSERT INTO `quiz_set_question_pool` (`quiz_set_id`, `question_pool_id`) VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4),
+    (1, 5),
+    (1, 6),
+    (1, 7);
