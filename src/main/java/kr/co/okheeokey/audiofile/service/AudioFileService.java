@@ -1,10 +1,10 @@
 package kr.co.okheeokey.audiofile.service;
 
-import com.sun.media.sound.InvalidFormatException;
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.domain.AudioFileContentStore;
 import kr.co.okheeokey.audiofile.domain.AudioFileRepository;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
+import kr.co.okheeokey.audiofile.exception.InvalidAudioFormatException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
 import kr.co.okheeokey.question.domain.Question;
@@ -14,9 +14,9 @@ import kr.co.okheeokey.util.CryptoUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class AudioFileService {
 
     @Transactional
     public String setAudioFile(AudioFileSetValues values)
-            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, InvalidAudioFormatException {
         Question question = questionRepository.findById(values.getQuestionId())
                 .orElseThrow(() -> new NoSuchElementException("No question exists with id { " + values.getQuestionId() + " }"));
 
@@ -100,7 +100,7 @@ public class AudioFileService {
         return new AudioFileSetValues(file, Long.valueOf(questionId), Long.valueOf(difficulty), true);
     }
 
-    private String verifyMultipartFile(MultipartFile file) throws IOException {
+    private String verifyMultipartFile(MultipartFile file) throws IOException, InvalidAudioFormatException {
         String mediaType = new Tika().detect(file.getInputStream());
 
         if (mediaType.contains("audio/"))
@@ -109,7 +109,7 @@ public class AudioFileService {
         if (mediaType.equals("video/mp4"))
             return "audio/aac";
 
-        throw new InvalidFormatException("The uploaded file is not an audio file");
+        throw new InvalidAudioFormatException("The uploaded file is not an audio file");
     }
 
 }

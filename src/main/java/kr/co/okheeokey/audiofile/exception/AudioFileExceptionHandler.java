@@ -29,8 +29,8 @@ public class AudioFileExceptionHandler {
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
 
-    @ExceptionHandler(value = InvalidFormatException.class)
-    public ResponseEntity<?> invalidFormatException(InvalidFormatException e) {
+    @ExceptionHandler(value = InvalidAudioFormatException.class)
+    public ResponseEntity<?> invalidAudioFormatException(InvalidAudioFormatException e) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
                 .body(Collections.singletonMap("message", e.getMessage()));
     }
