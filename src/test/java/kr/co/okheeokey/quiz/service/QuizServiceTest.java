@@ -2,6 +2,7 @@ package kr.co.okheeokey.quiz.service;
 
 import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.question.domain.QuestionDifficulty;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
 import kr.co.okheeokey.quiz.vo.QuestionInfoValues;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -43,6 +45,9 @@ public class QuizServiceTest {
     @Mock private List<Question> randomQuestionList;
     @Mock private Song song;
     @Mock private AudioFile audioFile;
+
+    @Mock private Question question1;
+    @Mock private Question question2;
 
     private final Long quizSetId = 73L;
     private final Long questionNum = 12L;
@@ -294,25 +299,38 @@ public class QuizServiceTest {
         Boolean closed = (Math.random() < 0.5);
         long questionNum = Math.round(Math.random() * 5 + 7);
 
-        List<Question> questionList = Arrays.asList(new Question(), new Question());
+        List<Question> questionList = new ArrayList<>();
+        for(int i = 0; i < questionNum; i++){
+            if (i % 2 == 0)
+                questionList.add(question1);
+            else
+                questionList.add(question2);
+        }
+
         Map<Long, Long> responseMap = new HashMap<>();
         for(int i = 0; i < questionNum; i++){
             if (Math.random() < 0.35)
                 responseMap.put((long) i, 55L);
         }
-        Map<Long, Boolean> scoreList = Collections.singletonMap(questionIndex, true);
+
+        Map<Long, Boolean> scoreList = Collections.singletonMap(questionIndex / 2, true);
 
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
         when(quiz.getOwner()).thenReturn(user);
+
         when(quiz.getQuizSet()).thenReturn(quizSet);
-        when(quiz.getClosed()).thenReturn(closed);
-        when(quiz.getQuestionNum()).thenReturn(questionNum);
-        when(quiz.getQuestionList()).thenReturn(questionList);
-        when(quiz.getResponseMap()).thenReturn(responseMap);
-        when(quiz.getScoreList()).thenReturn(scoreList);
 
         when(quizSet.getTitle()).thenReturn(title);
         when(quizSet.getDescription()).thenReturn(description);
+
+        when(quiz.getClosed()).thenReturn(closed);
+        when(quiz.getQuestionNum()).thenReturn(questionNum);
+        when(quiz.getQuestionList()).thenReturn(questionList);
+        when(question1.getDifficulty()).thenReturn(QuestionDifficulty.MEDIUM);
+        when(question2.getDifficulty()).thenReturn(QuestionDifficulty.HARD);
+
+        when(quiz.getResponseMap()).thenReturn(responseMap);
+        when(quiz.getScoreList()).thenReturn(scoreList);
 
         // when
         QuizStatusValues values = quizService.getQuizStatus(user, quizId);
@@ -323,12 +341,21 @@ public class QuizServiceTest {
         assertThat(values.getClosed(), is(closed));
         assertThat(values.getQuestionNum(), is(questionNum));
 
-        assertThat(values.getQuestionList().size(), is(2));
-        assertThat(values.getScoreList().get(questionIndex), is(true));
+        assertThat(values.getQuestionList().size(), is(Math.toIntExact(questionNum)));
+        assertArrayEquals(values.getQuestionList().toArray(),
+                questionList.stream().map(Question::getDifficulty).toArray());
 
-        List<Boolean> responseList = values.getResponseList();
         for(int i = 0; i < questionNum; i++){
-            assertEquals(responseList.get(i), responseMap.containsKey((long) i));
+            if (responseMap.containsKey((long) i))
+                assertThat(55L, is(values.getResponseList().get(i)));
+            else
+                assertThat(-1L, is(values.getResponseList().get(i)));
         }
+
+        if (closed)
+            assertThat(values.getScoreList().get(questionIndex.intValue() / 2), is(true));
+        else
+            assertFalse(values.getScoreList().stream()
+                    .reduce(Boolean::logicalOr).get());
     }
 }

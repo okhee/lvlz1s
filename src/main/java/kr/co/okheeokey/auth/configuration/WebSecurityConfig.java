@@ -70,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/quiz/**").authenticated()
 
-                .antMatchers("/questions/**").hasAuthority(UserRole.ADMIN.name())
+                .antMatchers("/question/**").hasAuthority(UserRole.ADMIN.name())
 
                 .antMatchers(HttpMethod.POST, "/audiofiles/**").hasAuthority(UserRole.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/audiofiles/**").authenticated()

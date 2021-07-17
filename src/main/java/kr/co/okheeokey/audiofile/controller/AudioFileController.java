@@ -1,7 +1,7 @@
 package kr.co.okheeokey.audiofile.controller;
 
-import com.sun.media.sound.InvalidFormatException;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
+import kr.co.okheeokey.audiofile.exception.InvalidAudioFormatException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.service.AudioFileService;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
@@ -55,13 +55,13 @@ public class AudioFileController {
      *         If {@code overwrite} is true, but there exists no audio file
      * @throws IOException
      *         If the given file can not be read
-     * @throws InvalidFormatException
+     * @throws InvalidAudioFormatException
      *         If the given file is not audio file format
      */
     @PostMapping
     public ResponseEntity<?> setAudioFile(@RequestPart MultipartFile file, @RequestParam("q") Long questionId,
           @RequestParam("diff") Long difficulty, @RequestParam(value = "overwrite", defaultValue = "false") Boolean overwrite)
-            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException {
+            throws NoSuchElementException, AudioFileAlreadyExistsException, NoAudioFileExistsException, IOException, InvalidAudioFormatException {
         String encryptUuid = audioFileService.setAudioFile(new AudioFileSetValues(file, questionId, difficulty, overwrite));
 
         return ResponseEntity.created(URI.create("/audiofiles/" + encryptUuid)).build();
@@ -95,7 +95,7 @@ public class AudioFileController {
      *         If {@code overwrite} is true, but there exists no audio file
      * @throws IOException
      *         If the given file can not be read
-     * @throws InvalidFormatException
+     * @throws InvalidAudioFormatException
      *         If the given file is not audio file format
      * @throws IllegalArgumentException
      *         If any of specified file has invalid file name.
