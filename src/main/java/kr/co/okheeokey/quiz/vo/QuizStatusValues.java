@@ -31,17 +31,17 @@ public class QuizStatusValues {
 
         this.questionList = quiz.getQuestionList().stream().map(Question::getDifficulty).collect(Collectors.toList());
 
-        this.scoreList = new ArrayList<>();
-        IntStream.range(0, this.questionNum.intValue())
-                .forEach(i -> this.scoreList.add(false));
-        if (!closed) {
-            quiz.getScoreList().forEach((key, value) -> this.scoreList.set(key.intValue(), value));
-        }
-
         this.responseList = new ArrayList<>();
         IntStream.range(0, this.questionNum.intValue())
                 .forEach(i -> this.responseList.add(-1L));
         quiz.getResponseMap()
                 .forEach((key, value) -> this.responseList.set(key.intValue(), value));
+
+        this.scoreList = new ArrayList<>();
+        IntStream.range(0, this.questionNum.intValue())
+                .forEach(i -> this.scoreList.add(false));
+        if (closed) {
+            quiz.getScoreList().forEach((key, value) -> this.scoreList.set(key.intValue(), value));
+        }
     }
 }

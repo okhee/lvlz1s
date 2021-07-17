@@ -1,7 +1,7 @@
 package kr.co.okheeokey.quiz.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.okheeokey.question.domain.Question;
+import kr.co.okheeokey.question.domain.QuestionDifficulty;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
@@ -11,6 +11,7 @@ import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +22,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -44,7 +46,8 @@ public class QuizControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean private QuizService quizService;
-    @MockBean private Quiz quiz;
+
+    @Mock private Quiz quiz;
 
     private final Long quizSetId = 43L;
     private final Long questionNum = 9L;
@@ -80,21 +83,36 @@ public class QuizControllerTest {
         // given
         String title = "ttiit_";
         String description = "ddedi1";
-        Boolean closed = (Math.random() < 0.5);
-        Long questionNum = 156L;
+        Boolean closed = true;
 
-        List<Question> questionList = Collections.singletonList(new Question());
-        Map<Long, Long> responseMap = Collections.singletonMap(51L, 162L);
-        Map<Long, Boolean> scoreList = Collections.singletonMap(16L, true);
-        List<Boolean> responseExistList = new ArrayList<>(Arrays.asList(true, false, true));
+        Long questionNum = 6L;
 
-        when(quizService.getQuizStatus(any(), anyLong()))
-                .thenReturn(new QuizStatusValues(title, description, closed, questionNum,
-                        questionList, responseMap, scoreList, responseExistList));
+        List<QuestionDifficulty> questionList = new ArrayList<>();
+        for (int i = 0; i < questionNum; i++)
+            questionList.add(QuestionDifficulty.MEDIUM);
+
+        List<Long> responseList = new ArrayList<>();
+        responseList.add(-1L);
+        responseList.add(-1L);
+        responseList.add(-1L);
+        responseList.add(162L);
+        responseList.add(-1L);
+        responseList.add(-1L);
+
+        List<Boolean> scoreList = new ArrayList<>();
+        scoreList.add(false);
+        scoreList.add(false);
+        scoreList.add(false);
+        scoreList.add(false);
+        scoreList.add(true);
+        scoreList.add(false);
+
+        when(quizService.getQuizStatus(any(), anyLong())).thenReturn(
+                new QuizStatusValues(title, description, closed, questionNum,
+                        questionList, responseList, scoreList));
 
         // when
         mvc.perform(get("/quiz/" + quizId))
-                .andDo(print())
 
         // then
                 .andExpect(status().isOk())
@@ -105,14 +123,13 @@ public class QuizControllerTest {
                 .andExpect(jsonPath("$.questionNum", is(questionNum.intValue())))
 
                 .andExpect(jsonPath("$.questionList").isArray())
-                .andExpect(jsonPath("$.responseMap['51']", is(162)))
-                .andExpect(jsonPath("$.scoreList['16']", is(true)))
 
-                .andExpect(jsonPath("$.responseExistList").isArray())
-                .andExpect(jsonPath("$.responseExistList", hasSize(3)))
-                .andExpect(jsonPath("$.responseExistList[0]", is(true)))
-                .andExpect(jsonPath("$.responseExistList[1]", is(false)))
-                .andExpect(jsonPath("$.responseExistList[2]", is(true)))
+                .andExpect(jsonPath("$.responseList").isArray())
+                .andExpect(jsonPath("$.responseList", hasSize(Math.toIntExact(questionNum))))
+                .andExpect(jsonPath("$.responseList[0]", is(-1)))
+                .andExpect(jsonPath("$.responseList[1]", is(-1)))
+                .andExpect(jsonPath("$.responseList[3]", is(162)))
+                .andExpect(jsonPath("$.scoreList[4]", is(true)))
                 .andDo(print());
     }
 
