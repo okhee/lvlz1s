@@ -29,7 +29,6 @@ public class Question {
     @JoinColumn(name = "song_id")
     private Song song;
 
-    @Column(nullable = false)
     private Long answerLocationInSecond;
 
     @Enumerated(value = EnumType.STRING)
