@@ -6,7 +6,7 @@ import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.dto.QuestionSubmitDto;
 import kr.co.okheeokey.quiz.dto.QuizCreateDto;
 import kr.co.okheeokey.quiz.service.QuizService;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
+import kr.co.okheeokey.question.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import org.junit.Test;

@@ -5,8 +5,8 @@ import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionDifficulty;
 import kr.co.okheeokey.quiz.domain.Quiz;
 import kr.co.okheeokey.quiz.domain.QuizRepository;
-import kr.co.okheeokey.quiz.vo.QuestionInfoValues;
-import kr.co.okheeokey.quiz.vo.QuestionSubmitValues;
+import kr.co.okheeokey.question.vo.QuestionInfoValues;
+import kr.co.okheeokey.question.vo.QuestionSubmitValues;
 import kr.co.okheeokey.quiz.vo.QuizCreateValues;
 import kr.co.okheeokey.quiz.vo.QuizStatusValues;
 import kr.co.okheeokey.quizset.domain.QuizSet;
@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
