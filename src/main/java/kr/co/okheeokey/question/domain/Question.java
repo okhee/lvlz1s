@@ -6,7 +6,7 @@ import kr.co.okheeokey.audiofile.domain.AudioFile;
 import kr.co.okheeokey.audiofile.exception.AudioFileAlreadyExistsException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.song.domain.Song;
-import kr.co.okheeokey.song.domain.SongYoutubeLink;
+import kr.co.okheeokey.song.domain.SongType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,9 +30,8 @@ public class Question {
     @JoinColumn(name = "song_id")
     private Song song;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    private SongYoutubeLink songYoutubeLink;
+    @Enumerated(EnumType.STRING)
+    private SongType songType;
 
     private Long answerLocationInSecond;
 

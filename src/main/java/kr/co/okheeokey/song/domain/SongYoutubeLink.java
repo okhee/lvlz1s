@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "song_youtube_link")
 public class SongYoutubeLink {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

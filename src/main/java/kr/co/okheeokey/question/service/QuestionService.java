@@ -9,6 +9,7 @@ import kr.co.okheeokey.question.vo.QuestionInfoValues;
 import kr.co.okheeokey.question.vo.QuestionResultValues;
 import kr.co.okheeokey.song.domain.Song;
 import kr.co.okheeokey.song.domain.SongRepository;
+import kr.co.okheeokey.song.domain.SongYoutubeLinkRepository;
 import kr.co.okheeokey.song.vo.AlbumInfoValues;
 import kr.co.okheeokey.song.vo.SongInfoValues;
 import kr.co.okheeokey.util.CryptoUtils;
@@ -23,6 +24,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final AudioFileRepository audioFileRepository;
     private final SongRepository songRepository;
+    private final SongYoutubeLinkRepository songYoutubeLinkRepository;
 
     public QuestionInfoValues getRandomQuestion(QuestionDifficulty difficulty) throws NoSuchElementException {
         List<Question> questionList = questionRepository.findAllByDifficulty(difficulty);
@@ -77,7 +79,8 @@ public class QuestionService {
                         .albumValues(new AlbumInfoValues(song.getAlbum()))
                         .build())
                 .correct(question.getSong().equals(song))
-                .youtubeAddress(question.getSongYoutubeLink().getYoutubeAddress(question.getAnswerLocationInSecond()))
+                .youtubeAddress(songYoutubeLinkRepository.findBySongAndSongType(song, question.getSongType()).get()
+                        .getYoutubeAddress(question.getAnswerLocationInSecond()))
                 .build();
 
     }
