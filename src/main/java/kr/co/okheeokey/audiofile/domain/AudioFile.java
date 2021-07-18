@@ -38,8 +38,8 @@ public class AudioFile {
     private Long contentLength;
 
     @MimeType
-    @Column(nullable = false, length = 20)
-    private String mimeType = "audio/flac";
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'audio/aac'")
+    private String mimeType = "audio/aac";
 
     @Builder
     public AudioFile(Long difficulty, String mimeType) {
