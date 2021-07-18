@@ -73,7 +73,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/question/**").hasAuthority(UserRole.ADMIN.name())
 
                 .antMatchers(HttpMethod.POST, "/audiofiles/**").hasAuthority(UserRole.ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/audiofiles/**").authenticated()
 
                 .anyRequest().permitAll()
                 .and()
