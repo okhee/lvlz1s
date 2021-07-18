@@ -9,7 +9,7 @@ import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
 import kr.co.okheeokey.question.domain.Question;
 import kr.co.okheeokey.question.domain.QuestionRepository;
-import kr.co.okheeokey.question.vo.AudioFileValues;
+import kr.co.okheeokey.audiofile.vo.AudioFileValues;
 import kr.co.okheeokey.util.CryptoUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;

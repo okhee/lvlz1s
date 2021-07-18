@@ -1,4 +1,4 @@
-package kr.co.okheeokey.quiz.vo;
+package kr.co.okheeokey.question.vo;
 
 import kr.co.okheeokey.user.domain.User;
 import lombok.Getter;

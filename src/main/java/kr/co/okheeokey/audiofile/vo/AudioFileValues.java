@@ -1,4 +1,4 @@
-package kr.co.okheeokey.question.vo;
+package kr.co.okheeokey.audiofile.vo;
 
 import lombok.Builder;
 import lombok.Getter;

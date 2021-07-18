@@ -6,8 +6,9 @@
 
 ## How To Play
 
-- Choose one of the ready-made quiz sets or build your own **custom quiz set**!
-- Start a **quiz instance** which consists of randomly arranged questions.
+- Select the difficulty and start a randomly selected question.
+- Or, select one of the quiz sets and start a **quiz instance** which consists of randomly arranged questions.
+  - Choose one of the ready-made quiz sets or build your own **custom quiz set**!
 - Guess each song by listening to given audio file. 
 - If you are stuck, you can get hints at a cost of points.
 - Prove that you have exceptional taste on music listening!

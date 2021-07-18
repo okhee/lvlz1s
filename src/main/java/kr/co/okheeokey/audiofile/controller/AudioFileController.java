@@ -5,7 +5,7 @@ import kr.co.okheeokey.audiofile.exception.InvalidAudioFormatException;
 import kr.co.okheeokey.audiofile.exception.NoAudioFileExistsException;
 import kr.co.okheeokey.audiofile.service.AudioFileService;
 import kr.co.okheeokey.audiofile.vo.AudioFileSetValues;
-import kr.co.okheeokey.question.vo.AudioFileValues;
+import kr.co.okheeokey.audiofile.vo.AudioFileValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
