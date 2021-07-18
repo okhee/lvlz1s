@@ -66,6 +66,7 @@ public class QuestionService {
         UUID uuid = CryptoUtils.decryptUuid(encryptUuid);
         AudioFile audioFile = audioFileRepository.findByUuid(uuid)
                 .orElseThrow(() -> new NoSuchElementException("No audio file exists with encryptUuid { " + encryptUuid + " }"));
+        Question question = audioFile.getQuestion();
 
         Song song = songRepository.findById(responseSongId)
                 .orElseThrow(() -> new NoSuchElementException("No song with id { " + responseSongId + " } exists "));
@@ -75,9 +76,8 @@ public class QuestionService {
                         .songName(song.getSongName())
                         .albumValues(new AlbumInfoValues(song.getAlbum()))
                         .build())
-                .correct(audioFile.getQuestion().getSong().equals(song))
-                .youtubeAddress(song.getYoutubeLink().get(audioFile.getQuestion().getSongType()))
-                .answerLocationInSecond(audioFile.getQuestion().getAnswerLocationInSecond())
+                .correct(question.getSong().equals(song))
+                .youtubeAddress(question.getSongYoutubeLink().getYoutubeAddress(question.getAnswerLocationInSecond()))
                 .build();
 
     }
