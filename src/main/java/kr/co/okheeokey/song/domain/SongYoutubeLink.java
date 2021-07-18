@@ -24,6 +24,8 @@ public class SongYoutubeLink {
     private Long timeSyncOffset;
 
     public String getYoutubeAddress(Long timeLocation) {
-        return "https://www.youtube.com/embed/" + youtubeLink + "?start=" + (timeLocation + timeSyncOffset);
+        long location = timeLocation + timeSyncOffset - 5L;
+        location = Math.max(location, 0L);
+        return "https://www.youtube.com/embed/" + youtubeLink + "?start=" + location;
     }
 }
