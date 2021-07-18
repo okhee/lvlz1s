@@ -34,6 +34,11 @@ public class Song {
     @JoinColumn(name = "album_id")
     private Album album;
 
+    @OneToMany(mappedBy = "song")
+    @JsonManagedReference
+    @EqualsAndHashCode.Exclude
+    private List<SongYoutubeLink> youtubeLinkList = new ArrayList<>();
+
     @Builder
     public Song(String songName) {
         this.songName = songName;

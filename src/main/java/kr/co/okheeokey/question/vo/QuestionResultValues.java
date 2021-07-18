@@ -9,13 +9,11 @@ public class QuestionResultValues {
     private final SongInfoValues songInfoValues;
     private final Boolean correct;
     private final String youtubeAddress;
-    private final Long answerLocationInSecond;
 
     @Builder
-    public QuestionResultValues(SongInfoValues songInfoValues, Boolean correct, String youtubeAddress, Long answerLocationInSecond) {
+    public QuestionResultValues(SongInfoValues songInfoValues, Boolean correct, String youtubeAddress) {
         this.songInfoValues = songInfoValues;
         this.correct = correct;
         this.youtubeAddress = youtubeAddress;
-        this.answerLocationInSecond = answerLocationInSecond;
     }
 }
