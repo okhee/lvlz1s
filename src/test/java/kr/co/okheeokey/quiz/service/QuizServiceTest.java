@@ -184,9 +184,9 @@ public class QuizServiceTest {
         // when 1
         values = quizService.getQuestion(user, quizId, 1L);
         // then 1
-        assertEquals(CryptoUtils.encryptUuid(uuid), values.getEncryptUuid());
+        assertEquals(uuid, CryptoUtils.decryptUuid(values.getEncryptUuid()));
         assertTrue(values.getHintAvailable());
-        assertEquals(1L, (long) values.getNextHintCost());
+        assertEquals(quiz.hintCost(1L), values.getNextHintCost());
 
         // when 2
         values = quizService.getQuestion(user, quizId, 2L);
@@ -222,25 +222,25 @@ public class QuizServiceTest {
 
         // Case 1: if additional hint is available, update and present new audio file
         // when 1
-        assertEquals(CryptoUtils.encryptUuid(audioFile1.getUuid()),
-                quizService.getQuestion(user, quizId, 1L).getEncryptUuid());
+        assertEquals(audioFile1.getUuid(),
+                CryptoUtils.decryptUuid(quizService.getQuestion(user, quizId, 1L).getEncryptUuid()));
 
         quizService.getAccessToNewHint(user, quizId, 1L);
 
         // then 1
-        assertEquals(CryptoUtils.encryptUuid(audioFile2.getUuid()),
-                quizService.getQuestion(user, quizId, 1L).getEncryptUuid());
+        assertEquals(audioFile2.getUuid(),
+                CryptoUtils.decryptUuid(quizService.getQuestion(user, quizId, 1L).getEncryptUuid()));
 
         // Case 2: if additional hint is not available, nothing happens
         // when 2
-        assertEquals(CryptoUtils.encryptUuid(audioFile3.getUuid()),
-                quizService.getQuestion(user, quizId, 2L).getEncryptUuid());
+        assertEquals(audioFile3.getUuid(),
+                CryptoUtils.decryptUuid(quizService.getQuestion(user, quizId, 2L).getEncryptUuid()));
 
         quizService.getAccessToNewHint(user, quizId, 2L);
 
         // then 2
-        assertEquals(CryptoUtils.encryptUuid(audioFile3.getUuid()),
-                quizService.getQuestion(user, quizId, 2L).getEncryptUuid());
+        assertEquals(audioFile3.getUuid(),
+                CryptoUtils.decryptUuid(quizService.getQuestion(user, quizId, 2L).getEncryptUuid()));
     }
 
     @Test

@@ -8,12 +8,10 @@ import static org.junit.Assert.assertEquals;
 
 public class CryptoUtilsTest {
     @Test
-    public void initTest() throws Exception {
-        CryptoUtils cryptoUtils = new CryptoUtils();
-
+    public void initTest() {
         UUID uuid = new UUID(1, 2);
-        String encryptUuid = cryptoUtils.encryptUuid(uuid);
-        assertEquals(uuid, cryptoUtils.decryptUuid(encryptUuid));
+        String encryptUuid = CryptoUtils.encryptUuid(uuid);
+        assertEquals(uuid, CryptoUtils.decryptUuid(encryptUuid));
     }
 
 }
