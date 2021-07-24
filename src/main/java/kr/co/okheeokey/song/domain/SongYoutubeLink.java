@@ -10,6 +10,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "song_youtube_link")
 public class SongYoutubeLink {
+    private static final Long timeSyncOffset = 3L;
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,10 +23,10 @@ public class SongYoutubeLink {
 
     private String youtubeLink;
 
-    private Long timeSyncOffset;
+    private Long mvSyncOffset;
 
     public String getYoutubeAddress(Long timeLocation) {
-        long location = timeLocation + timeSyncOffset - 5L;
+        long location = timeLocation + mvSyncOffset - timeSyncOffset;
         location = Math.max(location, 0L);
         return "https://www.youtube.com/embed/" + youtubeLink + "?start=" + location;
     }
