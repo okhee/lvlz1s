@@ -1,50 +1,77 @@
 package kr.co.okheeokey.util;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.nio.ByteBuffer;
-import java.security.*;
-import java.util.Base64;
-import java.util.UUID;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.*;
 
 public class CryptoUtils {
-    private static SecretKey KEY;
-    private static IvParameterSpec IV;
+    private static final Long KEY_NUM = 16L;
+    private static final int SALT_LEN = 8;
+
+    private static final List<SecretKey> KEYS = new ArrayList<>();
+    private static final IvParameterSpec IV;
 
     static {
         KeyGenerator keyGenerator = null;
         try {
-            keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator = KeyGenerator.getInstance("DES");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         assert keyGenerator != null;
-        keyGenerator.init(128, new SecureRandom());
-        CryptoUtils.KEY = keyGenerator.generateKey();
+        keyGenerator.init(56, new SecureRandom());
 
-        byte[] iv = new byte[16];
+        for(int i = 0; i < KEY_NUM; i++)
+            KEYS.add(keyGenerator.generateKey());
+
+        byte[] iv = new byte[8];
         new SecureRandom().nextBytes(iv);
-        CryptoUtils.IV = new IvParameterSpec(iv);
+        IV = new IvParameterSpec(iv);
     }
 
     public static String encryptUuid(UUID uuid) {
-        String encryptUuid = null;
+        StringBuilder encryptUuidBuffer = new StringBuilder();
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, KEY, IV);
-            encryptUuid = Base64.getUrlEncoder().encodeToString(cipher.doFinal(asBytes(uuid)));
+            int keyIndex = new SecureRandom().nextInt(KEY_NUM.intValue());
+            Cipher cipher = Cipher.getInstance("DES/CBC/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, KEYS.get(keyIndex), IV);
+
+            byte[] salt = new byte[SALT_LEN];
+            new SecureRandom().nextBytes(salt);
+
+            ByteBuffer bb = ByteBuffer.wrap(new byte[16 + SALT_LEN]);
+            bb.put(salt);
+            bb.put(asBytes(uuid));
+
+            encryptUuidBuffer.append(keyIndex);
+            encryptUuidBuffer.append("$");
+            encryptUuidBuffer.append(Base64.getUrlEncoder().encodeToString(cipher.doFinal(bb.array())));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
-        return encryptUuid;
+        return encryptUuidBuffer.toString();
     }
 
     public static UUID decryptUuid(String encryptUuid) {
         UUID uuid = null;
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, KEY, IV);
-            uuid = asUuid(cipher.doFinal(Base64.getUrlDecoder().decode(encryptUuid)));
+            String[] split = encryptUuid.split("\\$");
+            if (split.length != 2)
+                throw new GeneralSecurityException("Invalid encryptUuid format");
+
+            int keyIndex = Integer.parseInt(split[0]);
+            Cipher cipher = Cipher.getInstance("DES/CBC/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, KEYS.get(keyIndex), IV);
+
+            byte[] uuidBuffer = cipher.doFinal(Base64.getUrlDecoder().decode(split[1]));
+            uuidBuffer = Arrays.copyOfRange(uuidBuffer, SALT_LEN, uuidBuffer.length);
+            uuid = asUuid(uuidBuffer);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
