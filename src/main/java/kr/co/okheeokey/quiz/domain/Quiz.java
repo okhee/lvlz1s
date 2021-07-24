@@ -125,7 +125,7 @@ public class Quiz extends TimeStampEntity {
         this.closed = true;
     }
 
-    private Long hintCost(Long hintIndex) {
+    public Long hintCost(Long hintIndex) {
         return 2 * hintIndex;
     }
 }
