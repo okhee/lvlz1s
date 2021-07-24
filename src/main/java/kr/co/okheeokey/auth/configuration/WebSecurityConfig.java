@@ -70,8 +70,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers("/quiz/**").authenticated()
 
-                .antMatchers("/question/**").hasAuthority(UserRole.ADMIN.name())
-
                 .antMatchers(HttpMethod.POST, "/audiofiles/**").hasAuthority(UserRole.ADMIN.name())
 
                 .anyRequest().permitAll()
