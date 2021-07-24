@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 @NoArgsConstructor
@@ -93,9 +92,9 @@ public class Quiz extends TimeStampEntity {
         questionIndex -= 1L;
 
         Question question = this.getQuestionList().get(questionIndex.intValue());
-        boolean available = question.getAudioList().containsKey(hintMap.get(questionIndex) + 1);
-        if(available)
-            return hintMap.get(questionIndex) + 1;
+        Long hintIndex = hintMap.get(questionIndex) + 1;
+        if (question.getAudioList().containsKey(hintIndex))
+            return hintCost(hintIndex);
         else
             return -1L;
     }
@@ -104,12 +103,10 @@ public class Quiz extends TimeStampEntity {
         questionIndex -= 1L;
 
         Question question = this.getQuestionList().get(questionIndex.intValue());
-        if (question.getAudioList().containsKey(hintMap.get(questionIndex) + 1)){
-            long newHintIndex = hintMap.get(questionIndex) + 1;
-            hintMap.put(questionIndex, newHintIndex);
-
-            long hintCost = newHintIndex;
-            hintCost += hintCost;
+        Long hintIndex = hintMap.get(questionIndex) + 1;
+        if (question.getAudioList().containsKey(hintIndex)){
+            hintMap.put(questionIndex, hintIndex);
+            hintTokenUsed += hintCost(hintIndex);
         }
     }
 
@@ -128,4 +125,7 @@ public class Quiz extends TimeStampEntity {
         this.closed = true;
     }
 
+    private Long hintCost(Long hintIndex) {
+        return 2 * hintIndex;
+    }
 }
